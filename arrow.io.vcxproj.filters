@@ -24,6 +24,10 @@
     <ClCompile Include="Setting.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="Start.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Help.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -38,6 +42,10 @@
     <ClInclude Include="Setting.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="Start.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="Help.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">
