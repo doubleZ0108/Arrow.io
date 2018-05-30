@@ -151,18 +151,26 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
   <ItemGroup>
     <ClCompile Include="..\Classes\AppDelegate.cpp" />
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
+    <ClCompile Include="BulletBase.cpp" />
+    <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Help.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Setting.cpp" />
     <ClCompile Include="Start.cpp" />
+    <ClCompile Include="TollgateScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Classes\AppDelegate.h" />
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
+    <ClInclude Include="BulletBase.h" />
+    <ClInclude Include="Entity.h" />
     <ClInclude Include="Help.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Setting.h" />
     <ClInclude Include="Start.h" />
+    <ClInclude Include="TollgateScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\cocos2d\cocos\2d\libcocos2d.vcxproj">

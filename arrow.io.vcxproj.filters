@@ -27,7 +27,13 @@
     <ClCompile Include="Start.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="Help.cpp" />
+    <ClCompile Include="Help.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="BulletBase.cpp" />
+    <ClCompile Include="TollgateScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -45,7 +51,13 @@
     <ClInclude Include="Start.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="Help.h" />
+    <ClInclude Include="Help.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="BulletBase.h" />
+    <ClInclude Include="TollgateScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

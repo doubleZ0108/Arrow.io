@@ -1,10 +1,22 @@
 #include "Start.h"
 #include "HelloWorldScene.h"
+#include "TollgateScene.h"
+#include "Player.h"
+#include "BulletBase.h"
+#include <math.h>
+#define k_w (EventKeyboard::KeyCode)119
+#define k_a (EventKeyboard::KeyCode)97
+#define k_s (EventKeyboard::KeyCode)115
+#define k_d (EventKeyboard::KeyCode)100
+
 USING_NS_CC;
 
 Scene* StartScene::createScene()
 {
-	return StartScene::create();
+	auto scene = Scene::create();
+	auto layer = TollgateScene::createScene();
+	scene->addChild(layer);
+	return scene;
 }
 
 // Print useful error message instead of segfaulting when files are not there.
@@ -38,28 +50,7 @@ void StartScene::ScenePrinter()
 	float x = rect.origin.x + rect.size.width / 2;
 	float y = rect.origin.y + rect.size.height / 2;
 
-	///////////////////////////////////////////
-	//add Setting_Background
-
-	x = rect.origin.x + rect.size.width / 2;
-	y = rect.origin.y + rect.size.height / 2;
-	auto *background = Sprite::create("Start_Background.png");
-	background->setPosition(Vec2(x, y));
-	this->addChild(background);
-
-	///////////////////////////////////
-	//a return button which click to back to HelloWorldScene
-	auto *return_button = MenuItemImage::create(
-		"backtoupper.png",
-		"backtoupper_select.png",
-		CC_CALLBACK_1(StartScene::menuHellowWorldScene, this));
-
-	auto *preturn = Menu::create(return_button, NULL);
-	x = rect.origin.x + rect.size.width*(10.0f / 11.0f);
-	y = rect.origin.y + rect.size.height*(1.0f / 10.0f);
-	preturn->setPosition(Vec2(x, y));
-	preturn->setScale(1.0f);
-	this->addChild(preturn);
+	/*
 	////////////////////////////////////////
 	//add a cover to draw something
 	auto *cover = CCLayerColor::create(ccc4(0, 0, 0, 150));  //cccv的第四个参数取值0~225，越大越不透明
@@ -74,11 +65,25 @@ void StartScene::ScenePrinter()
 	auto *actionTinback = actionTint->reverse();
 	auto *sequence2 = CCSequence::create(actionTint, actionTint, NULL);
 	//chose the sequence that you prefer
-	cover->runAction(sequence2);
+	cover->runAction(sequence2);*/
 
 
 }
 void StartScene::menuHellowWorldScene(Ref* pSender)
 {
 	Director::getInstance()->replaceScene(HelloWorld::create());
+}
+char *StartScene::FontToUTF8(const char* font)
+{
+	int len = MultiByteToWideChar(CP_ACP, 0, font, -1, NULL, 0);
+	wchar_t *wstr = new wchar_t[len + 1];
+	memset(wstr, 0, len + 1);
+	MultiByteToWideChar(CP_ACP, 0, font, -1, wstr, len);
+	len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
+	char *str = new char[len + 1];
+	memset(str, 0, len + 1);
+	WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, len, NULL, NULL);
+	if (wstr)delete[] wstr;
+	return str;
+
 }

@@ -8,7 +8,6 @@ public:
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
-
 	// a selector callback
 	void menuHellowWorldScene(cocos2d::Ref* pSender);
 
@@ -20,11 +19,19 @@ public:
 	bool is_paused;
 	void play(cocos2d::Object* pSender);
 	void stop(cocos2d::Object* pSender);
+
 	void pause(cocos2d::Object* pSender);
 	//language setting
-	void language_change(cocos2d::Object* pSender);
+	void language_change_tochinese(cocos2d::Object* pSender);
+	void language_change_toenglish(cocos2d::Object* pSender);
+
 	void size_change(cocos2d::Object* pSender);
 
+	char *FontToUTF8(const char* font);
+
+	void ScenePrinter_chinese();
+	void MusicPrinter_chinese();
+	void LanguagePrinter_chinese();
 	// implement the "static create()" method manually
 	CREATE_FUNC(SettingScene);
 };

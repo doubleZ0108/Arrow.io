@@ -1,5 +1,6 @@
 #ifndef _START_H_
 #define _START_H_
+
 #include "cocos2d.h"
 
 class StartScene : public cocos2d::Scene
@@ -13,10 +14,10 @@ public:
 	void menuHellowWorldScene(cocos2d::Ref* pSender);
 
 	void ScenePrinter();
-	
+	char *FontToUTF8(const char* font);
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(StartScene);
 };
 
-#endif _START_H_
+#endif //_START_H_
