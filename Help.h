@@ -14,7 +14,6 @@ public:
 
 	void ScenePrinter();
 
-	char *FontToUTF8(const char* font);
 	// implement the "static create()" method manually
 	CREATE_FUNC(HelpScene);
 };

@@ -25,13 +25,10 @@ public:
 	void language_change_tochinese(cocos2d::Object* pSender);
 	void language_change_toenglish(cocos2d::Object* pSender);
 
-	void size_change(cocos2d::Object* pSender);
+	void size_change_tosmall(cocos2d::Object* pSender);
+	void size_change_tomiddle(cocos2d::Object* pSender);
+	void size_change_tolarge(cocos2d::Object* pSender);
 
-	char *FontToUTF8(const char* font);
-
-	void ScenePrinter_chinese();
-	void MusicPrinter_chinese();
-	void LanguagePrinter_chinese();
 	// implement the "static create()" method manually
 	CREATE_FUNC(SettingScene);
 };

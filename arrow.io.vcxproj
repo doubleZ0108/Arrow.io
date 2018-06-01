@@ -153,6 +153,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="..\Classes\HelloWorldScene.cpp" />
     <ClCompile Include="BulletBase.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="FontToUTF8.cpp" />
     <ClCompile Include="Help.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />

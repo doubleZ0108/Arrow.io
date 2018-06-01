@@ -34,6 +34,9 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="BulletBase.cpp" />
     <ClCompile Include="TollgateScene.cpp" />
+    <ClCompile Include="FontToUTF8.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">

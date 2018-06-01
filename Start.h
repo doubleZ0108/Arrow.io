@@ -13,8 +13,8 @@ public:
 	// a selector callback
 	void menuHellowWorldScene(cocos2d::Ref* pSender);
 
+	void MapPrinter();
 	void ScenePrinter();
-	char *FontToUTF8(const char* font);
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(StartScene);

@@ -1,19 +1,17 @@
 #include "Start.h"
 #include "HelloWorldScene.h"
 #include "TollgateScene.h"
-#include "Player.h"
-#include "BulletBase.h"
-#include <math.h>
-#define k_w (EventKeyboard::KeyCode)119
-#define k_a (EventKeyboard::KeyCode)97
-#define k_s (EventKeyboard::KeyCode)115
-#define k_d (EventKeyboard::KeyCode)100
 
 USING_NS_CC;
 
+extern bool language_flag;  //true->English   false->Chinese
+extern char *FontToUTF8(const char* font);
+//it is define in another .cpp file 
+//and it is used to change character
+
 Scene* StartScene::createScene()
 {
-	auto scene = Scene::create();
+	auto scene = StartScene::create();
 	auto layer = TollgateScene::createScene();
 	scene->addChild(layer);
 	return scene;
@@ -36,9 +34,16 @@ bool StartScene::init()
 		return false;
 	}
 
+	MapPrinter();
 	ScenePrinter();
 	
 	return true;
+}
+
+void StartScene::MapPrinter()
+{
+	auto *map = TMXTiledMap::create("ArcherBattle_map1.tmx");
+	this->addChild(map);
 }
 
 void StartScene::ScenePrinter()
@@ -49,6 +54,21 @@ void StartScene::ScenePrinter()
 	auto rect = Director::getInstance()->getOpenGLView()->getVisibleRect();
 	float x = rect.origin.x + rect.size.width / 2;
 	float y = rect.origin.y + rect.size.height / 2;
+	
+	///////////////////////////////////
+	//a return button which click to back to HelloWorldScene
+	auto *return_button = MenuItemImage::create(
+		"backtoupper.png",
+		"backtoupper_select.png",
+		CC_CALLBACK_1(StartScene::menuHellowWorldScene, this));
+
+	auto *preturn = Menu::create(return_button, NULL);
+	x = rect.origin.x + rect.size.width*(10.0f / 11.0f);
+	y = rect.origin.y + rect.size.height*(1.0f / 10.0f);
+	preturn->setPosition(Vec2(x, y));
+
+	preturn->setScale(1.0f);
+	this->addChild(preturn);
 
 	/*
 	////////////////////////////////////////
@@ -66,24 +86,11 @@ void StartScene::ScenePrinter()
 	auto *sequence2 = CCSequence::create(actionTint, actionTint, NULL);
 	//chose the sequence that you prefer
 	cover->runAction(sequence2);*/
-
+	
 
 }
 void StartScene::menuHellowWorldScene(Ref* pSender)
 {
 	Director::getInstance()->replaceScene(HelloWorld::create());
 }
-char *StartScene::FontToUTF8(const char* font)
-{
-	int len = MultiByteToWideChar(CP_ACP, 0, font, -1, NULL, 0);
-	wchar_t *wstr = new wchar_t[len + 1];
-	memset(wstr, 0, len + 1);
-	MultiByteToWideChar(CP_ACP, 0, font, -1, wstr, len);
-	len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
-	char *str = new char[len + 1];
-	memset(str, 0, len + 1);
-	WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, len, NULL, NULL);
-	if (wstr)delete[] wstr;
-	return str;
 
-}
