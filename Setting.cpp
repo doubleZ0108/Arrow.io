@@ -350,5 +350,5 @@ void SettingScene::size_change_tolarge(cocos2d::Object * pSender)
 {
 	auto director = Director::getInstance();
 	auto glview = director->getOpenGLView();
-	glview->setFrameZoomFactor(1.3f);
+	glview->setFrameZoomFactor(1.35f);
 }

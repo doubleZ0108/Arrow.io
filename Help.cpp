@@ -67,7 +67,34 @@ void HelpScene::ScenePrinter()
 	preturn->setScale(1.0f);
 	this->addChild(preturn);
 
-
+	//爆炸效果*/
+	/*CCParticleSystem* particleSystem = CCParticleExplosion::create();
+	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
+	addChild(particleSystem);*/
+	//火焰效果  
+	/*CCParticleSystem* particleSystem = CCParticleFire::create();
+	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
+	addChild(particleSystem);*/
+	//烟花效果  
+	/*CCParticleSystem* particleSystem = CCParticleFireworks::create();
+	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
+	addChild(particleSystem);*/
+	//星系效果  
+	/*CCParticleSystem* particleSystem = CCParticleGalaxy::create();
+	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
+	addChild(particleSystem);*/
+	//下雨效果  
+	/*CCParticleSystem* particleSystem = CCParticleRain::create();
+	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
+	addChild(particleSystem);*/
+	//下雪效果  
+	/*CCParticleSystem* particleSystem = CCParticleSnow::create();
+	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("snow.jpg"));
+	addChild(particleSystem);*/
+	//漩涡效果  这个比较迷
+	/*CCParticleSystem* particleSystem = CCParticleSpiral::create();
+	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
+	addChild(particleSystem);*/
 }
 void HelpScene::menuHellowWorldScene(Ref* pSender)
 {

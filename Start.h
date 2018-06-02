@@ -6,6 +6,11 @@
 class StartScene : public cocos2d::Scene
 {
 public:
+	cocos2d::Size size;
+	cocos2d::Sprite* sprite;
+	cocos2d::TMXTiledMap* map;
+	cocos2d::TMXLayer* meta;
+
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
@@ -15,6 +20,12 @@ public:
 
 	void MapPrinter();
 	void ScenePrinter();
+
+	void up(cocos2d::Object* pSender);
+	void right(cocos2d::Object* pSender);
+	void left(cocos2d::Object* pSender);
+	void down(cocos2d::Object* pSender);
+	bool isCanReach(float x, float y);
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(StartScene);
