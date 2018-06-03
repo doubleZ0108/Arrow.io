@@ -1,7 +1,7 @@
 #include "Start.h"
 #include "HelloWorldScene.h"
 #include "TollgateScene.h"
-#define MAP_SIZE 1320
+#define MAP_SIZE 1600
 USING_NS_CC;
 
 extern bool language_flag;  //true->English   false->Chinese
@@ -34,7 +34,7 @@ bool StartScene::init()
 		return false;
 	}
 
-	MapPrinter();
+	//MapPrinter();
 	ScenePrinter();
 	
 	return true;
@@ -42,7 +42,7 @@ bool StartScene::init()
 
 void StartScene::MapPrinter()
 {
-	auto *map = TMXTiledMap::create("ArcherBattle_map1.tmx");
+	auto *map = TMXTiledMap::create("ArcherBattle_Tiledmap_1.tmx");
 	this->addChild(map);
 }
 
@@ -87,7 +87,7 @@ void StartScene::ScenePrinter()
 	//chose the sequence that you prefer
 	cover->runAction(sequence2);*/
 	size = Director::getInstance()->getVisibleSize();
-	map = TMXTiledMap::create("map.tmx");
+	map = TMXTiledMap::create("untitled.tmx");
 	this->addChild(map);
 
 	meta = map->layerNamed("meta");
@@ -95,7 +95,7 @@ void StartScene::ScenePrinter()
 	sprite = Sprite::create("sprite.png");
 	map->addChild(sprite, 10);
 	
-	sprite->setPosition(Vec2(16.5f, 16.5f));
+	sprite->setPosition(Vec2(80.0f, 80.0f));
 
 	auto* pLeft = MenuItemImage::create("left.png", "left1.png", this, menu_selector(StartScene::left));
 	auto* left = Menu::create(pLeft, NULL);
@@ -131,13 +131,13 @@ void StartScene::up(cocos2d::Object * pSender)
 {
 
 	float y = sprite->getPositionY();   //因为是往上走，所以获取精灵相对于地图的y坐标
-	if (y + 16.5<MAP_SIZE&&isCanReach(sprite->getPositionX(), y + 33))
+	if (y + 16<MAP_SIZE&&isCanReach(sprite->getPositionX(), y + 32))
 	{	//如果精灵上面那格不是地图的上边界
-		//之所以是一格大小的一半,是因为精灵的锚点在中心,上面一个的下边界只需要再加16.5
-		sprite->setPositionY(y + 33);  //把精灵置于上面一格的位置
+		//之所以是一格大小的一半,是因为精灵的锚点在中心,上面一个的下边界只需要再加16
+		sprite->setPositionY(y + 32);  //把精灵置于上面一格的位置
 		if ((y + map->getPositionY() > size.height / 2) && ((MAP_SIZE - y)>size.height / 2))
 		{ //调整地图,使人物尽量居中
-			map->setPositionY(map->getPositionY() - 33);
+			map->setPositionY(map->getPositionY() - 32);
 		}
 	}
 
@@ -145,46 +145,46 @@ void StartScene::up(cocos2d::Object * pSender)
 void StartScene::right(cocos2d::Object * pSender)
 {
 	float x = sprite->getPositionX();
-	if (x + 16.5<MAP_SIZE&&isCanReach(x + 33, sprite->getPositionY()))
+	if (x + 16<MAP_SIZE&&isCanReach(x + 32, sprite->getPositionY()))
 	{
-		sprite->setPositionX(x + 33);
+		sprite->setPositionX(x + 32);
 		if ((x + map->getPositionX() > size.width / 2) && ((MAP_SIZE - x)>size.width / 2))
 		{
-			map->setPositionX(map->getPositionX() - 33);
+			map->setPositionX(map->getPositionX() - 32);
 		}
 	}
 }
 void StartScene::left(cocos2d::Object * pSender)
 {
 	float x = sprite->getPositionX();
-	if (x>16.5&&isCanReach(x - 33, sprite->getPositionY()))
+	if (x>16&&isCanReach(x - 32, sprite->getPositionY()))
 	{
-		sprite->setPositionX(x - 33);
+		sprite->setPositionX(x - 32);
 		if ((x + map->getPositionX() < size.width / 2) && map->getPositionX() != 0)
 		{
-			map->setPositionX(map->getPositionX() + 33);
+			map->setPositionX(map->getPositionX() + 32);
 		}
 	}
 }
 void StartScene::down(cocos2d::Object * pSender)
 {
 	float y = sprite->getPositionY();
-	if (y > 16.5&&isCanReach(sprite->getPositionX(), y - 33))
+	if (y > 16&&isCanReach(sprite->getPositionX(), y - 32))
 	{
-		sprite->setPositionY(y - 33);
+		sprite->setPositionY(y - 32);
 		if ((y + map->getPositionY() < size.height / 2) && map->getPositionY() != 0)
 		{
-			map->setPositionY(map->getPositionY() + 33);
+			map->setPositionY(map->getPositionY() + 32);
 		}
 	}
 }
 bool StartScene::isCanReach(float x, float y)
 {
 	bool result;
-	int mapX = (int)((x - 16.5) / 33);        //减去16.5是由于人物的锚点在中心
-	int mapY = (int)(39 - (y - 16.5) / 33);   //39为Tiled里地图的坐标最大值
-	int tileGid = meta->tileGIDAt(Vec2(mapX, mapY)); //33是一格的大小
-	if (tileGid == 49)
+	int mapX = (int)((x - 16) / 32);        //减去16是由于人物的锚点在中心
+	int mapY = (int)(49 - (y - 16) / 32);   //49为Tiled里地图的坐标最大值
+	int tileGid = meta->tileGIDAt(Vec2(mapX, mapY)); //32是一格的大小
+	if (tileGid != 18)
 	{
 		result = true;
 	}
@@ -196,6 +196,8 @@ bool StartScene::isCanReach(float x, float y)
 }
 void StartScene::menuHellowWorldScene(Ref* pSender)
 {
-	Director::getInstance()->replaceScene(HelloWorld::create());
+	auto sc = HelloWorld::createScene();        //缩放交替的切换动画
+	auto reScene = TransitionShrinkGrow::create(1.0f, sc);
+	Director::getInstance()->replaceScene(reScene);
 }
 

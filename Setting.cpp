@@ -296,7 +296,9 @@ void SettingScene::SizePrinter()
 
 void SettingScene::menuHellowWorldScene(Ref* pSender)
 {
-	Director::getInstance()->replaceScene(HelloWorld::create());
+	auto sc = HelloWorld::createScene();
+	auto reScene = TransitionSlideInR::create(1.0f, sc);  //从右边推入的动画
+	Director::getInstance()->replaceScene(reScene);
 }
 void SettingScene::play(cocos2d::Object* pSender)
 {

@@ -14,6 +14,7 @@ public:
 
 	void ScenePrinter();
 
+	void Func(cocos2d::Ref* pSender);
 	// implement the "static create()" method manually
 	CREATE_FUNC(HelpScene);
 };
