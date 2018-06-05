@@ -5,12 +5,17 @@
 USING_NS_CC;
 
 extern bool language_flag;  //true->English   false->Chinese
+extern int is_paused;       //关于is_paused的具体解释请见 "HelloWorldScene.h"
 extern char *FontToUTF8(const char* font);
 //it is define in another .cpp file 
 //and it is used to change character
 
 Scene* StartScene::createScene()
 {
+	is_paused = reply_music;   //进入正式游戏后吧初始音乐设为reply_music
+	//正式进入游戏后会切换到新的游戏音乐，并把欢迎界面的音乐设为stop
+	//再次返回到欢迎界面的时候回从头播放音乐
+	//////////////////////////////////
 	auto scene = StartScene::create();
 	//auto layer = TollgateScene::createScene();
 	//scene->addChild(layer);

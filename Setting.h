@@ -16,7 +16,6 @@ public:
 	void LanguagePrinter();
 	void SizePrinter();
 	//music setting
-	bool is_paused;
 	void play(cocos2d::Object* pSender);
 	void stop(cocos2d::Object* pSender);
 

@@ -3,8 +3,8 @@
 #include "HelloWorldScene.h"
 
 USING_NS_CC;
-
 extern bool language_flag;   //true->English   false->Chinese
+extern int is_paused;        //关于is_paused的具体解释请见 "HelloWorldScene.h"
 extern char *FontToUTF8(const char* font);
 //it is define in another .cpp file 
 //and it is used to change character
@@ -134,7 +134,6 @@ void SettingScene::MusicPrinter()
 {
 	auto rect = Director::getInstance()->getOpenGLView()->getVisibleRect();
 	float x, y;
-	is_paused = false;
 	//play button
 	Label *label_play;
 	if (language_flag)
@@ -302,24 +301,23 @@ void SettingScene::menuHellowWorldScene(Ref* pSender)
 }
 void SettingScene::play(cocos2d::Object* pSender)
 {
-	if (is_paused)
+	if (!is_paused)
 	{
-		CocosDenshion::SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+		CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Funky_Stars.mp3");
 	}
 	else
 	{
-		CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Escape.mp3");
+		CocosDenshion::SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
 	}
-	is_paused = false;
 }
 void SettingScene::stop(cocos2d::Object* pSender)
 {
-	is_paused = false;
+	is_paused = stop_music;
 	CocosDenshion::SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
 }
 void SettingScene::pause(cocos2d::Object* pSender)
 {
-	is_paused = true;
+	is_paused = continue_music;
 	CocosDenshion::SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
 }
 
