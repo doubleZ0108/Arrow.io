@@ -9,7 +9,7 @@
  <tileset firstgid="19" name="blue" tilewidth="32" tileheight="32" tilecount="4" columns="2">
   <image source="blue.png" width="64" height="64"/>
  </tileset>
- <layer name="background" width="50" height="50" opacity="0.23">
+ <layer name="background" width="50" height="50" opacity="0.5">
   <data encoding="base64" compression="zlib">
    eJztwwEJAAAMBKHr8P27LsdAwVVTVVVVVVVVVVXV5w9k/rmN
   </data>
