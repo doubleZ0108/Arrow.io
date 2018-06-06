@@ -1,7 +1,12 @@
 #include "Start.h"
 #include "HelloWorldScene.h"
 #include "TollgateScene.h"
+#include "cstdlib"
 #define MAP_SIZE 1600
+#define MAP1_WIDTH 49
+#define MAP1_HEIGHT 49
+#define BACKGROUND_GID 19
+#define GAP_GID 18
 USING_NS_CC;
 
 extern bool language_flag;  //true->English   false->Chinese
@@ -39,7 +44,7 @@ bool StartScene::init()
 		return false;
 	}
 
-	//MapPrinter();
+	MapPrinter();
 	ScenePrinter();
 	
 	return true;
@@ -47,8 +52,41 @@ bool StartScene::init()
 
 void StartScene::MapPrinter()
 {
-	auto *map = TMXTiledMap::create("ArcherBattle_Tiledmap_1.tmx");
-	this->addChild(map);
+	size = Director::getInstance()->getVisibleSize();
+	//打开第一张瓦片地图
+	tiledmap = TMXTiledMap::create("ArcherBattle_TiledMap_1.tmx");
+	this->addChild(tiledmap);
+
+	//将meta设置为属性层
+	meta = tiledmap->layerNamed("meta");
+	//meta->setVisible(false);
+	//获取HP和MP对象层
+	HP_objects = tiledmap->getObjectGroup("HP");
+	std::vector<Sprite*> sprite;
+	//auto *sprite = Sprite::create("HP_tiledmap.png");
+
+	for (auto&enemy : HP_objects->getObjects()) {
+		// 获取对象的属性  
+		ValueMap& dict = enemy.asValueMap();
+		if (dict["HP"].asString() == "HP") { // 自定义属性“Enemy”  
+			float x = dict["x"].asFloat();     // x坐标  
+			float y = dict["y"].asFloat();      // y坐标  
+			sprite.push_back(Sprite::create("HP_tiledmap.png"));
+			sprite[sprite.size()-1]->ignoreAnchorPointForPosition(false);
+			sprite[sprite.size() - 1]->setAnchorPoint(Vec2(0.0f, 1.0f));
+			sprite[sprite.size() - 1]->setPosition(Vec2(x, y));
+			CCLOG("x = %f,y = %f", x, y);
+			Size mapSize = tiledmap->getMapSize();      // 获取以tiles数量为单位的地图尺寸
+			Size tileSize = tiledmap->getTileSize();    // 获取以像素点为单位的tile尺寸属性
+			x = x / tileSize.width;
+			y = (mapSize.height*tileSize.height - y) / tileSize.height;
+			CCLOG("x = %f,y = %f", x, y);
+			meta->setTileGID(GAP_GID, Vec2(x, y));
+			
+			tiledmap->addChild(sprite[sprite.size() - 1],100);
+		}
+	}
+	
 }
 
 void StartScene::ScenePrinter()
@@ -91,14 +129,9 @@ void StartScene::ScenePrinter()
 	auto *sequence2 = CCSequence::create(actionTint, actionTint, NULL);
 	//chose the sequence that you prefer
 	cover->runAction(sequence2);*/
-	size = Director::getInstance()->getVisibleSize();
-	map = TMXTiledMap::create("untitled.tmx");
-	this->addChild(map);
-
-	meta = map->layerNamed("meta");
-	meta->setVisible(false);
+	
 	sprite = Sprite::create("sprite.png");
-	map->addChild(sprite, 10);
+	tiledmap->addChild(sprite, 10);
 	
 	sprite->setPosition(Vec2(80.0f, 80.0f));
 
@@ -140,9 +173,9 @@ void StartScene::up(cocos2d::Object * pSender)
 	{	//如果精灵上面那格不是地图的上边界
 		//之所以是一格大小的一半,是因为精灵的锚点在中心,上面一个的下边界只需要再加16
 		sprite->setPositionY(y + 32);  //把精灵置于上面一格的位置
-		if ((y + map->getPositionY() > size.height / 2) && ((MAP_SIZE - y)>size.height / 2))
+		if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y)>size.height / 2))
 		{ //调整地图,使人物尽量居中
-			map->setPositionY(map->getPositionY() - 32);
+			tiledmap->setPositionY(tiledmap->getPositionY() - 32);
 		}
 	}
 
@@ -153,9 +186,9 @@ void StartScene::right(cocos2d::Object * pSender)
 	if (x + 16<MAP_SIZE&&isCanReach(x + 32, sprite->getPositionY()))
 	{
 		sprite->setPositionX(x + 32);
-		if ((x + map->getPositionX() > size.width / 2) && ((MAP_SIZE - x)>size.width / 2))
+		if ((x + tiledmap->getPositionX() > size.width / 2) && ((MAP_SIZE - x)>size.width / 2))
 		{
-			map->setPositionX(map->getPositionX() - 32);
+			tiledmap->setPositionX(tiledmap->getPositionX() - 32);
 		}
 	}
 }
@@ -165,9 +198,9 @@ void StartScene::left(cocos2d::Object * pSender)
 	if (x>16&&isCanReach(x - 32, sprite->getPositionY()))
 	{
 		sprite->setPositionX(x - 32);
-		if ((x + map->getPositionX() < size.width / 2) && map->getPositionX() != 0)
+		if ((x + tiledmap->getPositionX() < size.width / 2) && tiledmap->getPositionX() != 0)
 		{
-			map->setPositionX(map->getPositionX() + 32);
+			tiledmap->setPositionX(tiledmap->getPositionX() + 32);
 		}
 	}
 }
@@ -177,9 +210,9 @@ void StartScene::down(cocos2d::Object * pSender)
 	if (y > 16&&isCanReach(sprite->getPositionX(), y - 32))
 	{
 		sprite->setPositionY(y - 32);
-		if ((y + map->getPositionY() < size.height / 2) && map->getPositionY() != 0)
+		if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
 		{
-			map->setPositionY(map->getPositionY() + 32);
+			tiledmap->setPositionY(tiledmap->getPositionY() + 32);
 		}
 	}
 }
@@ -189,7 +222,7 @@ bool StartScene::isCanReach(float x, float y)
 	int mapX = (int)((x - 16) / 32);        //减去16是由于人物的锚点在中心
 	int mapY = (int)(49 - (y - 16) / 32);   //49为Tiled里地图的坐标最大值
 	int tileGid = meta->tileGIDAt(Vec2(mapX, mapY)); //32是一格的大小
-	if (tileGid != 18)
+	if (tileGid != GAP_GID)
 	{
 		result = true;
 	}

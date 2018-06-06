@@ -2,21 +2,24 @@
 #define _START_H_
 
 #include "cocos2d.h"
-
-class StartScene : public cocos2d::Scene
+USING_NS_CC;
+class StartScene : public Scene
 {
 public:
-	cocos2d::Size size;
-	cocos2d::Sprite* sprite;
-	cocos2d::TMXTiledMap* map;
-	cocos2d::TMXLayer* meta;
+	Size size;
+	Sprite* sprite;
+
+
+	TMXTiledMap* tiledmap;
+	TMXLayer* meta;
+	TMXObjectGroup* HP_objects;
 
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
 
 	// a selector callback
-	void menuHellowWorldScene(cocos2d::Ref* pSender);
+	void menuHellowWorldScene(Ref* pSender);
 
 	void MapPrinter();
 	void ScenePrinter();

@@ -1,19 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" tiledversion="2018.05.24" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="4" nextobjectid="1">
- <tileset firstgid="1" name="background" tilewidth="32" tileheight="32" tilecount="128" columns="8">
-  <image source="ArcherBattle_TiledMap_1.png" width="256" height="512"/>
+<map version="1.0" tiledversion="1.1.5" orientation="orthogonal" renderorder="right-down" width="50" height="50" tilewidth="32" tileheight="32" infinite="0" nextobjectid="27">
+ <tileset firstgid="1" name="perspective_walls" tilewidth="64" tileheight="64" tilecount="16" columns="4">
+  <image source="Tiled Map/perspective_walls.png" width="256" height="256"/>
  </tileset>
- <tileset firstgid="129" name="meta" tilewidth="32" tileheight="32" tilecount="2" columns="2">
+ <tileset firstgid="17" name="layer" tilewidth="32" tileheight="32" tilecount="2" columns="2">
   <image source="layer.png" width="66" height="33"/>
  </tileset>
- <layer id="1" name="background" width="50" height="50">
+ <tileset firstgid="19" name="blue" tilewidth="32" tileheight="32" tilecount="4" columns="2">
+  <image source="blue.png" width="64" height="64"/>
+ </tileset>
+ <layer name="background" width="50" height="50" opacity="0.5">
   <data encoding="base64" compression="zlib">
-   eJztVrsSwzAIyzdn6JCv79rzYZB42L6UQUtjAxIC93Nd16fRaJThJn/fUR9Si3TmFuDVI4ODFXtWL1N/de9QDcd6JT47OViaovVa91f0IiMPwq+SEzun3rhVeSR9rBzjN3bGKzmg/tA8gvCvnhFUc+9bYXGv8Js3jsZ9dT80nzFzo2m8iof2OzP/2f1Ge4C8g5J3TuGh+Wn8FuWxel+h/UL/qyC+XMHD0tyqb8fbgXJieFg9OwHMe7i71jfUiOA5oIa38YjU0jxy4zwJPCTs4JF1P7OvrB7e3FKebH9W85hphcSananQQPO51u8IDw+X2WxanrTOsDFmvmT2RWRPsX1CuHr3XfaOROOMOSP7+veO9z7iVfSuxyOe+c3uB/IdPRfRI8NXGbsikserM6o3WiNTV9RrbFxrH0cQ8Zr37LjPohwqfMVqt5pHhS6Rt/okNI9G4//wBd/qgGE=
+   eJztzjENAAAIA7B5AP9aMcFBQo/+rSQFAAAAAAAAAADAS33gsGUAZcq5jg==
   </data>
  </layer>
- <layer id="3" name="meta" width="50" height="50">
+ <layer name="wall" width="50" height="50">
   <data encoding="base64" compression="zlib">
-   eJztmEEKgDAQxPbr3Zd7lUJrC5XuDDkErwmDVm0R0QDgN7KAw5ffimPljgyPjh2/yh0Ze5tUJV9X5Q6XTXp/xZaRs1rHrO+2Aw2a94bbFg7P3L7ltgcAAOjhcn44dLic5w4NdNRi9H2u8i7fuyq5j1pue5zc5LbLiS1UW2b/35R6Zq4qLSueCvfNjptCz+kNAQAAKvMAXNHsWA==
+   eJztmEEOgDAIBHmBfsH/v9IYLz2ILQsYWneTxkPL0rEJVHcR2UWOmcd2PyFdsWBouBc5yJHhRQ5yZHiRo5ZW5tg6Q/Exj5c9mWNXPo8ZxXpFjgwvcpAjw4sctUSOWvoTB3JnBfbhymE9j8gaFZkjg6O3xjuvxZBDX9P5nnv1qMSROa/FkCNO6D+Jdl+e/hHZQzz6Uz+fQRrHF33bopHasDoHUDNCagLaO0fPI6Luo2vIQQ6Phye3pV5Z7rGRHG1uLSar7oLv4pN7otU7yfoxFzn63knWj7lW4hi5U1Qel04Zai4B
   </data>
  </layer>
+ <layer name="meta" width="50" height="50" opacity="0.33">
+  <data encoding="base64" compression="zlib">
+   eJztlzECwCAIA/1C+//Hdu+gEoIiZsjSInKoiG9r7S2kxyhkTJQvcYhDHOIQxzkcmVSZA7n72T2EdWzl9dgVxy6OKvVKHOIQhzhO4cgkceTSbRxIz+qJxTqHNZ5Zn5H/xXEvB/oOzMZRZT0qcCBi7MWRnXeOFcoUyw0cnn2ViU0cvprB6vkY9er/jVH3URtx1OUY+WPkomfTOydIvbKcYTS3o7wzOCyarYPePif6Pl91B4lDHNEcp+sD/JSnyA==
+  </data>
+ </layer>
+ <objectgroup name="HP">
+  <object id="17" x="132" y="1282" width="26" height="30">
+   <properties>
+    <property name="HP" value="HP"/>
+   </properties>
+  </object>
+  <object id="22" x="-414" y="1644"/>
+  <object id="24" x="324" y="1474" width="30" height="30">
+   <properties>
+    <property name="HP" value="HP"/>
+   </properties>
+  </object>
+  <object id="25" x="416" y="1246" width="38" height="38">
+   <properties>
+    <property name="HP" value="HP"/>
+   </properties>
+  </object>
+ </objectgroup>
 </map>
