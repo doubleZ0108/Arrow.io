@@ -11,7 +11,7 @@
  </tileset>
  <layer name="background" width="50" height="50" opacity="0.5">
   <data encoding="base64" compression="zlib">
-   eJztwwEJAAAMBKHr8P27LsdAwVVTVVVVVVVVVVXV5w9k/rmN
+   eJztzjENAAAIA7B5AP9aMcFBQo/+rSQFAAAAAAAAAADAS33gsGUAZcq5jg==
   </data>
  </layer>
  <layer name="wall" width="50" height="50">
@@ -21,7 +21,7 @@
  </layer>
  <layer name="meta" width="50" height="50" opacity="0.33">
   <data encoding="base64" compression="zlib">
-   eJzt1rEBgCAMRFFW0P2HtbcAcwkYwi+uUYQ8VOBurd2FchmjPDOrLxw4cODAsY8jUyo7lL0/+gxhfbby+/irjr8cVdYrHDhw4NjFkSk4cuU0h3Jm9dRiHcNaz9c+Z97HcbZD/d6zOaq8DzVZHGrto3gd3jFWJFMtJzg831UmGw7fmhF15otYr97XIvYvtQ2Ouo5RfxFz0WvT+08Uh+UfVud2NO9ehzXKXCjjzt7PV+1BOHCssOycB+KYp8Y=
+   eJzt1zECgCAMA0C+IP9/rLsD2LSFEjJkUQQOFLC31jpRHmOQZ7LqkkMOOeSQ4xxHpTA7kL0/+gxhfZZ5Pnb1Y5eDZb2SQw455DjFUSly1MptDuTM6umLtQ1rf/7WmXlfjnsd6H9gNQfLfDA4kES8i7Ny3jZWpFJfbnB43qtKNjl8a0bUmS9ivfpei1j30TJy8Dpm9UWMxajM6DtBHJZvGB3b2bh7HdYgY4G0m72fr9qD5JAj23F6XgHvp8k=
   </data>
  </layer>
 </map>
