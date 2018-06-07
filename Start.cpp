@@ -79,7 +79,7 @@ void StartScene::MapPrinter()
 	//获取HP和MP对象层
 	HP_objects = tiledmap->getObjectGroup("HP");
 	
-	/*int metax, metay, spritex, spritey;
+	int metax, metay, spritex, spritey;
 	for (int i = 0; i < 10;)
 	{
 		srand(time(NULL));
@@ -99,7 +99,7 @@ void StartScene::MapPrinter()
 			hp_potion[hp_potion.size() - 1]->setTag(i);
 			tiledmap->addChild(hp_potion[hp_potion.size() - 1]);
 		}
-	}*/
+	}
 
 	//std::vector<Sprite*> sprite;
 	//for (auto&enemy : HP_objects->getObjects()) {

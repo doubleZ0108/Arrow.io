@@ -9,7 +9,7 @@
  <tileset firstgid="21" name="ArcherBattle_TiledMap_1" tilewidth="32" tileheight="32" tilecount="128" columns="8">
   <image source="ArcherBattle_TiledMap_1.png" width="256" height="512"/>
  </tileset>
- <layer name="background" width="50" height="50" visible="0" opacity="0.5">
+ <layer name="background" width="50" height="50" opacity="0.5">
   <data encoding="base64" compression="zlib">
    eJztzjENAAAIA7BZAP9iMcFBQo/+rSQFAAAAAAAAAADAS33gsGUAsBimBg==
   </data>
