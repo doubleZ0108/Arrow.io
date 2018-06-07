@@ -1,8 +1,9 @@
 #include "Player.h"
-#define k_w (EventKeyboard::KeyCode)119
-#define k_a (EventKeyboard::KeyCode)97
-#define k_s (EventKeyboard::KeyCode)115
-#define k_d (EventKeyboard::KeyCode)100
+#include "Start.h"
+#define k_w (EventKeyboard::KeyCode)146
+#define k_a (EventKeyboard::KeyCode)124
+#define k_s (EventKeyboard::KeyCode)142
+#define k_d (EventKeyboard::KeyCode)127
 
 Player::Player()
 {
@@ -46,7 +47,19 @@ void Player::run(Player *player, std::map<EventKeyboard::KeyCode, bool>keys)
 	player->y_coord += ychange;
 
 	auto moveBy = MoveBy::create(0.1f, Point(xchange, ychange));
-	log("x = %f  y = %f", player->x_coord, player->y_coord);
+	//	log("x = %f  y = %f", player->x_coord, player->y_coord);
 	player->runAction(moveBy);
+}
+
+void Player::hurt(int atk)
+{
+	p_hp -= atk;
+	log("eeeeeeeeeeeee");
+	if (p_hp <= 0)
+		die();
+}
+
+void Player::die()
+{
 
 }

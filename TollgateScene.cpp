@@ -1,11 +1,12 @@
 #include "TollgateScene.h"
-#include "Player.h"
-#include "BulletBase.h"
 #include <math.h>
 #define k_w (EventKeyboard::KeyCode)119
 #define k_a (EventKeyboard::KeyCode)97
 #define k_s (EventKeyboard::KeyCode)115
 #define k_d (EventKeyboard::KeyCode)100
+#define ENNUMBER 20;
+
+using namespace std;
 
 Scene* TollgateScene::createScene()
 {
@@ -26,13 +27,18 @@ bool TollgateScene::init()
 
 	m_player = Player::create();
 	m_player->bindSprite(Sprite::create("player1.png"));
+	m_player->setScale(0.5f);
 	m_player->setPosition(Point(m_player->x_coord, m_player->y_coord));
 	this->addChild(m_player);
 
 	n_player = Player::create();
 	n_player->bindSprite(Sprite::create("player2.png"));
+	n_player->setScale(0.5f);
 	n_player->setPosition(Point(n_player->x_coord, n_player->y_coord));
 	this->addChild(n_player);
+
+	plsum.push_back(m_player);
+	plsum.push_back(n_player);
 
 	this->scheduleUpdate();
 
@@ -69,10 +75,6 @@ void TollgateScene::onEnter()
 		pos = pos2;//得到单击坐标
 		return true;
 	};
-	touchlistener->onTouchEnded = [&](Touch* toych, Event *event)
-	{
-		touchon = false;
-	};
 
 	EventDispatcher *eventDispatcher2 = Director::getInstance()->getEventDispatcher();
 	eventDispatcher2->addEventListenerWithSceneGraphPriority(touchlistener, this);
@@ -86,33 +88,49 @@ void TollgateScene::update(float delta)
 		runEvent();
 	}
 
-	if (!touchon)
-	{
-		once = true;
-	}
-	if (touchon&&once)
+	if (touchon)
 	{
 		attack();
-		once = false;
+		touchon = false;
 	}
-	//鼠标点击事件，通过前面这几行操作可以使单击一次时仅攻击一次（原本想设计个攻击CD，因未知原因BUG，无果
+	//鼠标点击事件，通过前面这几行操作可以使单击一次时仅攻击一次，bug已修复
+
+	vector<BulletBase*>::iterator it;
+	for (it = bubsum.begin(); it != bubsum.end();)
+	{
+		if ((*it)->exist != true)
+		{
+			it = bubsum.erase(it);
+			//			log("delete");
+		}
+		else it++;
+	}
+	for (auto bub : bubsum)
+	{
+		for (auto pl : plsum)
+		{
+			bub->collidePlayer(pl);
+		}
+	}
+
+
 }
 //主角跑动的函数，不恒居中因为场景这一块不是我写的……到时候看着改吧
 void TollgateScene::runEvent()
 {
 	m_player->run(m_player, keys);
-
 }
 
 void TollgateScene::attack()
 {
-
-
-	log("attack in x = %f  y = %f", pos.x, pos.y);
+	//   log("attack in x = %f  y = %f", pos.x, pos.y);
 	auto Abullet = BulletBase::create();
 	Abullet->bindSprite(Sprite::create("bullet.png"));
 	Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
 	this->addChild(Abullet);
+
+	Abullet->exist = true;
+	bubsum.push_back(Abullet);
 
 	Abullet->attacking(m_player, Abullet, pos);
 }

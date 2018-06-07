@@ -1,7 +1,14 @@
 #include "Start.h"
 #include "HelloWorldScene.h"
-#include "TollgateScene.h"
+//#include "TollgateScene.h"
 #include "cstdlib"
+#include <math.h>
+
+#define k_w (EventKeyboard::KeyCode)146
+#define k_a (EventKeyboard::KeyCode)124
+#define k_s (EventKeyboard::KeyCode)142
+#define k_d (EventKeyboard::KeyCode)127
+#define ENNUMBER 20;
 #define MAP_SIZE 1600
 #define MAP1_WIDTH 49
 #define MAP1_HEIGHT 49
@@ -10,6 +17,9 @@
 #define NOR_GID 138
 #define HP_GID 137
 USING_NS_CC;
+
+std::vector<Sprite*> StartScene::hp_potion;
+
 
 extern bool language_flag;  //true->English   false->Chinese
 extern int is_paused;       //关于is_paused的具体解释请见 "HelloWorldScene.h"
@@ -24,8 +34,7 @@ Scene* StartScene::createScene()
 	//再次返回到欢迎界面的时候回从头播放音乐
 	//////////////////////////////////
 	auto scene = StartScene::create();
-	//auto layer = TollgateScene::createScene();
-	//scene->addChild(layer);
+	
 	return scene;
 }
 
@@ -61,6 +70,7 @@ void StartScene::MapPrinter()
 	//////////////////////////////////////////
 	mapSize = tiledmap->getMapSize();      // 获取以tiles数量为单位的地图尺寸
 	tileSize = tiledmap->getTileSize();    // 获取以像素点为单位的tile尺寸属性
+	log("tileSize %f %f", tileSize.width, tileSize.height);
 	/////////////////////////////////////////
 	//将meta设置为属性层
 	meta = tiledmap->layerNamed("meta");
@@ -68,8 +78,8 @@ void StartScene::MapPrinter()
 	////////////////////////////////////////
 	//获取HP和MP对象层
 	HP_objects = tiledmap->getObjectGroup("HP");
-	std::vector<Sprite*> sprite;
-	int metax, metay, spritex, spritey;
+	
+	/*int metax, metay, spritex, spritey;
 	for (int i = 0; i < 10;)
 	{
 		srand(time(NULL));
@@ -82,14 +92,14 @@ void StartScene::MapPrinter()
 			meta->setTileGID(HP_GID, Vec2(metax, metay));
 			spritex = metax * tileSize.width;
 			spritey = (mapSize.height - metay)*tileSize.height;
-			sprite.push_back(Sprite::create("HP_tiledmap.png"));
-			sprite[sprite.size() - 1]->ignoreAnchorPointForPosition(false);
-			sprite[sprite.size() - 1]->setAnchorPoint(Vec2(0.0f, 1.0f));
-			sprite[sprite.size() - 1]->setPosition(Vec2(spritex, spritey));
-			sprite[sprite.size() - 1]->setTag(i);
-			tiledmap->addChild(sprite[sprite.size() - 1]);
+			hp_potion.push_back(Sprite::create("HP_tiledmap.png"));
+			hp_potion[hp_potion.size() - 1]->ignoreAnchorPointForPosition(false);
+			hp_potion[hp_potion.size() - 1]->setAnchorPoint(Vec2(0.0f, 1.0f));
+			hp_potion[hp_potion.size() - 1]->setPosition(Vec2(spritex, spritey));
+			hp_potion[hp_potion.size() - 1]->setTag(i);
+			tiledmap->addChild(hp_potion[hp_potion.size() - 1]);
 		}
-	}
+	}*/
 
 	//std::vector<Sprite*> sprite;
 	//for (auto&enemy : HP_objects->getObjects()) {
@@ -138,6 +148,26 @@ void StartScene::ScenePrinter()
 	preturn->setScale(1.0f);
 	this->addChild(preturn,100);   //把返回按钮置于100层，防止遮挡
 
+	m_player = Player::create();
+	m_player->bindSprite(Sprite::create("player1.png"));
+	m_player->setScale(0.5f);
+	m_player->ignoreAnchorPointForPosition(false);
+	m_player->setAnchorPoint(Vec2(0.0f, 0.0f));
+	m_player->setPosition(Point(m_player->x_coord, m_player->y_coord));
+	tiledmap->addChild(m_player,10);
+
+	n_player = Player::create();
+	n_player->bindSprite(Sprite::create("player2.png"));
+	n_player->setScale(0.5f);
+	n_player->x_coord += 1000;
+	n_player->y_coord += 1000;
+	n_player->setPosition(Point(n_player->x_coord, n_player->y_coord));
+	tiledmap->addChild(n_player,10);
+
+	plsum.push_back(m_player);
+	plsum.push_back(n_player);
+
+	this->scheduleUpdate();
 	/*
 	////////////////////////////////////////
 	//add a cover to draw something
@@ -155,9 +185,8 @@ void StartScene::ScenePrinter()
 	//chose the sequence that you prefer
 	cover->runAction(sequence2);*/
 	
-	sprite = Sprite::create("sprite.png");
-	tiledmap->addChild(sprite, 10);
-	
+	/*sprite = Sprite::create("sprite.png");
+	tiledmap->addChild(sprite, 10); 
 	sprite->setPosition(Vec2(80.0f, 80.0f));
 
 	auto* pLeft = MenuItemImage::create("left.png", "left1.png", this, menu_selector(StartScene::left));
@@ -187,65 +216,69 @@ void StartScene::ScenePrinter()
 	y = rect.origin.y + rect.size.height*(1.0f / 8.0f);
 	down->setPosition(Vec2(x, y));
 	this->addChild(down);
-	isCanReach(sprite->getPositionX(), sprite->getPositionY());
+	isCanReach(sprite->getPositionX(), sprite->getPositionY());*/
 
 }
-void StartScene::up(cocos2d::Object * pSender)
+void StartScene::up()
 {
-
-	float y = sprite->getPositionY();   //因为是往上走，所以获取精灵相对于地图的y坐标
-	if (y + 16<MAP_SIZE&&isCanReach(sprite->getPositionX(), y + 32))
+	float x = m_player->getPositionX(), y = m_player->getPositionY();
+	if (y+32<MAP_SIZE&&isCanReach(x, y+16))
 	{	//如果精灵上面那格不是地图的上边界
 		//之所以是一格大小的一半,是因为精灵的锚点在中心,上面一个的下边界只需要再加16
-		sprite->setPositionY(y + 32);  //把精灵置于上面一格的位置
-		HPjudge(Vec2(sprite->getPositionX()/tileSize.width,
-			(mapSize.height*tileSize.height - sprite->getPositionY())/tileSize.height));
+		//sprite->setPositionY(y + 32);  //把精灵置于上面一格的位置
+		runEvent();
+		HPjudge(Vec2(x/tileSize.width,
+			(mapSize.height*tileSize.height - y)/tileSize.height));
 		if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y)>size.height / 2))
 		{ //调整地图,使人物尽量居中
-			tiledmap->setPositionY(tiledmap->getPositionY() - 32);
+			tiledmap->setPositionY(tiledmap->getPositionY() - 5);
+			y_move += 5;
 		}
 	}
 
 }
-void StartScene::right(cocos2d::Object * pSender)
+void StartScene::right()
 {
-	float x = sprite->getPositionX();
-	if (x + 16<MAP_SIZE&&isCanReach(x + 32, sprite->getPositionY()))
+	float x = m_player->getPositionX(), y = m_player->getPositionY();
+	if (x + 32<MAP_SIZE&&isCanReach(x+16, y))
 	{
-		sprite->setPositionX(x + 32);
-		HPjudge(Vec2(sprite->getPositionX() / tileSize.width,
-			(mapSize.height*tileSize.height - sprite->getPositionY()) / tileSize.height));
+		runEvent();
+		HPjudge(Vec2(x / tileSize.width,
+			(mapSize.height*tileSize.height - y) / tileSize.height));
 		if ((x + tiledmap->getPositionX() > size.width / 2) && ((MAP_SIZE - x)>size.width / 2))
 		{
-			tiledmap->setPositionX(tiledmap->getPositionX() - 32);
+			tiledmap->setPositionX(tiledmap->getPositionX() - 5);
+			x_move += 5;
 		}
 	}
 }
-void StartScene::left(cocos2d::Object * pSender)
+void StartScene::left()
 {
-	float x = sprite->getPositionX();
-	if (x>16&&isCanReach(x - 32, sprite->getPositionY()))
+	float x = m_player->getPositionX(), y = m_player->getPositionY();
+	if (x>32&&isCanReach(x-16, y))
 	{
-		sprite->setPositionX(x - 32);
-		HPjudge(Vec2(sprite->getPositionX() / tileSize.width,
-			(mapSize.height*tileSize.height - sprite->getPositionY()) / tileSize.height));
+		runEvent();
+		HPjudge(Vec2(x / tileSize.width,
+			(mapSize.height*tileSize.height - y) / tileSize.height));
 		if ((x + tiledmap->getPositionX() < size.width / 2) && tiledmap->getPositionX() != 0)
 		{
-			tiledmap->setPositionX(tiledmap->getPositionX() + 32);
+			tiledmap->setPositionX(tiledmap->getPositionX()+5);
+			x_move -= 5;
 		}
 	}
 }
-void StartScene::down(cocos2d::Object * pSender)
+void StartScene::down()
 {
-	float y = sprite->getPositionY();
-	if (y > 16&&isCanReach(sprite->getPositionX(), y - 32))
+	float x = m_player->getPositionX(), y = m_player->getPositionY();
+	if (y > 32&&isCanReach(x, y-16))
 	{
-		sprite->setPositionY(y - 32);
-		HPjudge(Vec2(sprite->getPositionX() / tileSize.width,
-			(mapSize.height*tileSize.height - sprite->getPositionY()) / tileSize.height));
+		runEvent();
+		HPjudge(Vec2(x / tileSize.width,
+			(mapSize.height*tileSize.height - y) / tileSize.height));
 		if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
 		{
-			tiledmap->setPositionY(tiledmap->getPositionY() + 32);
+			tiledmap->setPositionY(tiledmap->getPositionY() + 5);
+			y_move -= 5;
 		}
 	}
 }
@@ -271,7 +304,7 @@ void StartScene::HPjudge(const Vec2 &pos)
 	{
 		CCLOG("hero is in HP_tiledmap");
 		meta->setTileGID(NOR_GID, Vec2(static_cast<int>(pos.x),static_cast<int>(pos.y)));
-		
+
 	}
 
 }
@@ -282,3 +315,106 @@ void StartScene::menuHellowWorldScene(Ref* pSender)
 	Director::getInstance()->replaceScene(reScene);
 }
 
+//我也不知道onEnter是什么意思只是照着抄的，只知道这里是监控室
+void StartScene::onEnter()
+{
+    Scene::onEnter();
+
+	auto keylistener = EventListenerKeyboard::create();
+	//键盘监听器，用于人物移动
+	keylistener->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *event)
+	{
+		keys[keyCode] = true;
+	};
+
+	keylistener->onKeyReleased = [&](EventKeyboard::KeyCode keyCode, Event *event)
+	{
+		keys[keyCode] = false;
+	};
+
+	EventDispatcher *eventDispatcher1 = Director::getInstance()->getEventDispatcher();
+	eventDispatcher1->addEventListenerWithSceneGraphPriority(keylistener, this);
+
+
+	auto touchlistener = EventListenerTouchOneByOne::create();
+	//触摸监听器，用于人物攻击
+	touchlistener->onTouchBegan = [&](Touch* touch, Event *event)
+	{
+		touchon = true;
+		Point pos1 = touch->getLocationInView();
+		Point pos2 = Director::getInstance()->convertToGL(pos1);
+		pos = pos2;//得到单击坐标
+		return true;
+	};
+
+	EventDispatcher *eventDispatcher2 = Director::getInstance()->getEventDispatcher();
+	eventDispatcher2->addEventListenerWithSceneGraphPriority(touchlistener, this);
+
+}
+
+void StartScene::update(float delta)
+{
+	float x = m_player->getPositionX(), y = m_player->getPositionY();
+	m_player->x_coord = x; m_player->y_coord = y;
+	//CCLOG("x=%f , y=%f", x, y);
+
+	if (keys[k_w] || keys[k_a] || keys[k_s] || keys[k_d])//分别是wasd，参见#define
+	{
+		if (keys[k_w])
+			up();
+		if (keys[k_a])
+			left();
+		if (keys[k_s])
+			down();
+		if (keys[k_d])
+			right();
+	}
+
+	if (touchon)
+	{
+		attack();
+		touchon = false;
+	}
+	//鼠标点击事件，通过前面这几行操作可以使单击一次时仅攻击一次，bug已修复
+
+	std::vector<BulletBase*>::iterator it;
+	for (it = bubsum.begin(); it != bubsum.end();)
+	{
+		if ((*it)->exist != true)
+		{
+			it = bubsum.erase(it);
+						log("delete");
+		}
+		else it++;
+	}
+	for (auto bub : bubsum)
+	{
+		for (auto pl : plsum)
+		{
+			bub->collidePlayer(pl);
+		}
+	}
+
+}
+//主角跑动的函数，不恒居中因为场景这一块不是我写的……到时候看着改吧
+void StartScene::runEvent()
+{
+		m_player->run(m_player, keys);
+}
+
+void StartScene::attack()
+{
+	log("attack in x = %f  y = %f", pos.x+x_move, pos.y+y_move);
+	log("player in x = %f  y = %f", m_player->x_coord, m_player->y_coord);
+	log("sourse in x = %f  y = %f", m_player->x_coord, m_player->y_coord);
+	pos.x += x_move; pos.y += y_move;
+	auto Abullet = BulletBase::create();
+	Abullet->bindSprite(Sprite::create("bullet.png"));
+	Abullet->setPosition(Point(m_player->x_coord-x_move, m_player->y_coord-y_move));
+	this->addChild(Abullet);
+
+	Abullet->exist = true;
+	bubsum.push_back(Abullet);
+
+	Abullet->attacking(m_player, Abullet, pos);
+}

@@ -14,14 +14,14 @@
    eJztzjENAAAIA7BZAP9iMcFBQo/+rSQFAAAAAAAAAADAS33gsGUAsBimBg==
   </data>
  </layer>
- <layer name="wall" width="50" height="50" visible="0">
+ <layer name="wall" width="50" height="50">
   <data encoding="base64" compression="zlib">
-   eJztmEEOgDAIBHmBfsH/v9IYLz2ILQsYWneTxkPL0rEJVHcR2UWOmcd2PyFdsWBouBc5yJHhRQ5yZHiRo5ZW5tg6Q/Exj5c9mWNXPo8ZxXpFjgwvcpAjw4sctUSOWvoTB3JnBfbhymE9j8gaFZkjg6O3xjuvxZBDX9P5nnv1qMSROa/FkCNO6D+Jdl+e/hHZQzz6Uz+fQRrHF33bopHasDoHUDNCagLaO0fPI6Luo2vIQQ6Phye3pV5Z7rGRHG1uLSar7oLv4pN7otU7yfoxFzn63knWj7lW4hi5U1Qel04Zai4B
+   eJztmssKxSAMRK3//9FF6KKLhujEEWNnwFXzuOeGJkFaSylX8lOfgwj1Y8QShzgYscQhDkYsceylkzm8HeBLyC5hCfE9uR4ZpX4lDkYscYiDEUsce0kce+lPHMjOOqpojtF6rKgdkoPB4dlEn1s+4rBtvDvlaI4vH9UDs8nCgQi9k3j/rsj8mDlDIvrTPM8gi2M3tp7ecDrH6PscuQv14sysx4y+j9qIA4vlKSMH2j/YHE0je+xMjnduy4fVd5H/oqc3WblYs2LlDBJHX+xVOo1j1fderNN0A9RjAk0=
   </data>
  </layer>
  <layer name="meta" width="50" height="50" opacity="0.33">
   <data encoding="base64" compression="zlib">
-   eJztlzECwCAIA31/t/64eweVEBQxQ5YWkUNFfFtrbyE9RiFjonyJQxziEIc4zuHIpMocyN3P7iGsYyuvx644dnFUqVfiEIc4xHEKRyaJI5du40B6Vk8s1jms8cz6jPwvjns50HdgNo4q61GBAxFjL47svHOsUKZYbuDw7KtMbOLw1QxWz8eoV/9vjLqP2oijLsfIHyMXPZveOUHqleUMo7kd5Z3BYdFsHfT2OdH3+ao7SBziiOY4XR879FBJ
+   eJzt10kSgCAMRFHOz44bewI1CYFqwl/0ShleoTGO1toolB5IdFz2XDhw4MCB4yyHSio7It/+7B7CO7byeZwY6hUOHDhwnOVQCQ6t3OaI9Kwze/GuEdmPdd6V13Hc64j+C6o5qpxHBYc3Gc/h332za+yI0l5wfDvUbNZnv7Jjpm5k9X3eWmTxZ9T96D04cHTnvNa138ZG6pX1Hc52/M25qu566+BMr7Pye76zT8Ch6yAaeQC9c1G8
   </data>
  </layer>
  <objectgroup name="HP">

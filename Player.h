@@ -5,8 +5,6 @@
 #include "Entity.h"
 using namespace cocos2d;
 
-#define JUMP_ACTION_TAG 1
-
 class Player : public Entity {
 public:
 	Player();
@@ -15,13 +13,16 @@ public:
 	virtual bool init();
 
 	void run(Player *player, std::map<EventKeyboard::KeyCode, bool>keys);
-public:
-	Size visibleSize = Director::getInstance()->getVisibleSize();
-	float x_coord = visibleSize.width / 2;
-	float y_coord = visibleSize.height / 2;//xy×ø±ê
+
+	Size visibleSize = CCDirector::getInstance()->getVisibleSize();
+	float x_coord = 80.0f;
+	float y_coord = 80.0f;
 	int speed = 3;
-private:
-	int p_hp;
+	float radius = 30;
+	int p_hp = 50;
+
+	void hurt(int atk);
+	void die();
 };
 
 #endif
