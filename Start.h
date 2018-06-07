@@ -9,7 +9,8 @@ public:
 	Size size;
 	Sprite* sprite;
 
-
+	Size mapSize;
+	Size tileSize;
 	TMXTiledMap* tiledmap;
 	TMXLayer* meta;
 	TMXObjectGroup* HP_objects;
@@ -29,6 +30,7 @@ public:
 	void left(cocos2d::Object* pSender);
 	void down(cocos2d::Object* pSender);
 	bool isCanReach(float x, float y);
+	void HPjudge(const Vec2 &pos);
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(StartScene);

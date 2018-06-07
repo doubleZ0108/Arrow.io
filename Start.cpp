@@ -5,8 +5,10 @@
 #define MAP_SIZE 1600
 #define MAP1_WIDTH 49
 #define MAP1_HEIGHT 49
-#define BACKGROUND_GID 19
-#define GAP_GID 18
+
+#define GAP_GID 145
+#define NOR_GID 138
+#define HP_GID 137
 USING_NS_CC;
 
 extern bool language_flag;  //true->English   false->Chinese
@@ -56,36 +58,59 @@ void StartScene::MapPrinter()
 	//打开第一张瓦片地图
 	tiledmap = TMXTiledMap::create("ArcherBattle_TiledMap_1.tmx");
 	this->addChild(tiledmap);
-
+	//////////////////////////////////////////
+	mapSize = tiledmap->getMapSize();      // 获取以tiles数量为单位的地图尺寸
+	tileSize = tiledmap->getTileSize();    // 获取以像素点为单位的tile尺寸属性
+	/////////////////////////////////////////
 	//将meta设置为属性层
 	meta = tiledmap->layerNamed("meta");
 	//meta->setVisible(false);
+	////////////////////////////////////////
 	//获取HP和MP对象层
 	HP_objects = tiledmap->getObjectGroup("HP");
 	std::vector<Sprite*> sprite;
-	//auto *sprite = Sprite::create("HP_tiledmap.png");
-
-	for (auto&enemy : HP_objects->getObjects()) {
-		// 获取对象的属性  
-		ValueMap& dict = enemy.asValueMap();
-		if (dict["HP"].asString() == "HP") { // 自定义属性“Enemy”  
-			float x = dict["x"].asFloat();     // x坐标  
-			float y = dict["y"].asFloat();      // y坐标  
+	int metax, metay, spritex, spritey;
+	for (int i = 0; i < 10;)
+	{
+		srand(time(NULL));
+		metax = rand() % MAP1_WIDTH;
+		metay = rand() % MAP1_HEIGHT;
+		int gid = meta->getTileGIDAt(Vec2(metax, metay));
+		if (GAP_GID != gid && HP_GID != gid)
+		{
+			++i;
+			meta->setTileGID(HP_GID, Vec2(metax, metay));
+			spritex = metax * tileSize.width;
+			spritey = (mapSize.height - metay)*tileSize.height;
 			sprite.push_back(Sprite::create("HP_tiledmap.png"));
-			sprite[sprite.size()-1]->ignoreAnchorPointForPosition(false);
+			sprite[sprite.size() - 1]->ignoreAnchorPointForPosition(false);
 			sprite[sprite.size() - 1]->setAnchorPoint(Vec2(0.0f, 1.0f));
-			sprite[sprite.size() - 1]->setPosition(Vec2(x, y));
-			CCLOG("x = %f,y = %f", x, y);
-			Size mapSize = tiledmap->getMapSize();      // 获取以tiles数量为单位的地图尺寸
-			Size tileSize = tiledmap->getTileSize();    // 获取以像素点为单位的tile尺寸属性
-			x = x / tileSize.width;
-			y = (mapSize.height*tileSize.height - y) / tileSize.height;
-			CCLOG("x = %f,y = %f", x, y);
-			meta->setTileGID(GAP_GID, Vec2(x, y));
-			
-			tiledmap->addChild(sprite[sprite.size() - 1],100);
+			sprite[sprite.size() - 1]->setPosition(Vec2(spritex, spritey));
+			sprite[sprite.size() - 1]->setTag(i);
+			tiledmap->addChild(sprite[sprite.size() - 1]);
 		}
 	}
+
+	//std::vector<Sprite*> sprite;
+	//for (auto&enemy : HP_objects->getObjects()) {
+	//	// 获取对象的属性  
+	//	ValueMap& dict = enemy.asValueMap();
+	//	if (dict["HP"].asString() == "HP") { // 自定义属性“Enemy”  
+	//		float x = dict["x"].asFloat();     // x坐标  
+	//		float y = dict["y"].asFloat();      // y坐标  
+	//		sprite.push_back(Sprite::create("HP_tiledmap.png"));
+	//		sprite[sprite.size()-1]->ignoreAnchorPointForPosition(false);
+	//		sprite[sprite.size() - 1]->setAnchorPoint(Vec2(0.0f, 1.0f));
+	//		sprite[sprite.size() - 1]->setPosition(Vec2(x, y));
+	//		CCLOG("x = %f,y = %f", x, y);
+	//		x = x / tileSize.width;
+	//		y = (mapSize.height*tileSize.height - y) / tileSize.height;
+	//		CCLOG("x = %f,y = %f", x, y);
+	//		meta->setTileGID(GAP_GID, Vec2(x, y));
+	//		
+	//		tiledmap->addChild(sprite[sprite.size() - 1]);
+	//	}
+	//}
 	
 }
 
@@ -173,6 +198,8 @@ void StartScene::up(cocos2d::Object * pSender)
 	{	//如果精灵上面那格不是地图的上边界
 		//之所以是一格大小的一半,是因为精灵的锚点在中心,上面一个的下边界只需要再加16
 		sprite->setPositionY(y + 32);  //把精灵置于上面一格的位置
+		HPjudge(Vec2(sprite->getPositionX()/tileSize.width,
+			(mapSize.height*tileSize.height - sprite->getPositionY())/tileSize.height));
 		if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y)>size.height / 2))
 		{ //调整地图,使人物尽量居中
 			tiledmap->setPositionY(tiledmap->getPositionY() - 32);
@@ -186,6 +213,8 @@ void StartScene::right(cocos2d::Object * pSender)
 	if (x + 16<MAP_SIZE&&isCanReach(x + 32, sprite->getPositionY()))
 	{
 		sprite->setPositionX(x + 32);
+		HPjudge(Vec2(sprite->getPositionX() / tileSize.width,
+			(mapSize.height*tileSize.height - sprite->getPositionY()) / tileSize.height));
 		if ((x + tiledmap->getPositionX() > size.width / 2) && ((MAP_SIZE - x)>size.width / 2))
 		{
 			tiledmap->setPositionX(tiledmap->getPositionX() - 32);
@@ -198,6 +227,8 @@ void StartScene::left(cocos2d::Object * pSender)
 	if (x>16&&isCanReach(x - 32, sprite->getPositionY()))
 	{
 		sprite->setPositionX(x - 32);
+		HPjudge(Vec2(sprite->getPositionX() / tileSize.width,
+			(mapSize.height*tileSize.height - sprite->getPositionY()) / tileSize.height));
 		if ((x + tiledmap->getPositionX() < size.width / 2) && tiledmap->getPositionX() != 0)
 		{
 			tiledmap->setPositionX(tiledmap->getPositionX() + 32);
@@ -210,6 +241,8 @@ void StartScene::down(cocos2d::Object * pSender)
 	if (y > 16&&isCanReach(sprite->getPositionX(), y - 32))
 	{
 		sprite->setPositionY(y - 32);
+		HPjudge(Vec2(sprite->getPositionX() / tileSize.width,
+			(mapSize.height*tileSize.height - sprite->getPositionY()) / tileSize.height));
 		if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
 		{
 			tiledmap->setPositionY(tiledmap->getPositionY() + 32);
@@ -231,6 +264,16 @@ bool StartScene::isCanReach(float x, float y)
 		result = false;
 	}
 	return result;
+}
+void StartScene::HPjudge(const Vec2 &pos)
+{
+	if (HP_GID == meta->getTileGIDAt(pos))
+	{
+		CCLOG("hero is in HP_tiledmap");
+		meta->setTileGID(NOR_GID, Vec2(static_cast<int>(pos.x),static_cast<int>(pos.y)));
+		
+	}
+
 }
 void StartScene::menuHellowWorldScene(Ref* pSender)
 {

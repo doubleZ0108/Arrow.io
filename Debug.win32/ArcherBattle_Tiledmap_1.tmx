@@ -3,25 +3,25 @@
  <tileset firstgid="1" name="perspective_walls" tilewidth="64" tileheight="64" tilecount="16" columns="4">
   <image source="Tiled Map/perspective_walls.png" width="256" height="256"/>
  </tileset>
- <tileset firstgid="17" name="layer" tilewidth="32" tileheight="32" tilecount="2" columns="2">
-  <image source="layer.png" width="66" height="33"/>
- </tileset>
- <tileset firstgid="19" name="blue" tilewidth="32" tileheight="32" tilecount="4" columns="2">
+ <tileset firstgid="17" name="blue" tilewidth="32" tileheight="32" tilecount="4" columns="2">
   <image source="blue.png" width="64" height="64"/>
  </tileset>
- <layer name="background" width="50" height="50" opacity="0.5">
+ <tileset firstgid="21" name="ArcherBattle_TiledMap_1" tilewidth="32" tileheight="32" tilecount="128" columns="8">
+  <image source="ArcherBattle_TiledMap_1.png" width="256" height="512"/>
+ </tileset>
+ <layer name="background" width="50" height="50" visible="0" opacity="0.5">
   <data encoding="base64" compression="zlib">
-   eJztzjENAAAIA7B5AP9aMcFBQo/+rSQFAAAAAAAAAADAS33gsGUAZcq5jg==
+   eJztzjENAAAIA7BZAP9iMcFBQo/+rSQFAAAAAAAAAADAS33gsGUAsBimBg==
   </data>
  </layer>
- <layer name="wall" width="50" height="50">
+ <layer name="wall" width="50" height="50" visible="0">
   <data encoding="base64" compression="zlib">
    eJztmEEOgDAIBHmBfsH/v9IYLz2ILQsYWneTxkPL0rEJVHcR2UWOmcd2PyFdsWBouBc5yJHhRQ5yZHiRo5ZW5tg6Q/Exj5c9mWNXPo8ZxXpFjgwvcpAjw4sctUSOWvoTB3JnBfbhymE9j8gaFZkjg6O3xjuvxZBDX9P5nnv1qMSROa/FkCNO6D+Jdl+e/hHZQzz6Uz+fQRrHF33bopHasDoHUDNCagLaO0fPI6Luo2vIQQ6Phye3pV5Z7rGRHG1uLSar7oLv4pN7otU7yfoxFzn63knWj7lW4hi5U1Qel04Zai4B
   </data>
  </layer>
  <layer name="meta" width="50" height="50" opacity="0.33">
   <data encoding="base64" compression="zlib">
-   eJztlzECwCAIA/1C+//Hdu+gEoIiZsjSInKoiG9r7S2kxyhkTJQvcYhDHOIQxzkcmVSZA7n72T2EdWzl9dgVxy6OKvVKHOIQhzhO4cgkceTSbRxIz+qJxTqHNZ5Zn5H/xXEvB/oOzMZRZT0qcCBi7MWRnXeOFcoUyw0cnn2ViU0cvprB6vkY9er/jVH3URtx1OUY+WPkomfTOydIvbKcYTS3o7wzOCyarYPePif6Pl91B4lDHNEcp+sD/JSnyA==
+   eJztlzECwCAIA31/t/64eweVEBQxQ5YWkUNFfFtrbyE9RiFjonyJQxziEIc4zuHIpMocyN3P7iGsYyuvx644dnFUqVfiEIc4xHEKRyaJI5du40B6Vk8s1jms8cz6jPwvjns50HdgNo4q61GBAxFjL47svHOsUKZYbuDw7KtMbOLw1QxWz8eoV/9vjLqP2oijLsfIHyMXPZveOUHqleUMo7kd5Z3BYdFsHfT2OdH3+ao7SBziiOY4XR879FBJ
   </data>
  </layer>
  <objectgroup name="HP">
