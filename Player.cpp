@@ -4,7 +4,7 @@
 #define k_a (EventKeyboard::KeyCode)124
 #define k_s (EventKeyboard::KeyCode)142
 #define k_d (EventKeyboard::KeyCode)127
-
+#define XIEBIAN 0.707
 Player::Player()
 {
 }
@@ -33,19 +33,19 @@ void Player::run(Player *player, std::map<EventKeyboard::KeyCode, bool>keys)
 		xchange = player->speed;
 	else if (keys[k_w] && keys[k_a] && !keys[k_s] && !keys[k_d]) 
 	{
-		xchange = -0.5*player->speed; ychange = 0.5*player->speed;
+		xchange = -XIEBIAN *player->speed; ychange = XIEBIAN *player->speed;
 	}
 	else if (keys[k_w] && !keys[k_a] && !keys[k_s] && keys[k_d]) 
 	{
-		xchange = 0.5*player->speed; ychange = 0.5*player->speed;
+		xchange = XIEBIAN *player->speed; ychange = XIEBIAN *player->speed;
 	}
 	else if (!keys[k_w] && keys[k_a] && keys[k_s] && !keys[k_d]) 
 	{
-		xchange = -0.5*player->speed; ychange = -0.5*player->speed;
+		xchange = -XIEBIAN *player->speed; ychange = -XIEBIAN *player->speed;
 	}
 	else if (!keys[k_w] && !keys[k_a] && keys[k_s] && keys[k_d]) 
 	{
-		xchange = 0.5*player->speed; ychange = -0.5*player->speed;
+		xchange = XIEBIAN *player->speed; ychange = -XIEBIAN *player->speed;
 	}
 	player->x_coord += xchange;
 	player->y_coord += ychange;
@@ -59,6 +59,8 @@ void Player::hurt(int atk)
 {
 	p_hp -= atk;
 	log("eeeeeeeeeeeee");
+
+
 	if (p_hp <= 0)
 		die();
 }

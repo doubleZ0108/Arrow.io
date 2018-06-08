@@ -13,6 +13,7 @@
 #define MAP1_WIDTH 49
 #define MAP1_HEIGHT 49
 
+#define DIFF 16   //人物和墙壁间的距离差值（比较玄学的测试，主要用于检测某一个方向是否有不可以走的地方
 #define GAP_GID 145
 #define NOR_GID 138
 #define HP_GID 137
@@ -151,16 +152,16 @@ void StartScene::ScenePrinter()
 	m_player = Player::create();
 	m_player->bindSprite(Sprite::create("player1.png"));
 	m_player->setScale(0.5f);
-	m_player->ignoreAnchorPointForPosition(false);
-	m_player->setAnchorPoint(Vec2(0.5f, 0.5f));
+	//m_player->ignoreAnchorPointForPosition(true);
+	m_player->setAnchorPoint(Vec2(0.0f, 0.0f));
 	m_player->setPosition(Point(m_player->x_coord, m_player->y_coord));
 	tiledmap->addChild(m_player,10);
 
 	n_player = Player::create();
 	n_player->bindSprite(Sprite::create("player2.png"));
 	n_player->setScale(0.5f);
-	n_player->x_coord += 1000;
-	n_player->y_coord += 1000;
+	n_player->x_coord += 900;
+	n_player->y_coord += 900;
 	n_player->setPosition(Point(n_player->x_coord, n_player->y_coord));
 	tiledmap->addChild(n_player,10);
 
@@ -244,7 +245,7 @@ bool StartScene::up(bool flag)
 bool StartScene::right(bool flag)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (x + 32 < MAP_SIZE&&isCanReach(x + 32, y))
+	if (x + 32 < MAP_SIZE&&isCanReach(x + 48, y))
 	{
 		if (flag)
 		{
@@ -284,7 +285,7 @@ bool StartScene::left(bool flag)
 bool StartScene::down(bool flag)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (y > 32&&isCanReach(x, y-32))
+	if (y > 32&&isCanReach(x, y-48))
 	{
 		if (flag)
 		{
@@ -379,32 +380,81 @@ void StartScene::update(float delta)
 
 	if (keys[k_w] || keys[k_a] || keys[k_s] || keys[k_d])//分别是wasd，参见#define
 	{
-		if (keys[k_w] && keys[k_d])
+		//如果同时按了w和d，首先检测是否可以往上并且可以往右
+		//方法是先将分方向判断函数的参数传递为false
+		//这样只会检测是否可以走,不会实际调runEvent函数
+		if (keys[k_w] && keys[k_d])  
 		{
-			if(up(false) && right(false))
+			bool flagup = up(false), flagright = right(false);
+			if(flagup && flagright)
 			{
 				up(true);
 			}
+			else if (flagup && !flagright)
+			{
+				up(true);
+				keys[k_d] = false;
+				
+			}
+			else if (!flagup && flagright)
+			{
+				right(true);
+				keys[k_w] = false;
+			}
+			
 		}
 		else if (keys[k_w] && keys[k_a])
 		{
-			if (up(false) && left(false))
+			bool flagup = up(false), flagleft = left(false);
+			if (flagup && flagleft)
 			{
 				up(true);
+			}
+			else if (flagup && !flagleft)
+			{
+				up(true);
+				keys[k_a] = false;
+			}
+			else if (!flagup && flagleft)
+			{
+				left(true);
+				keys[k_w] = false;
 			}
 		}
 		else if (keys[k_a] && keys[k_s])
 		{
-			if (left(false) && down(false))
+			bool flagleft = left(false), flagdown = down(false);
+			if (flagleft && flagdown)
 			{
 				down(true);
+			}
+			else if (flagleft && !flagdown)
+			{
+				left(true);
+				keys[k_s] = false;
+			}
+			else if (!flagleft && flagdown)
+			{
+				down(true);
+				keys[k_a] = false;
 			}
 		}
 		else if (keys[k_s] && keys[k_d])
 		{
-			if (down(false) && right(false))
+			bool flagdown = down(false), flagright = right(false);
+			if (flagdown && flagright)
 			{
 				down(true);
+			}
+			else if (flagdown && !flagright)
+			{
+				down(true);
+				keys[k_d] = false;
+			}
+			else if (!flagdown && flagright)
+			{
+				right(true);
+				keys[k_s] = false;
 			}
 		}
 		else if (keys[k_w])

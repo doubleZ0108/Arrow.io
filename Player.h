@@ -17,7 +17,7 @@ public:
 	Size visibleSize = CCDirector::getInstance()->getVisibleSize();
 	float x_coord = 80.0f;
 	float y_coord = 80.0f;
-	int speed = 3;
+	int speed = 4;
 	float radius = 30;
 	int p_hp = 50;
 
