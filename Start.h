@@ -17,7 +17,7 @@ public:
 
 	Size mapSize;
 	Size tileSize;
-	float x_move = 0.0;
+	float x_move = 0.0;   //用于地图调整之后鼠标点击的位置做相应的数值转换
 	float y_move = 0.0;
 	TMXTiledMap* tiledmap;
 	TMXLayer* meta;
@@ -35,10 +35,10 @@ public:
 	void MapPrinter();
 	void ScenePrinter();
 
-	void up();
-	void right();
-	void left();
-	void down();
+	bool up(bool flag); //true代表我需要调用runEvent函数实实在在的移动
+	bool right(bool flag);//false代表我只是想判断这个方向能不能走，其实不想移动
+	bool left(bool flag);
+	bool down(bool flag);
 	bool isCanReach(float x, float y);
 	void HPjudge(const Vec2 &pos);
 

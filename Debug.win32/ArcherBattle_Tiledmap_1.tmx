@@ -21,25 +21,8 @@
  </layer>
  <layer name="meta" width="50" height="50" opacity="0.33">
   <data encoding="base64" compression="zlib">
-   eJzt10kSgCAMRFHOz44bewI1CYFqwl/0ShleoTGO1toolB5IdFz2XDhw4MCB4yyHSio7It/+7B7CO7byeZwY6hUOHDhwnOVQCQ6t3OaI9Kwze/GuEdmPdd6V13Hc64j+C6o5qpxHBYc3Gc/h332za+yI0l5wfDvUbNZnv7Jjpm5k9X3eWmTxZ9T96D04cHTnvNa138ZG6pX1Hc52/M25qu566+BMr7Pye76zT8Ch6yAaeQC9c1G8
+   eJzt1sEVgCAMA1Dm5+bGLqDSJumzYg69iFA+YPEYYxwbxUwG2q9iLDvssMOOPzgmmVs5FuvoElcO5L5U3r1IX8RxlV/9D6FwfDHs2Kfu2mGHHfs7JplbOZbvj17xJwfyn8fMA8kRfb+7BXUz77DtdmCOVdjhc1XtYPYv6mBzZNfzyw7lOrw9lwpHNxd6rrrtUebs3z2PmlTfEXPnZOog48jWHpUD2VvmfLC57bhvR+tHtSP6DVQ4Vn2Russ4omux6pdte1q3VagdkVzsnDOOirCjr8PRI05ocVa2
   </data>
  </layer>
- <objectgroup name="HP">
-  <object id="17" x="132" y="1282" width="26" height="30">
-   <properties>
-    <property name="HP" value="HP"/>
-   </properties>
-  </object>
-  <object id="22" x="-414" y="1644"/>
-  <object id="24" x="324" y="1474" width="30" height="30">
-   <properties>
-    <property name="HP" value="HP"/>
-   </properties>
-  </object>
-  <object id="25" x="416" y="1246" width="38" height="38">
-   <properties>
-    <property name="HP" value="HP"/>
-   </properties>
-  </object>
- </objectgroup>
+ <objectgroup name="HP"/>
 </map>

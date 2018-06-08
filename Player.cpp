@@ -31,17 +31,21 @@ void Player::run(Player *player, std::map<EventKeyboard::KeyCode, bool>keys)
 		ychange = -player->speed;
 	else if (!keys[k_w] && !keys[k_a] && !keys[k_s] && keys[k_d])
 		xchange = player->speed;
-	else if (keys[k_w] && keys[k_a] && !keys[k_s] && !keys[k_d]) {
-		xchange = -0.7*player->speed; ychange = 0.7*player->speed;
+	else if (keys[k_w] && keys[k_a] && !keys[k_s] && !keys[k_d]) 
+	{
+		xchange = -0.5*player->speed; ychange = 0.5*player->speed;
 	}
-	else if (keys[k_w] && !keys[k_a] && !keys[k_s] && keys[k_d]) {
-		xchange = 0.7*player->speed; ychange = 0.7*player->speed;
+	else if (keys[k_w] && !keys[k_a] && !keys[k_s] && keys[k_d]) 
+	{
+		xchange = 0.5*player->speed; ychange = 0.5*player->speed;
 	}
-	else if (!keys[k_w] && keys[k_a] && keys[k_s] && !keys[k_d]) {
-		xchange = -0.7*player->speed; ychange = -0.7*player->speed;
+	else if (!keys[k_w] && keys[k_a] && keys[k_s] && !keys[k_d]) 
+	{
+		xchange = -0.5*player->speed; ychange = -0.5*player->speed;
 	}
-	else if (!keys[k_w] && !keys[k_a] && keys[k_s] && keys[k_d]) {
-		xchange = 0.7*player->speed; ychange = -0.7*player->speed;
+	else if (!keys[k_w] && !keys[k_a] && keys[k_s] && keys[k_d]) 
+	{
+		xchange = 0.5*player->speed; ychange = -0.5*player->speed;
 	}
 	player->x_coord += xchange;
 	player->y_coord += ychange;

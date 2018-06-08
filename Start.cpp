@@ -74,12 +74,12 @@ void StartScene::MapPrinter()
 	/////////////////////////////////////////
 	//将meta设置为属性层
 	meta = tiledmap->layerNamed("meta");
-	//meta->setVisible(false);
+	meta->setVisible(false);
 	////////////////////////////////////////
 	//获取HP和MP对象层
 	HP_objects = tiledmap->getObjectGroup("HP");
 	
-	int metax, metay, spritex, spritey;
+	/*int metax, metay, spritex, spritey;
 	for (int i = 0; i < 10;)
 	{
 		srand(time(NULL));
@@ -99,7 +99,7 @@ void StartScene::MapPrinter()
 			hp_potion[hp_potion.size() - 1]->setTag(i);
 			tiledmap->addChild(hp_potion[hp_potion.size() - 1]);
 		}
-	}
+	}*/
 
 	//std::vector<Sprite*> sprite;
 	//for (auto&enemy : HP_objects->getObjects()) {
@@ -152,7 +152,7 @@ void StartScene::ScenePrinter()
 	m_player->bindSprite(Sprite::create("player1.png"));
 	m_player->setScale(0.5f);
 	m_player->ignoreAnchorPointForPosition(false);
-	m_player->setAnchorPoint(Vec2(0.0f, 0.0f));
+	m_player->setAnchorPoint(Vec2(0.5f, 0.5f));
 	m_player->setPosition(Point(m_player->x_coord, m_player->y_coord));
 	tiledmap->addChild(m_player,10);
 
@@ -219,68 +219,87 @@ void StartScene::ScenePrinter()
 	isCanReach(sprite->getPositionX(), sprite->getPositionY());*/
 
 }
-void StartScene::up()
+bool StartScene::up(bool flag)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
 	if (y+32<MAP_SIZE&&isCanReach(x, y+16))
 	{	//如果精灵上面那格不是地图的上边界
 		//之所以是一格大小的一半,是因为精灵的锚点在中心,上面一个的下边界只需要再加16
 		//sprite->setPositionY(y + 32);  //把精灵置于上面一格的位置
-		runEvent();
-		HPjudge(Vec2(x/tileSize.width,
-			(mapSize.height*tileSize.height - y)/tileSize.height));
-		if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y)>size.height / 2))
-		{ //调整地图,使人物尽量居中
-			tiledmap->setPositionY(tiledmap->getPositionY() - 5);
-			y_move += 5;
+		if (flag)
+		{
+			runEvent();
+			HPjudge(Vec2(x / tileSize.width,
+				(mapSize.height*tileSize.height - y) / tileSize.height));
+			if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
+			{ //调整地图,使人物尽量居中
+				tiledmap->setPositionY(tiledmap->getPositionY() - 5);
+				y_move += 5;
+			}
 		}
+		return true;
 	}
-
+	return false;
 }
-void StartScene::right()
+bool StartScene::right(bool flag)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (x + 32<MAP_SIZE&&isCanReach(x+16, y))
+	if (x + 32 < MAP_SIZE&&isCanReach(x + 32, y))
 	{
-		runEvent();
-		HPjudge(Vec2(x / tileSize.width,
-			(mapSize.height*tileSize.height - y) / tileSize.height));
-		if ((x + tiledmap->getPositionX() > size.width / 2) && ((MAP_SIZE - x)>size.width / 2))
+		if (flag)
 		{
-			tiledmap->setPositionX(tiledmap->getPositionX() - 5);
-			x_move += 5;
+			runEvent();
+			HPjudge(Vec2(x / tileSize.width,
+				(mapSize.height*tileSize.height - y) / tileSize.height));
+			if ((x + tiledmap->getPositionX() > size.width / 2) && ((MAP_SIZE - x) > size.width / 2))
+			{
+				tiledmap->setPositionX(tiledmap->getPositionX() - 5);
+				x_move += 5;
+			}
 		}
+		return true;
 	}
+	return false;
 }
-void StartScene::left()
+bool StartScene::left(bool flag)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
 	if (x>32&&isCanReach(x-16, y))
 	{
-		runEvent();
-		HPjudge(Vec2(x / tileSize.width,
-			(mapSize.height*tileSize.height - y) / tileSize.height));
-		if ((x + tiledmap->getPositionX() < size.width / 2) && tiledmap->getPositionX() != 0)
+		if (flag)
 		{
-			tiledmap->setPositionX(tiledmap->getPositionX()+5);
-			x_move -= 5;
+			runEvent();
+			HPjudge(Vec2(x / tileSize.width,
+				(mapSize.height*tileSize.height - y) / tileSize.height));
+			if ((x + tiledmap->getPositionX() < size.width / 2) && tiledmap->getPositionX() != 0)
+			{
+				tiledmap->setPositionX(tiledmap->getPositionX() + 5);
+				x_move -= 5;
+			}
 		}
+		return true;
 	}
+	return false;
 }
-void StartScene::down()
+bool StartScene::down(bool flag)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (y > 32&&isCanReach(x, y-16))
+	if (y > 32&&isCanReach(x, y-32))
 	{
-		runEvent();
-		HPjudge(Vec2(x / tileSize.width,
-			(mapSize.height*tileSize.height - y) / tileSize.height));
-		if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
+		if (flag)
 		{
-			tiledmap->setPositionY(tiledmap->getPositionY() + 5);
-			y_move -= 5;
+			runEvent();
+			HPjudge(Vec2(x / tileSize.width,
+				(mapSize.height*tileSize.height - y) / tileSize.height));
+			if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
+			{
+				tiledmap->setPositionY(tiledmap->getPositionY() + 5);
+				y_move -= 5;
+			}
 		}
+		return true;
 	}
+	return false;
 }
 bool StartScene::isCanReach(float x, float y)
 {
@@ -360,14 +379,50 @@ void StartScene::update(float delta)
 
 	if (keys[k_w] || keys[k_a] || keys[k_s] || keys[k_d])//分别是wasd，参见#define
 	{
-		if (keys[k_w])
-			up();
-		if (keys[k_a])
-			left();
-		if (keys[k_s])
-			down();
-		if (keys[k_d])
-			right();
+		if (keys[k_w] && keys[k_d])
+		{
+			if(up(false) && right(false))
+			{
+				up(true);
+			}
+		}
+		else if (keys[k_w] && keys[k_a])
+		{
+			if (up(false) && left(false))
+			{
+				up(true);
+			}
+		}
+		else if (keys[k_a] && keys[k_s])
+		{
+			if (left(false) && down(false))
+			{
+				down(true);
+			}
+		}
+		else if (keys[k_s] && keys[k_d])
+		{
+			if (down(false) && right(false))
+			{
+				down(true);
+			}
+		}
+		else if (keys[k_w])
+		{
+			up(true);
+		}
+		else if (keys[k_a])
+		{
+			left(true);
+		}
+		else if (keys[k_s])
+		{
+			down(true);
+		}
+		else if (keys[k_d])
+		{
+			right(true);
+		}
 	}
 
 	if (touchon)
