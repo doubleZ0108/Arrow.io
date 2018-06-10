@@ -154,6 +154,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="BulletBase.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FontToUTF8.cpp" />
+    <ClCompile Include="GamePlaying.cpp" />
     <ClCompile Include="Help.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -166,6 +167,7 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="..\Classes\HelloWorldScene.h" />
     <ClInclude Include="BulletBase.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="GamePlaying.h" />
     <ClInclude Include="Help.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Player.h" />

@@ -295,14 +295,17 @@ void SettingScene::SizePrinter()
 
 void SettingScene::menuHellowWorldScene(Ref* pSender)
 {
+	is_paused = continue_music;
 	auto sc = HelloWorld::createScene();
 	auto reScene = TransitionSlideInR::create(1.0f, sc);  //从右边推入的动画
 	Director::getInstance()->replaceScene(reScene);
 }
 void SettingScene::play(cocos2d::Object* pSender)
 {
-	if (!is_paused)
+	if (stop_music == is_paused)
 	{
+		//解决按了stop后马上按play却是接着播放的bug
+		CocosDenshion::SimpleAudioEngine::sharedEngine()->stopBackgroundMusic(); 
 		CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Funky_Stars.mp3");
 	}
 	else
@@ -325,11 +328,13 @@ void SettingScene::pause(cocos2d::Object* pSender)
 void SettingScene::language_change_tochinese(cocos2d::Object * pSender)
 {
 	language_flag = false;
+	is_paused = continue_music;      //防止切换语言的时候音乐重新重头播放
 	Director::getInstance()->replaceScene(SettingScene::create());
 }
 void SettingScene::language_change_toenglish(cocos2d::Object * pSender)
 {
 	language_flag = true;
+	is_paused = continue_music;
 	Director::getInstance()->replaceScene(SettingScene::create());
 }
 

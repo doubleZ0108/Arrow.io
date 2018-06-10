@@ -16,13 +16,12 @@
  </layer>
  <layer name="wall" width="50" height="50">
   <data encoding="base64" compression="zlib">
-   eJztmssKxSAMRK3//9FF6KKLhujEEWNnwFXzuOeGJkFaSylX8lOfgwj1Y8QShzgYscQhDkYsceylkzm8HeBLyC5hCfE9uR4ZpX4lDkYscYiDEUsce0kce+lPHMjOOqpojtF6rKgdkoPB4dlEn1s+4rBtvDvlaI4vH9UDs8nCgQi9k3j/rsj8mDlDIvrTPM8gi2M3tp7ecDrH6PscuQv14sysx4y+j9qIA4vlKSMH2j/YHE0je+xMjnduy4fVd5H/oqc3WblYs2LlDBJHX+xVOo1j1fderNN0A9RjAk0=
+   eJztmsEOhCAQQ1n//6M33IwJyLQdAtgmZg+OLU9chhivUspv86PqKpjQ69Re1+N3ZrbSyxx8ttLLHHy20sscfLbSi+VYRadzjOwBnkL3EqjXCMduMgd3ndrLHHy20sscfLbSyxx8ttLL/WMtmWMtjXIge9aomAxkPmbMXTQji+Othj3fqjdHu6b3vO/EkXm+VW8OndB3EvcxMf1D2UNQfa2fr64ex2psvfF8hSP6f2behb75KOdDse6jNeaIj+FUDnT9yOaoiuxjlRz37FZ91rqL3IuRfX0rJ6tXzOpB5oj5Z+tEjlnfe2UdVX+JSwJL
   </data>
  </layer>
  <layer name="meta" width="50" height="50" opacity="0.33">
   <data encoding="base64" compression="zlib">
-   eJztlsEVgCAMQ5mfmxu7gEqbpM+KOeSi0PRDKRxjjGMjzaTQeRWxzGEOc5jjDxyT9FbGYjm66IoDuS+Vdy8yF+G48le/IRQcXxTbr5R5vMmxQ981hznMsT/HJL2VsXwP9tKfOJB3HpMH4hEd350F5WbGsP/NgXGsZA7XVdYjmyezf1EO1iO7nl/mUK7D27lUcHTjQuuq2x5lav/ue6ZHKc4Rc+dk+iDDke09Kg5kb5n6YL3Ncf8f7R/VHNEzUMGxmov0XYYjuhYr7yjHfIgVFbMWWW90HstR5WWOfhxWD51S5Fav
+   eJztlksWhTAMQrv+ztzx24AfCPSYVxkw0oTcFluPMcaxkSapap27VzjCEY5wfIVjCnXOXg6ODrriqNyXznuXrWWedWbZPVdMvXOWNzl2OHfDEY5w7M8xhTpnr9yDvfQ1jsp/njoL48G835mlMg/aV33OrM9KDiSn/8LxpHAkV6wH+61X947hUDwYqTl0ZN7F4uB/c5ZVHN24qrnqtkd38yAcTO6UOwPt4+BQzzXHmeLIFcpRzUfVOxyY/9m7HTjQb0BZC8TbwYGwONbiyRvluMoFI2UtGO9qnYNjhU84enJEPfQDDuVXpA==
   </data>
  </layer>
- <objectgroup name="HP"/>
 </map>

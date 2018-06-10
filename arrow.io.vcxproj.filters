@@ -37,6 +37,7 @@
     <ClCompile Include="FontToUTF8.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="GamePlaying.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -61,6 +62,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="BulletBase.h" />
     <ClInclude Include="TollgateScene.h" />
+    <ClInclude Include="GamePlaying.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

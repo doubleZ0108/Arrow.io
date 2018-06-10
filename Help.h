@@ -19,4 +19,4 @@ public:
 	CREATE_FUNC(HelpScene);
 };
 
-#endif HELP
+#endif //HELP
