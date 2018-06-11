@@ -10,7 +10,7 @@ public:
 	CREATE_FUNC(Player);
 	virtual bool init();
 
-	void run(Player *player, std::map<EventKeyboard::KeyCode, bool>keys);
+	void run(Player *player, std::map<EventKeyboard::KeyCode, bool>keys, Player *smallplayer);
 
 	Size visibleSize = CCDirector::getInstance()->getVisibleSize();
 	float x_coord = 80.0f;

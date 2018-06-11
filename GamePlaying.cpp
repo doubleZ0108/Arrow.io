@@ -20,6 +20,8 @@
 #define NOR_GID 138
 #define HP_GID 137
 #define EXP_GID 142
+
+#define SM_MAP_SIZE 245
 USING_NS_CC;
 
 std::vector<HP_MESS> GamePlaying::hp_auto_arise;   //用于储存随机安置的回血道具的相关信息
@@ -110,6 +112,9 @@ void GamePlaying::ScenePrinter()
 
 	m_player = Player::create();
 	m_player->bindSprite(Sprite::create("player1.png"));
+	//m_player->setCascadeOpacityEnabled(true); //打开透明度
+	//m_player->setOpacity();
+	m_player->setColor(Color3B(0, 0, 0));
 	m_player->setScale(0.5f);
 	//m_player->ignoreAnchorPointForPosition(true);
 	m_player->setAnchorPoint(Vec2(0.0f, 0.0f));
@@ -128,11 +133,28 @@ void GamePlaying::ScenePrinter()
 	plsum.push_back(n_player);
 
 	this->scheduleUpdate();
-	/*
+	
 	////////////////////////////////////////
-	//add a cover to draw something
-	auto *cover = CCLayerColor::create(ccc4(0, 0, 0, 150));  //cccv的第四个参数取值0~225，越大越不透明
-	this->addChild(cover, 1);
+	//add a smallmap to draw something and besides the smallmap is also a cover
+	//cccv的第四个参数取值0~225，越大越不透明
+	//m_smallmap = LayerColor::create(ccc4(0, 0, 0, 100), 250, 250);
+	m_smallmap = Sprite::create("smallmap.png");
+	m_smallmap->setOpacity(200);
+	//m_smallmap->setColor(Color3B(0, 0, 205));
+	m_smallmap->setAnchorPoint(Vec2(0.0f, 0.0f));
+	x = rect.origin.x + rect.size.width*0.0f;
+	y = rect.origin.y + rect.size.height*(2.0f / 3.0f -0.01f);  //减0.01是为了消去一个极其小的位置偏差
+	m_smallmap->setPosition(Vec2(x, y));
+	this->addChild(m_smallmap, 1);
+	
+	m_smallplayer = Player::create();
+	m_smallplayer->bindSprite(Sprite::create("smallplayer.png"));
+	m_smallplayer->ignoreAnchorPointForPosition(false);
+	//smallplayer->setAnchorPoint(Vec2(0.0f, 0.0f));
+	m_smallplayer->setPosition(Vec2(10, 10));
+	m_smallmap->addChild(m_smallplayer);
+
+	/*
 	////////////////////////////////////////
 	//starting cortoon淡入淡出
 	auto *actionFade = CCFadeOut::create(3.0f);
@@ -549,7 +571,7 @@ void GamePlaying::update(float delta)
 //主角跑动的函数，不恒居中因为场景这一块不是我写的……到时候看着改吧
 void GamePlaying::runEvent()
 {
-	m_player->run(m_player, keys);
+	m_player->run(m_player, keys, m_smallplayer);
 }
 
 void GamePlaying::attack()

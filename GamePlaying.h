@@ -94,6 +94,10 @@ private:
 	Point pos;//单击坐标，用于攻击
 	std::vector<Player*>plsum;
 	std::vector<BulletBase*>bubsum;
+
+	Sprite *m_smallmap;
+	//LayerColor *m_smallmap;
+	Player *m_smallplayer;
 };
 
 #endif //_GAMEPLAYING_H_

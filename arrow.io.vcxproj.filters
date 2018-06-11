@@ -33,7 +33,6 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="BulletBase.cpp" />
-    <ClCompile Include="TollgateScene.cpp" />
     <ClCompile Include="FontToUTF8.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -65,7 +64,6 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="BulletBase.h" />
-    <ClInclude Include="TollgateScene.h" />
     <ClInclude Include="GamePlaying.h">
       <Filter>src</Filter>
     </ClInclude>

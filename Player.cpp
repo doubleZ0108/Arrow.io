@@ -6,13 +6,14 @@
 #define k_d (EventKeyboard::KeyCode)127
 #define XIEBIAN 0.707
 
+#define RETE (260.0/1600)  //smallplayer和player移动距离的比
 bool Player::init()
 {
 
 	return true;
 }
 
-void Player::run(Player *player, std::map<EventKeyboard::KeyCode, bool>keys)
+void Player::run(Player *player, std::map<EventKeyboard::KeyCode, bool>keys, Player *smallplayer)
 {
 	float xchange = 0, ychange = 0;
 
@@ -46,6 +47,10 @@ void Player::run(Player *player, std::map<EventKeyboard::KeyCode, bool>keys)
 	auto moveBy = MoveBy::create(0.1f, Point(xchange, ychange));
 	//	log("x = %f  y = %f", player->x_coord, player->y_coord);
 	player->runAction(moveBy);
+
+	auto moveBy_smallplayer = MoveBy::create(0.1f, Point(xchange*RETE, ychange*(RETE)));
+	smallplayer->runAction(moveBy_smallplayer);
+	
 }
 
 void Player::hurt(int atk)
