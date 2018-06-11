@@ -1,17 +1,10 @@
 #include "Player.h"
-#include "Start.h"
+#include "GamePlaying.h"
 #define k_w (EventKeyboard::KeyCode)146
 #define k_a (EventKeyboard::KeyCode)124
 #define k_s (EventKeyboard::KeyCode)142
 #define k_d (EventKeyboard::KeyCode)127
 #define XIEBIAN 0.707
-Player::Player()
-{
-}
-
-Player::~Player()
-{
-}
 
 bool Player::init()
 {
@@ -59,7 +52,6 @@ void Player::hurt(int atk)
 {
 	p_hp -= atk;
 	log("eeeeeeeeeeeee");
-
 
 	if (p_hp <= 0)
 		die();

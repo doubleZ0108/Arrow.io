@@ -15,6 +15,16 @@ struct HP_MESS
 	int savex, savey;  //储存下道具的位置用于检索
 	HP_MESS(Sprite* buf, int randx, int randy)
 		:hp_potion(buf), savex(randx), savey(randy) {}
+	//重载==运算符，否则的话调用std::find()函数时会出bug
+	//std::find()的内部实现应该是借用了==运算符
+	bool operator==(const HP_MESS &thv)
+	{
+		if(this->savex==thv.savex && this->savey==thv.savey)
+		{
+			return true;
+		}
+		else { return false; }
+	}
 };
 struct EXP_MESS
 {
@@ -22,6 +32,14 @@ struct EXP_MESS
 	int savex, savey;  //储存下道具的位置用于检索
 	EXP_MESS(Sprite* buf, int randx, int randy)
 		:exp_potion(buf), savex(randx), savey(randy) {}
+	bool operator==(const EXP_MESS &thv)
+	{
+		if (this->savex == thv.savex && this->savey == thv.savey)
+		{
+			return true;
+		}
+		else { return false; }
+	}
 };
 class GamePlaying : public Scene
 {
@@ -45,7 +63,7 @@ public:
 	virtual bool init();
 
 	// a selector callback
-	void menuHellowWorldScene(Ref* pSender);
+	void menuStartScene(Ref* pSender);
 
 	void MapPrinter();
 	void ScenePrinter();
@@ -67,8 +85,9 @@ public:
 	void onEnter();
 	void runEvent();
 	void attack();
+
 private:
-	Player * m_player;		//主角1
+	Player* m_player;		//主角1
 	Player* n_player;       //主角2，作为不动靶，闲的话也可以加一套操作系统当多人线下对战
 	std::map<EventKeyboard::KeyCode, bool>keys;//记录按键状态
 	bool touchon = false;//是否单击

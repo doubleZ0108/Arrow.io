@@ -1,8 +1,9 @@
 #include "GamePlaying.h"
-#include "HelloWorldScene.h"
-//#include "TollgateScene.h"
-#include "cstdlib"
+#include "Start.h"
+#include <cstdlib>
 #include <math.h>
+#include <vector>
+#include <algorithm>
 
 #define k_w (EventKeyboard::KeyCode)146
 #define k_a (EventKeyboard::KeyCode)124
@@ -33,10 +34,6 @@ extern char *FontToUTF8(const char* font);
 
 Scene* GamePlaying::createScene()
 {
-	is_paused = reply_music;   //进入正式游戏后吧初始音乐设为reply_music
-							   //正式进入游戏后会切换到新的游戏音乐，并把欢迎界面的音乐设为stop
-							   //再次返回到欢迎界面的时候回从头播放音乐
-							   //////////////////////////////////
 	auto scene = GamePlaying::create();
 
 	return scene;
@@ -101,7 +98,7 @@ void GamePlaying::ScenePrinter()
 	auto *return_button = MenuItemImage::create(
 		"backtoupper.png",
 		"backtoupper_select.png",
-		CC_CALLBACK_1(GamePlaying::menuHellowWorldScene, this));
+		CC_CALLBACK_1(GamePlaying::menuStartScene, this));
 
 	auto *preturn = Menu::create(return_button, NULL);
 	x = rect.origin.x + rect.size.width*(10.0f / 11.0f);
@@ -148,38 +145,6 @@ void GamePlaying::ScenePrinter()
 	//chose the sequence that you prefer
 	cover->runAction(sequence2);*/
 
-	/*sprite = Sprite::create("sprite.png");
-	tiledmap->addChild(sprite, 10);
-	sprite->setPosition(Vec2(80.0f, 80.0f));
-
-	auto* pLeft = MenuItemImage::create("left.png", "left1.png", this, menu_selector(StartScene::left));
-	auto* left = Menu::create(pLeft, NULL);
-	x = rect.origin.x + rect.size.width*(2.0f / 32.0f);
-	y = rect.origin.y + rect.size.height*(3.0f / 16.0f);
-	left->setPosition(Vec2(x, y));
-	this->addChild(left);
-
-	auto* pUp = MenuItemImage::create("up.png", "up1.png", this, menu_selector(StartScene::up));
-	auto* up = Menu::create(pUp, NULL);
-	x = rect.origin.x + rect.size.width*(3.0f / 32.0f);
-	y = rect.origin.y + rect.size.height*(1.0f / 4.0f);
-	up->setPosition(Vec2(x, y));
-	this->addChild(up);
-
-	auto* pRight = MenuItemImage::create("right.png", "right1.png", this, menu_selector(StartScene::right));
-	auto* right = Menu::create(pRight, NULL);
-	x = rect.origin.x + rect.size.width*(4.0f / 32.0f);
-	y = rect.origin.y + rect.size.height*(3.0f / 16.0f);
-	right->setPosition(Vec2(x, y));
-	this->addChild(right);
-
-	auto* pDown = MenuItemImage::create("down.png", "down1.png", this, menu_selector(StartScene::down));
-	auto* down = Menu::create(pDown, NULL);
-	x = rect.origin.x + rect.size.width*(3.0f / 32.0f);
-	y = rect.origin.y + rect.size.height*(1.0f / 8.0f);
-	down->setPosition(Vec2(x, y));
-	this->addChild(down);
-	isCanReach(sprite->getPositionX(), sprite->getPositionY());*/
 
 }
 bool GamePlaying::up(bool flag)
@@ -290,9 +255,9 @@ bool GamePlaying::isCanReach(float x, float y)
 	return result;
 }
 
-void GamePlaying::menuHellowWorldScene(Ref* pSender)
+void GamePlaying::menuStartScene(Ref* pSender)
 {
-	auto sc = HelloWorld::createScene();        //缩放交替的切换动画
+	auto sc = StartScene::createScene();        //缩放交替的切换动画
 	auto reScene = TransitionShrinkGrow::create(1.0f, sc);
 	Director::getInstance()->replaceScene(reScene);
 }
@@ -304,16 +269,20 @@ void GamePlaying::HPjudge(const Vec2 &pos)
 		CCLOG("hero is in HP_tiledmap");
 		meta->setTileGID(NOR_GID, Vec2(static_cast<int>(pos.x), static_cast<int>(pos.y)));
 		int judgex = static_cast<int>(pos.x), judgey = static_cast<int>(pos.y);
-		for (int i = 0; i < hp_auto_arise.size(); ++i)
+		//范围for的使用，用于找到当前接触的回血道具
+		//将对应的精灵删除，并删除vector里相应的元素
+		for (auto &hp_now : hp_auto_arise)
 		{
-			if (judgex == hp_auto_arise[i].savex && judgey == hp_auto_arise[i].savey)
+			if (judgex == hp_now.savex && judgey == hp_now.savey)
 			{
-				hp_auto_arise[i].hp_potion->removeFromParentAndCleanup(true);
-				hp_auto_arise.erase(hp_auto_arise.begin() + i,
-					hp_auto_arise.begin() + i + 1);
+				hp_now.hp_potion->removeFromParentAndCleanup(true);
+				auto hp_iter = std::find(hp_auto_arise.begin(), hp_auto_arise.end(), hp_now);
+				hp_auto_arise.erase(hp_iter, hp_iter+1);
+				
 				break;
 			}
 		}
+
 	}
 
 }
@@ -333,10 +302,10 @@ void GamePlaying::HP_grow(float dt)
 	metax = ((rand()%MAP1_WIDTH)*(rand()%MAP1_WIDTH)) % MAP1_WIDTH;
 	metay = ((rand() % MAP1_HEIGHT)*(rand() % MAP1_HEIGHT)) % MAP1_HEIGHT;
 
-	int gid = meta->getTileGIDAt(Vec2(metax, metay));
+	int gid = meta->getTileGIDAt(Vec2(1.0*metax, 1.0*metay));
 	if (GAP_GID != gid && HP_GID != gid && EXP_GID != gid)
 	{
-		meta->setTileGID(HP_GID, Vec2(metax, metay));
+		meta->setTileGID(HP_GID, Vec2(1.0*metax, 1.0*metay));
 
 		//类的构造函数，添加一个回血道具
 		hp_auto_arise.push_back(HP_MESS(Sprite::create("HP_tiledmap.png"), metax, metay));
@@ -358,16 +327,19 @@ void GamePlaying::EXPjudge(const Vec2 & pos)
 		CCLOG("hero is in EXP_tiledmap");
 		meta->setTileGID(NOR_GID, Vec2(static_cast<int>(pos.x), static_cast<int>(pos.y)));
 		int judgex = static_cast<int>(pos.x), judgey = static_cast<int>(pos.y);
-		for (int i = 0; i < exp_auto_arise.size(); ++i)
+
+		for (auto &exp_now : exp_auto_arise)
 		{
-			if (judgex == exp_auto_arise[i].savex && judgey == exp_auto_arise[i].savey)
+			if (judgex == exp_now.savex && judgey == exp_now.savey)
 			{
-				exp_auto_arise[i].exp_potion->removeFromParentAndCleanup(true);
-				exp_auto_arise.erase(exp_auto_arise.begin() + i,
-					exp_auto_arise.begin() + i + 1);
+				exp_now.exp_potion->removeFromParentAndCleanup(true);
+				auto exp_iter = std::find(exp_auto_arise.begin(), exp_auto_arise.end(), exp_now);
+				exp_auto_arise.erase(exp_iter, exp_iter + 1);
+
 				break;
 			}
 		}
+
 	}
 }
 void GamePlaying::EXP_grow(float dt)
@@ -385,10 +357,10 @@ void GamePlaying::EXP_grow(float dt)
 	metax = rand() % MAP1_WIDTH;
 	metay = rand() % MAP1_HEIGHT;
 
-	int gid = meta->getTileGIDAt(Vec2(metax, metay));
+	int gid = meta->getTileGIDAt(Vec2(1.0*metax, 1.0*metay));
 	if (GAP_GID != gid && HP_GID != gid && EXP_GID != gid)
 	{
-		meta->setTileGID(EXP_GID, Vec2(metax, metay));
+		meta->setTileGID(EXP_GID, Vec2(1.0*metax, 1.0*metay));
 
 		//类的构造函数，添加一个回血道具
 		exp_auto_arise.push_back(EXP_MESS(Sprite::create("EXP_tiledmap.png"), metax, metay));
@@ -596,3 +568,4 @@ void GamePlaying::attack()
 
 	Abullet->attacking(m_player, Abullet, pos);
 }
+

@@ -157,7 +157,9 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClCompile Include="GamePlaying.cpp" />
     <ClCompile Include="Help.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MapChose.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PlayerChose.cpp" />
     <ClCompile Include="Setting.cpp" />
     <ClCompile Include="Start.cpp" />
     <ClCompile Include="TollgateScene.cpp" />
@@ -170,7 +172,9 @@ xcopy "$(ProjectDir)..\Resources" "$(OutDir)" /D /E /I /F /Y
     <ClInclude Include="GamePlaying.h" />
     <ClInclude Include="Help.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="MapChose.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerChose.h" />
     <ClInclude Include="Setting.h" />
     <ClInclude Include="Start.h" />
     <ClInclude Include="TollgateScene.h" />

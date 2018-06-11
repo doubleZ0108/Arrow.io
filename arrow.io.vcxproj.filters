@@ -37,7 +37,11 @@
     <ClCompile Include="FontToUTF8.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="GamePlaying.cpp" />
+    <ClCompile Include="GamePlaying.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="MapChose.cpp" />
+    <ClCompile Include="PlayerChose.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -62,7 +66,11 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="BulletBase.h" />
     <ClInclude Include="TollgateScene.h" />
-    <ClInclude Include="GamePlaying.h" />
+    <ClInclude Include="GamePlaying.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="MapChose.h" />
+    <ClInclude Include="PlayerChose.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

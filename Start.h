@@ -14,7 +14,9 @@ public:
 
 	// a selector callback
 	void menuHellowWorldScene(Ref* pSender);
-	void menuStartButton(Ref* pSender);
+	void menuToPlayButton(Ref* pSender);
+	void menuMapChoseButton(Ref* pSender);
+	void menuPlayerChoseButton(Ref* pSender);
 
 	void ScenePrinter();
 
