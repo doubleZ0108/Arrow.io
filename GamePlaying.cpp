@@ -139,7 +139,7 @@ void GamePlaying::ScenePrinter()
 	//cccv的第四个参数取值0~225，越大越不透明
 	//m_smallmap = LayerColor::create(ccc4(0, 0, 0, 100), 250, 250);
 	m_smallmap = Sprite::create("smallmap.png");
-	m_smallmap->setOpacity(200);
+	m_smallmap->setOpacity(220);     //设置小地图的透明度
 	//m_smallmap->setColor(Color3B(0, 0, 205));
 	m_smallmap->setAnchorPoint(Vec2(0.0f, 0.0f));
 	x = rect.origin.x + rect.size.width*0.0f;
