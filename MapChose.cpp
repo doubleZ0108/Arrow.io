@@ -80,6 +80,7 @@ void MapChose::ScenePrinter()
 	this->addChild(pre_map2);
 
 
+
 	//爆炸效果*/
 	/*CCParticleSystem* particleSystem = CCParticleExplosion::create();
 	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
@@ -170,6 +171,6 @@ void MapChose::ScenePrinter()
 void MapChose::menuStartScene(Ref* pSender)
 {
 	auto sc = StartScene::createScene();        //按列分割界面的切换动画
-	auto reScene = TransitionSplitCols::create(1.0f, sc);
+	auto reScene = TransitionSlideInR::create(1.0f, sc);  //从右边推入的动画
 	Director::getInstance()->replaceScene(reScene);
 }

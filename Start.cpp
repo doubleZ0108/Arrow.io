@@ -150,20 +150,20 @@ void StartScene::menuHellowWorldScene(Ref* pSender)
 void StartScene::menuToPlayButton(Ref * pSender)
 {
 	auto sc = GamePlaying::createScene();        //缩放交替的切换动画
-	auto reScene = TransitionShrinkGrow::create(1.0f, sc);
+	auto reScene = TransitionFade::create(2.0f, sc);
 	Director::getInstance()->replaceScene(reScene);
 }
 
 void StartScene::menuMapChoseButton(Ref * pSender)
 {
-	auto sc = MapChose::createScene();        //缩放交替的切换动画
-	auto reScene = TransitionShrinkGrow::create(1.0f, sc);
+	auto sc = MapChose::createScene();
+	auto reScene = TransitionSlideInL::create(1.0f, sc);  //从左边推入的动画
 	Director::getInstance()->replaceScene(reScene);
 }
 
 void StartScene::menuPlayerChoseButton(Ref * pSender)
 {
 	auto sc = PlayerChose::createScene();        //缩放交替的切换动画
-	auto reScene = TransitionShrinkGrow::create(1.0f, sc);
+	auto reScene = TransitionSlideInR::create(1.0f, sc);  //从右边推入的动画
 	Director::getInstance()->replaceScene(reScene);
 }

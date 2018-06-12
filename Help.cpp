@@ -153,15 +153,23 @@ void HelpScene::ScenePrinter()
 	//    CCActionInterval* jumpTiles = CCJumpTiles3D::create(5, CCSize(20, 20), 5, 20); 
 	//    gridNodeTarget->runAction(jumpTiles); 
 
+	auto toggleMenuItem = MenuItemToggle::createWithCallback(
+		CC_CALLBACK_1(HelpScene::Func, this),
+		MenuItemFont::create("On"),
+		MenuItemFont::create("Off"),
+		NULL);
+	Menu* mn = Menu::create(toggleMenuItem, NULL);
+	this->addChild(mn);
 }
+
 void HelpScene::Func(Ref* pSender)
 {
-	this->runAction(PageTurn3D::create(3.0f,Size(15,10)));
+	//this->runAction(PageTurn3D::create(3.0f,Size(15,10)));
 }
 void HelpScene::menuHellowWorldScene(Ref* pSender)
 {
 	auto sc = HelloWorld::createScene();        //按列分割界面的切换动画
-	auto reScene = TransitionSplitCols::create(1.0f, sc);
+	auto reScene = TransitionFadeBL::create(1.0f, sc);
 	Director::getInstance()->replaceScene(reScene);
 }
 

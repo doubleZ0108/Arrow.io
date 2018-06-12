@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "Player.h"
 #include "BulletBase.h"
+#include "ProgressView.h"
 #include <windows.h>  
 #include <vector>
 #define KEY_DOWN(vk_code) (GetAsyncKeyState(vk_code) & 0x8000 ? 1 : 0)  
@@ -43,7 +44,12 @@ struct EXP_MESS
 };
 class GamePlaying : public Scene
 {
-public:
+private:
+	Size visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	Rect rect = Director::getInstance()->getOpenGLView()->getVisibleRect();
+
+private:
 	Size size;
 	Sprite* sprite;
 
@@ -67,6 +73,10 @@ public:
 
 	void MapPrinter();
 	void ScenePrinter();
+	void MusicPrinter();
+	void SmallmapPrinter();
+	void Smallmap_Switch(Ref* pSender);
+	void Mode_Switch(Ref* pSender);
 
 	bool up(bool flag); //true代表我需要调用runEvent函数实实在在的移动
 	bool right(bool flag);//false代表我只是想判断这个方向能不能走，其实不想移动
@@ -87,13 +97,17 @@ public:
 	void attack();
 
 private:
-	Player* m_player;		//主角1
-	Player* n_player;       //主角2，作为不动靶，闲的话也可以加一套操作系统当多人线下对战
+	bool waytorun = 0;
+	Player* m_player = Player::create();		//主角1
+	Player* n_player = Player::create();       //主角2，作为不动靶，闲的话也可以加一套操作系统当多人线下对战
 	std::map<EventKeyboard::KeyCode, bool>keys;//记录按键状态
 	bool touchon = false;//是否单击
-	Point pos;//单击坐标，用于攻击
+	Point pos;//鼠标坐标，用于攻击、移动
 	std::vector<Player*>plsum;
 	std::vector<BulletBase*>bubsum;
+	///////////////////////////////
+	ProgressView *m_pProgressView;
+	ProgressView *n_pProgressView;
 
 	Sprite *m_smallmap;
 	//LayerColor *m_smallmap;

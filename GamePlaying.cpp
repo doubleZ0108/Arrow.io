@@ -1,4 +1,5 @@
 #include "GamePlaying.h"
+#include "SimpleAudioEngine.h"
 #include "Start.h"
 #include <cstdlib>
 #include <math.h>
@@ -10,18 +11,19 @@
 #define k_s (EventKeyboard::KeyCode)142
 #define k_d (EventKeyboard::KeyCode)127
 
-#define MAP_SIZE 1600
+#define MAP_SIZE 1599
 #define MAP1_WIDTH 49
 #define MAP1_HEIGHT 49
 
 #define DIFF 16   //ÈËÎïºÍÇ½±Ú¼äµÄ¾àÀë²îÖµ£¨±È½ÏĞşÑ§µÄ²âÊÔ£¬Ö÷ÒªÓÃÓÚ¼ì²âÄ³Ò»¸ö·½ÏòÊÇ·ñÓĞ²»¿ÉÒÔ×ßµÄµØ·½
-#define MAP_MOVE 5  //ÓÃÓÚÈËÎï²»ÔÚÖĞÑëÊ±£¬µØÍ¼µÄÎ»ÖÃÒÆ¶¯ºÍÊó±êµã»÷×ø±êµÄÒÆ¶¯
 #define GAP_GID 145
 #define NOR_GID 138
 #define HP_GID 137
 #define EXP_GID 142
 
 #define SM_MAP_SIZE 245
+#define RETE (260.0/1599)  //smallplayerºÍplayerÒÆ¶¯¾àÀëµÄ±È
+
 USING_NS_CC;
 
 std::vector<HP_MESS> GamePlaying::hp_auto_arise;   //ÓÃÓÚ´¢´æËæ»ú°²ÖÃµÄ»ØÑªµÀ¾ßµÄÏà¹ØĞÅÏ¢
@@ -31,6 +33,9 @@ std::vector<EXP_MESS> GamePlaying::exp_auto_arise;   //ÓÃÓÚ´¢´æËæ»ú°²ÖÃµÄ¾­ÑéµÀ¾
 extern bool language_flag;  //true->English   false->Chinese
 extern int is_paused;       //¹ØÓÚis_pausedµÄ¾ßÌå½âÊÍÇë¼û "HelloWorldScene.h"
 extern char *FontToUTF8(const char* font);
+
+bool smallmap_switch = true;       //Ğ¡µØÍ¼¿ØÖÆ¿ª¹Ø,true->´ò¿ªĞ¡µØÍ¼,false->¹ØÉÏĞ¡µØÍ¼
+								   //Ã¿´Î´ò¿ªĞ¡µØÍ¼µÄÊ±ºòĞ¡ÈËÎïµÄÎ»ÖÃÒªËæm_player×öÏàÓ¦µÄµ÷Õû
 //it is define in another .cpp file 
 //and it is used to change character
 
@@ -57,9 +62,10 @@ bool GamePlaying::init()
 	{
 		return false;
 	}
-
+	//MusicPrinter();
 	MapPrinter();
 	ScenePrinter();
+	SmallmapPrinter();
 
 	schedule(schedule_selector(GamePlaying::EXP_grow), 0.1f);
 	schedule(schedule_selector(GamePlaying::HP_grow), 1.5f);
@@ -88,10 +94,6 @@ void GamePlaying::MapPrinter()
 
 void GamePlaying::ScenePrinter()
 {
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
-	auto rect = Director::getInstance()->getOpenGLView()->getVisibleRect();
 	float x = rect.origin.x + rect.size.width / 2;
 	float y = rect.origin.y + rect.size.height / 2;
 
@@ -106,54 +108,110 @@ void GamePlaying::ScenePrinter()
 	x = rect.origin.x + rect.size.width*(10.0f / 11.0f);
 	y = rect.origin.y + rect.size.height*(1.0f / 10.0f);
 	preturn->setPosition(Vec2(x, y));
-
 	preturn->setScale(1.0f);
 	this->addChild(preturn, 100);   //°Ñ·µ»Ø°´Å¥ÖÃÓÚ100²ã£¬·ÀÖ¹ÕÚµ²
 
-	m_player = Player::create();
-	m_player->bindSprite(Sprite::create("player1.png"));
-	//m_player->setCascadeOpacityEnabled(true); //´ò¿ªÍ¸Ã÷¶È
-	//m_player->setOpacity();
-	m_player->setColor(Color3B(0, 0, 0));
-	m_player->setScale(0.5f);
-	//m_player->ignoreAnchorPointForPosition(true);
-	m_player->setAnchorPoint(Vec2(0.0f, 0.0f));
-	m_player->setPosition(Point(m_player->x_coord, m_player->y_coord));
-	tiledmap->addChild(m_player, 10);
 
-	n_player = Player::create();
-	n_player->bindSprite(Sprite::create("player2.png"));
-	n_player->setScale(0.5f);
-	n_player->x_coord += 900;
-	n_player->y_coord += 900;
+	///////////////////////////////////////////////
+	//add player
+	m_player->sprite = Sprite::create("player1.png");
+	m_player->bindSprite(m_player->sprite);
+	m_player->setScale(2.13, 2.13);
+	m_player->setPosition(Point(m_player->x_coord, m_player->y_coord));
+	this->addChild(m_player);
+
+	n_player->sprite = Sprite::create("player2.png");
+	n_player->bindSprite(n_player->sprite);
+	n_player->setScale(1.8, 1.8);
 	n_player->setPosition(Point(n_player->x_coord, n_player->y_coord));
-	tiledmap->addChild(n_player, 10);
+	this->addChild(n_player);
 
 	plsum.push_back(m_player);
 	plsum.push_back(n_player);
+	///////////////////////////////////////////////
+	m_pProgressView = new ProgressView;
+	m_pProgressView->setPosition(ccp(m_player->x_coord, m_player->y_coord + 50));
+	m_pProgressView->setScale(2);
+	m_pProgressView->setBackgroundTexture("background.png");
+	m_pProgressView->setForegroundTexture("foreground.png");
+	m_pProgressView->setTotalProgress(50);
+	m_pProgressView->setCurrentProgress(50);
+	this->addChild(m_pProgressView, 2);
 
+	n_pProgressView = new ProgressView;
+	n_pProgressView->setPosition(ccp(n_player->x_coord, n_player->y_coord + 50));
+	n_pProgressView->setScale(2);
+	n_pProgressView->setBackgroundTexture("background.png");
+	n_pProgressView->setForegroundTexture("foreground.png");
+	n_pProgressView->setTotalProgress(50);
+	n_pProgressView->setCurrentProgress(50);
+	this->addChild(n_pProgressView, 2);
+
+	///////////////////////////////////////////////
 	this->scheduleUpdate();
 	
-	////////////////////////////////////////
-	//add a smallmap to draw something and besides the smallmap is also a cover
-	//cccvµÄµÚËÄ¸ö²ÎÊıÈ¡Öµ0~225£¬Ô½´óÔ½²»Í¸Ã÷
-	//m_smallmap = LayerColor::create(ccc4(0, 0, 0, 100), 250, 250);
-	m_smallmap = Sprite::create("smallmap.png");
-	m_smallmap->setOpacity(220);     //ÉèÖÃĞ¡µØÍ¼µÄÍ¸Ã÷¶È
-	//m_smallmap->setColor(Color3B(0, 0, 205));
-	m_smallmap->setAnchorPoint(Vec2(0.0f, 0.0f));
-	x = rect.origin.x + rect.size.width*0.0f;
-	y = rect.origin.y + rect.size.height*(2.0f / 3.0f -0.01f);  //¼õ0.01ÊÇÎªÁËÏûÈ¥Ò»¸ö¼«ÆäĞ¡µÄÎ»ÖÃÆ«²î
-	m_smallmap->setPosition(Vec2(x, y));
-	this->addChild(m_smallmap, 1);
-	
-	m_smallplayer = Player::create();
-	m_smallplayer->bindSprite(Sprite::create("smallplayer.png"));
-	m_smallplayer->ignoreAnchorPointForPosition(false);
-	//smallplayer->setAnchorPoint(Vec2(0.0f, 0.0f));
-	m_smallplayer->setPosition(Vec2(10, 10));
-	m_smallmap->addChild(m_smallplayer);
 
+	Label *smallmapword;
+	if (language_flag)
+	{
+		smallmapword = Label::createWithTTF("Global Map",
+			"fonts/Marker Felt.ttf", 40);
+	}
+	else
+	{
+		smallmapword = Label::create(FontToUTF8("È«¾ÖµØÍ¼"),
+			"Arial", 40);
+	}
+	x = rect.origin.x + rect.size.width*(34.0f / 40.0f);
+	y = rect.origin.y + rect.size.height*(9.0f / 10.0f);
+	smallmapword->setPosition(Vec2(x, y));
+	this->addChild(smallmapword, 1);
+
+	auto smallMenuItem = MenuItemToggle::createWithCallback(
+		CC_CALLBACK_1(GamePlaying::Smallmap_Switch, this),
+		MenuItemImage::create(
+			"checkbox_selected.png",
+			"checkbox_selected.png"),
+		MenuItemImage::create(
+			"checkbox_normal.png",
+			"checkbox_normal.png"),
+		NULL);
+	Menu* smallmn = Menu::create(smallMenuItem, NULL);
+	x = rect.origin.x + rect.size.width*(37.5f / 40.0f);
+	smallmn->setPosition(Vec2(x, y));
+	this->addChild(smallmn, 1);
+
+	/////////////////////////////////////////////////
+	//ÇĞ»»²»Í¬µÄÓÎÏ·Ä£Ê½
+	Label *modeword;
+	if (language_flag)
+	{
+		modeword = Label::createWithTTF("Game Mode",
+			"fonts/Marker Felt.ttf", 40);
+	}
+	else
+	{
+		modeword = Label::create(FontToUTF8("ÓÎÏ·Ä£Ê½"),
+			"Arial", 40);
+	}
+	x = rect.origin.x + rect.size.width*(34.0f / 40.0f);
+	y = rect.origin.y + rect.size.height*(8.0f / 10.0f);
+	modeword->setPosition(Vec2(x, y));
+	this->addChild(modeword, 1);
+
+	auto modeMenuItem = MenuItemToggle::createWithCallback(
+		CC_CALLBACK_1(GamePlaying::Mode_Switch, this),
+		MenuItemImage::create(
+			"checkbox_selected.png",
+			"checkbox_selected.png"),
+		MenuItemImage::create(
+			"checkbox_normal.png",
+			"checkbox_normal.png"),
+		NULL);
+	Menu* modemn = Menu::create(modeMenuItem, NULL);
+	x = rect.origin.x + rect.size.width*(37.5f / 40.0f);
+	modemn->setPosition(Vec2(x, y));
+	this->addChild(modemn, 1);
 	/*
 	////////////////////////////////////////
 	//starting cortoonµ­Èëµ­³ö
@@ -169,10 +227,85 @@ void GamePlaying::ScenePrinter()
 
 
 }
+void GamePlaying::MusicPrinter()
+{
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Escape.mp3");
+}
+void GamePlaying::Smallmap_Switch(Ref* pSender)
+{
+	smallmap_switch = (smallmap_switch ? false : true); 
+	//½«¿ª×ÅµÄĞ¡µØÍ¼¹ØÉÏ£¬½«¹Ø×ÅµÄĞ¡µØÍ¼´ò¿ª
+	SmallmapPrinter();
+}
+void GamePlaying::Mode_Switch(Ref * pSender)
+{
+	this->waytorun = (this->waytorun ? false : true);
+}
+void GamePlaying::SmallmapPrinter()
+{	
+	static Label *OnorOff = 0;
+	float x, y;
+	if (smallmap_switch)        //Èç¹ûÒª´ò¿ªĞ¡µØÍ¼£¬ÔòÖØĞÂ¹¹½¨£¬ÒòÎªÃ¿´ÎµÄĞ¡ÈËÎïÎ»ÖÃ²»Í¬
+	{
+		////////////////////////////////////////
+		//add a smallmap to draw something and besides the smallmap is also a cover
+		//cccvµÄµÚËÄ¸ö²ÎÊıÈ¡Öµ0~225£¬Ô½´óÔ½²»Í¸Ã÷
+		//m_smallmap = LayerColor::create(ccc4(0, 0, 0, 100), 250, 250);
+		m_smallmap = Sprite::create("smallmap.png");
+		m_smallmap->setOpacity(220);     //ÉèÖÃĞ¡µØÍ¼µÄÍ¸Ã÷¶È
+										 //m_smallmap->setColor(Color3B(0, 0, 205));
+		m_smallmap->setAnchorPoint(Vec2(0.0f,0.0f));
+		x = rect.origin.x + rect.size.width*0.0f;
+		y = rect.origin.y + rect.size.height*(2.0f / 3.0f - 0.01f);  //¼õ0.01ÊÇÎªÁËÏûÈ¥Ò»¸ö¼«ÆäĞ¡µÄÎ»ÖÃÆ«²î
+		m_smallmap->setPosition(Vec2(x, y));
+		this->addChild(m_smallmap, 1);
+
+		m_smallplayer = Player::create();
+		m_smallplayer->bindSprite(Sprite::create("smallplayer.png"));
+		m_smallplayer->ignoreAnchorPointForPosition(false);
+		//smallplayer->setAnchorPoint(Vec2(0.0f, 0.0f));
+		m_smallplayer->setPosition(
+			Vec2(m_player->getPositionX()*RETE, m_player->getPositionY()*RETE));
+		m_smallmap->addChild(m_smallplayer);
+
+		if (OnorOff) { OnorOff->removeFromParentAndCleanup(true); }
+		if (language_flag)
+		{
+			OnorOff = Label::createWithTTF("ON",
+				"fonts/Marker Felt.ttf", 40);
+		}
+		else
+		{
+			OnorOff = Label::create(FontToUTF8("¿ªÆô"),
+				"Arial", 40);
+		}
+	}
+	else      //Èç¹ûÒª¹ØÉÏ¾ÍÖ±½ÓÏú»Ù¾«Áé
+	{
+		m_smallmap->removeFromParentAndCleanup(true);
+
+		OnorOff->removeFromParentAndCleanup(true);
+		if (language_flag)
+		{
+			OnorOff = Label::createWithTTF("OFF",
+				"fonts/Marker Felt.ttf", 40);
+		}
+		else
+		{
+			OnorOff = Label::create(FontToUTF8("¹Ø±Õ"),
+				"Arial", 40);
+		}
+	}
+	x = rect.origin.x + rect.size.width*(39.0f / 40.0f);
+	y = rect.origin.y + rect.size.height*(9.0f / 10.0f);
+	OnorOff->setPosition(Vec2(x, y));
+	this->addChild(OnorOff, 1);
+}
+
 bool GamePlaying::up(bool flag)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (y + tileSize.height < MAP_SIZE && isCanReach(x, y + DIFF))
+	if (y + tileSize.height < MAP_SIZE && isCanReach(x, y + DIFF + 1))   //ÍùÉÏµÄÅĞ¶Ï¶à+1Ïû³ı¿¨Ç½bug
 	{	//Èç¹û¾«ÁéÉÏÃæÄÇ¸ñ²»ÊÇµØÍ¼µÄÉÏ±ß½ç
 		//Ö®ËùÒÔÊÇÒ»¸ñ´óĞ¡µÄÒ»°ë,ÊÇÒòÎª¾«ÁéµÄÃªµãÔÚÖĞĞÄ,ÉÏÃæÒ»¸öµÄÏÂ±ß½çÖ»ĞèÒªÔÙ¼Ó16
 		//sprite->setPositionY(y + 32);  //°Ñ¾«ÁéÖÃÓÚÉÏÃæÒ»¸ñµÄÎ»ÖÃ
@@ -185,9 +318,10 @@ bool GamePlaying::up(bool flag)
 				(mapSize.height*tileSize.height - y) / tileSize.height));
 		}
 		if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
-		{ //µ÷ÕûµØÍ¼,Ê¹ÈËÎï¾¡Á¿¾ÓÖĞ
-			tiledmap->setPositionY(tiledmap->getPositionY() - MAP_MOVE);
-			y_move += MAP_MOVE;
+		{   //µ÷ÕûµØÍ¼,Ê¹ÈËÎï¾¡Á¿¾ÓÖĞ
+			//µØÍ¼ÒÆ¶¯ËÙ¶ÈÓëÈËÎïÒÆ¶¯ËÙ¶È±£³ÖÒ»Ö±£¬»ñµÃ×î¼ÑÓÎÏ·ÌåÑé£¬¾¡ÏíË¿»¬
+			tiledmap->setPositionY(tiledmap->getPositionY() - m_player->speed);
+			y_move += m_player->speed;
 		}
 		return true;
 	}
@@ -208,8 +342,8 @@ bool GamePlaying::right(bool flag)
 		}
 		if ((x + tiledmap->getPositionX() > size.width / 2) && ((MAP_SIZE - x) > size.width / 2))
 		{
-			tiledmap->setPositionX(tiledmap->getPositionX() - MAP_MOVE);
-			x_move += MAP_MOVE;
+			tiledmap->setPositionX(tiledmap->getPositionX() - m_player->speed);
+			x_move += m_player->speed;
 		}
 		return true;
 	}
@@ -218,7 +352,7 @@ bool GamePlaying::right(bool flag)
 bool GamePlaying::left(bool flag)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (x>tileSize.width && isCanReach(x - DIFF, y))
+	if (x>tileSize.width && isCanReach(x - DIFF - 1, y))  //Íù×óµÄÅĞ¶Ï¶à-1Ïû³ı¿¨Ç½bug
 	{
 		if (flag)
 		{
@@ -230,8 +364,8 @@ bool GamePlaying::left(bool flag)
 		}
 		if ((x + tiledmap->getPositionX() < size.width / 2) && tiledmap->getPositionX() != 0)
 		{
-			tiledmap->setPositionX(tiledmap->getPositionX() + MAP_MOVE);
-			x_move -= MAP_MOVE;
+			tiledmap->setPositionX(tiledmap->getPositionX() + m_player->speed);
+			x_move -= m_player->speed;
 		}
 		return true;
 	}
@@ -253,8 +387,8 @@ bool GamePlaying::down(bool flag)
 		}
 		if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
 		{
-			tiledmap->setPositionY(tiledmap->getPositionY() + MAP_MOVE);
-			y_move -= MAP_MOVE;
+			tiledmap->setPositionY(tiledmap->getPositionY() + m_player->speed);
+			y_move -= m_player->speed;
 		}
 		return true;
 	}
@@ -263,8 +397,9 @@ bool GamePlaying::down(bool flag)
 bool GamePlaying::isCanReach(float x, float y)
 {
 	bool result;
-	int mapX = (int)((x - DIFF) / 32);        //¼õÈ¥16ÊÇÓÉÓÚÈËÎïµÄÃªµãÔÚÖĞĞÄ
-	int mapY = (int)(MAP1_HEIGHT - (y - DIFF) / 32);   //49ÎªTiledÀïµØÍ¼µÄ×ø±ê×î´óÖµ
+	//log("ancherpoint %f %f", m_player->getAnchorPoint().x, m_player->getAnchorPoint().y);
+	double mapX = ((x - DIFF) / 32);        //¼õÈ¥16ÊÇÓÉÓÚÈËÎïµÄÃªµãÔÚÖĞĞÄ
+	double mapY = (MAP1_HEIGHT - (y - DIFF) / 32);   //49ÎªTiledÀïµØÍ¼µÄ×ø±ê×î´óÖµ
 	int tileGid = meta->tileGIDAt(Vec2(mapX, mapY)); //32ÊÇÒ»¸ñµÄ´óĞ¡
 	if (tileGid != GAP_GID)
 	{
@@ -275,13 +410,6 @@ bool GamePlaying::isCanReach(float x, float y)
 		result = false;
 	}
 	return result;
-}
-
-void GamePlaying::menuStartScene(Ref* pSender)
-{
-	auto sc = StartScene::createScene();        //Ëõ·Å½»ÌæµÄÇĞ»»¶¯»­
-	auto reScene = TransitionShrinkGrow::create(1.0f, sc);
-	Director::getInstance()->replaceScene(reScene);
 }
 
 void GamePlaying::HPjudge(const Vec2 &pos)
@@ -401,37 +529,67 @@ void GamePlaying::EXP_grow(float dt)
 void GamePlaying::onEnter()
 {
 	Scene::onEnter();
-
-	auto keylistener = EventListenerKeyboard::create();
-	//¼üÅÌ¼àÌıÆ÷£¬ÓÃÓÚÈËÎïÒÆ¶¯
-	keylistener->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *event)
+	//////////////////////////////////////
+	if (waytorun)
 	{
-		keys[keyCode] = true;
-	};
+		auto keylistener = EventListenerKeyboard::create();
+		//¼üÅÌ¼àÌıÆ÷£¬ÓÃÓÚÈËÎïÒÆ¶¯
+		keylistener->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *event)
+		{
+			keys[keyCode] = true;
+		};
 
-	keylistener->onKeyReleased = [&](EventKeyboard::KeyCode keyCode, Event *event)
+		keylistener->onKeyReleased = [&](EventKeyboard::KeyCode keyCode, Event *event)
+		{
+			keys[keyCode] = false;
+		};
+
+		EventDispatcher *eventDispatcher1 = Director::getInstance()->getEventDispatcher();
+		eventDispatcher1->addEventListenerWithSceneGraphPriority(keylistener, this);
+
+
+		auto touchlistener = EventListenerTouchOneByOne::create();
+		//´¥Ãş¼àÌıÆ÷£¬ÓÃÓÚÈËÎï¹¥»÷
+		touchlistener->onTouchBegan = [&](Touch* touch, Event *event)
+		{
+			touchon = true;
+			Point pos1 = touch->getLocationInView();
+			Point pos2 = Director::getInstance()->convertToGL(pos1);
+			pos = pos2;//µÃµ½µ¥»÷×ø±ê
+			return true;
+		};
+
+		EventDispatcher *eventDispatcher2 = Director::getInstance()->getEventDispatcher();
+		eventDispatcher2->addEventListenerWithSceneGraphPriority(touchlistener, this);
+	}
+	else
 	{
-		keys[keyCode] = false;
-	};
+		auto keylistener = EventListenerKeyboard::create();
+		//¼üÅÌ¼àÌıÆ÷£¬ÓÃÓÚÈËÎïÒÆ¶¯
+		keylistener->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *event)
+		{
+			if (keyCode == (EventKeyboard::KeyCode)32)
+				touchon = true;
+		};
 
-	EventDispatcher *eventDispatcher1 = Director::getInstance()->getEventDispatcher();
-	eventDispatcher1->addEventListenerWithSceneGraphPriority(keylistener, this);
+		EventDispatcher *eventDispatcher1 = Director::getInstance()->getEventDispatcher();
+		eventDispatcher1->addEventListenerWithSceneGraphPriority(keylistener, this);
 
+		auto mouselistener = EventListenerMouse::create();
+		mouselistener->onMouseMove = [&](Event *event)
+		{
+			EventMouse* e = (EventMouse*)event;
+			Point pos1, pos2;
+			pos1.x = e->getCursorX();
+			pos1.y = e->getCursorY();
+			pos = pos1;
+			pos.y += (Director::getInstance()->getVisibleSize()).height;
+		};
 
-	auto touchlistener = EventListenerTouchOneByOne::create();
-	//´¥Ãş¼àÌıÆ÷£¬ÓÃÓÚÈËÎï¹¥»÷
-	touchlistener->onTouchBegan = [&](Touch* touch, Event *event)
-	{
-		touchon = true;
-		Point pos1 = touch->getLocationInView();
-		Point pos2 = Director::getInstance()->convertToGL(pos1);
-		pos = pos2;//µÃµ½µ¥»÷×ø±ê
-		return true;
-	};
+		EventDispatcher *eventDispatcher2 = Director::getInstance()->getEventDispatcher();
+		eventDispatcher2->addEventListenerWithSceneGraphPriority(mouselistener, this);
 
-	EventDispatcher *eventDispatcher2 = Director::getInstance()->getEventDispatcher();
-	eventDispatcher2->addEventListenerWithSceneGraphPriority(touchlistener, this);
-
+	}
 }
 
 void GamePlaying::update(float delta)
@@ -542,6 +700,11 @@ void GamePlaying::update(float delta)
 		}
 	}
 
+	m_pProgressView->setCurrentProgress(m_player->p_hp);
+	m_pProgressView->setPosition(ccp(m_player->x_coord, m_player->y_coord + 50));
+	n_pProgressView->setCurrentProgress(n_player->p_hp);
+	n_pProgressView->setPosition(ccp(n_player->x_coord, n_player->y_coord + 50));
+
 	if (touchon)
 	{
 		attack();
@@ -563,7 +726,15 @@ void GamePlaying::update(float delta)
 	{
 		for (auto pl : plsum)
 		{
-			bub->collidePlayer(pl);
+			if (bub->collidePlayer(pl))
+			{
+				Sprite* star = Sprite::create("attacked.png");
+				star->setScale(2.4, 2.4);
+				star->setPosition(pl->x_coord, pl->y_coord);
+				this->addChild(star);
+				MoveBy* moveBy = MoveBy::create(0.2f, Point(0, 0));
+				star->runAction(Sequence::create(moveBy, CallFunc::create(CC_CALLBACK_0(Sprite::removeFromParent, star)), NULL));
+			}
 		}
 	}
 
@@ -571,19 +742,39 @@ void GamePlaying::update(float delta)
 //Ö÷½ÇÅÜ¶¯µÄº¯Êı£¬²»ºã¾ÓÖĞÒòÎª³¡¾°ÕâÒ»¿é²»ÊÇÎÒĞ´µÄ¡­¡­µ½Ê±ºò¿´×Å¸Ä°É
 void GamePlaying::runEvent()
 {
-	m_player->run(m_player, keys, m_smallplayer);
+	if (waytorun)
+		m_player->runway1(keys);
+	else m_player->runway2(pos);
 }
 
 void GamePlaying::attack()
 {
-	log("attack in x = %f  y = %f", pos.x + x_move, pos.y + y_move);
-	log("player in x = %f  y = %f", m_player->x_coord, m_player->y_coord);
-	log("sourse in x = %f  y = %f", m_player->x_coord, m_player->y_coord);
-	pos.x += x_move; pos.y += y_move;
+	//   log("attack in x = %f  y = %f", pos.x, pos.y);
 	auto Abullet = BulletBase::create();
-	Abullet->bindSprite(Sprite::create("bullet.png"));
-	Abullet->setPosition(Point(m_player->x_coord - x_move, m_player->y_coord - y_move));
+	Abullet->bindSprite(Sprite::create("arrow.png"));
+	Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
 	this->addChild(Abullet);
+
+	float angle;
+	float dx, dy;
+	dx = pos.x - m_player->x_coord;
+	dy = pos.y - m_player->y_coord;
+
+	if (dy == 0)
+	{
+		if (dx >= 0)
+			angle = 90;
+		else angle = 270;
+	}
+	else
+	{
+		angle = atan(dx / dy) / 3.1416 * 180;
+		if (dy < 0)
+			angle += 180;
+	}
+
+	auto * rotateto = RotateTo::create(0, 45 + angle);
+	Abullet->runAction(rotateto);
 
 	Abullet->exist = true;
 	bubsum.push_back(Abullet);
@@ -591,3 +782,9 @@ void GamePlaying::attack()
 	Abullet->attacking(m_player, Abullet, pos);
 }
 
+void GamePlaying::menuStartScene(Ref* pSender)
+{
+	auto sc = StartScene::createScene();        //Ëõ·Å½»ÌæµÄÇĞ»»¶¯»­
+	auto reScene = TransitionShrinkGrow::create(1.0f, sc);
+	Director::getInstance()->replaceScene(reScene);
+}

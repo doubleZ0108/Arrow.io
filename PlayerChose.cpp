@@ -170,6 +170,6 @@ void PlayerChose::ScenePrinter()
 void PlayerChose::menuStartScene(Ref* pSender)
 {
 	auto sc = StartScene::createScene();        //按列分割界面的切换动画
-	auto reScene = TransitionSplitCols::create(1.0f, sc);
+	auto reScene = TransitionSlideInL::create(1.0f, sc);  //从左边推入的动画
 	Director::getInstance()->replaceScene(reScene);
 }

@@ -18,11 +18,11 @@ public:
 
 	int atkpower = 5;
 	int flyspeed = 500;
-	float range = 200;
+	float range = 300;
 	Player *comefrom;//子弹来源
 
 	void attacking(Player *player, BulletBase *Abullet, Point pos);
-	void collidePlayer(Player *player);//判断碰撞
+	bool collidePlayer(Player *player);//判断碰撞
 
 	void pointChange(float dt);
 
@@ -34,6 +34,7 @@ private:
 	Point target;//预定攻击坐标
 	float xcs, ycs, rcs;//x y r单位时间改变量
 	float flyrange;//已飞行距离
+				   //	Point direct;
 };
 
 #endif

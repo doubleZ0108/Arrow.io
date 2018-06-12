@@ -28,6 +28,8 @@ void BulletBase::attacking(Player *player, BulletBase *Abullet, Point pos)
 	float xchange = (pos.x - player->x_coord) / length * Abullet->range;
 	float ychange = (pos.y - player->y_coord) / length * Abullet->range;
 	//在cocos2dx中你甚至能学几何
+	//direct.x = xchange;
+	//direct.y = ychange;
 
 	auto moveBy = MoveBy::create(time, Point(xchange, ychange));
 	point.x = player->x_coord;
@@ -75,9 +77,9 @@ void BulletBase::pointChange(float dt)
 	}
 }
 
-void BulletBase::collidePlayer(Player *player)
+bool BulletBase::collidePlayer(Player *player)
 {
-	if (this->comefrom != player)
+	if (this->comefrom != player && player->p_hp > 0 && !player->unbeat)
 	{
 		float dx, dy;
 		dx = point.x - player->x_coord;
@@ -88,6 +90,8 @@ void BulletBase::collidePlayer(Player *player)
 		{
 			this->hide();
 			player->hurt(atkpower);
+			return true;
 		}
 	}
+	return false;
 }
