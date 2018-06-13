@@ -41,7 +41,9 @@
     </ClCompile>
     <ClCompile Include="MapChose.cpp" />
     <ClCompile Include="PlayerChose.cpp" />
-    <ClCompile Include="ProgressView.cpp" />
+    <ClCompile Include="ProgressView.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
@@ -70,7 +72,9 @@
     </ClInclude>
     <ClInclude Include="MapChose.h" />
     <ClInclude Include="PlayerChose.h" />
-    <ClInclude Include="ProgressView.h" />
+    <ClInclude Include="ProgressView.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="game.rc">

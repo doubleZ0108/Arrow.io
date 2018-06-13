@@ -1,4 +1,4 @@
-#include "Player.h"
+ï»¿#include "Player.h"
 #include "GamePlaying.h"
 #define k_w (EventKeyboard::KeyCode)146
 #define k_a (EventKeyboard::KeyCode)124
@@ -6,16 +6,16 @@
 #define k_d (EventKeyboard::KeyCode)127
 #define XIEBIAN 0.707
 
-#define RETE (260.0/1599)  //smallplayerºÍplayerÒÆ¶¯¾àÀëµÄ±È
-extern bool smallmap_switch;       //Ğ¡µØÍ¼¿ØÖÆ¿ª¹Ø,true->´ò¿ªĞ¡µØÍ¼,false->¹ØÉÏĞ¡µØÍ¼
+#define RETE (260.0/1605)  //smallplayerç§»åŠ¨çš„è·ç¦»å’Œm_playerç§»åŠ¨è·ç¦»çš„æ¯”å€¼
+
+extern bool smallmap_switch;       //å°åœ°å›¾æ§åˆ¶å¼€å…³,true->æ‰“å¼€å°åœ°å›¾,false->å…³ä¸Šå°åœ°å›¾
 bool Player::init()
 {
 
 	return true;
 }
 
-//////////////////////////////////////////////////
-void Player::runway1(std::map<EventKeyboard::KeyCode, bool>keys)
+void Player::runway1(std::map<EventKeyboard::KeyCode, bool>keys, Player *smallplayer)
 {
 	float xchange = 0, ychange = 0;
 
@@ -64,9 +64,18 @@ void Player::runway1(std::map<EventKeyboard::KeyCode, bool>keys)
 
 	//	log("x = %f  y = %f", x_coord, y_coord);
 	this->setPosition(ccp(x_coord, y_coord));
+
+	if (smallmap_switch)
+	{
+		auto moveBy_smallplayer = MoveBy::create(0.1f, Point(xchange*RETE, ychange*(RETE)));
+		smallplayer->setPosition(Vec2(
+			smallplayer->getPositionX() + xchange*RETE,
+			smallplayer->getPositionY() + ychange*(RETE)));
+	}
+
 }
 
-void Player::runway2(Point point)
+void Player::runway2(Point point, Player *smallplayer)
 {
 	float xchange, ychange;
 	float distance = sqrt((point.x - x_coord)*(point.x - x_coord) + (point.y - y_coord)*(point.y - y_coord));
@@ -87,8 +96,16 @@ void Player::runway2(Point point)
 
 	//log("x = %f  y = %f", x_coord, y_coord);
 	this->setPosition(ccp(x_coord, y_coord));
-}
 
+	if (smallmap_switch)
+	{
+		auto moveBy_smallplayer = MoveBy::create(0.1f, Point(xchange*RETE, ychange*(RETE)));
+		smallplayer->setPosition(Vec2(
+			smallplayer->getPositionX() + xchange * RETE,
+			smallplayer->getPositionY() + ychange * (RETE)));
+	}
+
+}
 void Player::hurt(int atk)
 {
 	p_hp -= atk;
@@ -144,26 +161,26 @@ void Player::animationcreate(int direct)
 	if (animating)
 		return;
 	animating = 1;
-	/* ¼ÓÔØÍ¼Æ¬Ö¡µ½»º´æ³Ø */
+	/* åŠ è½½å›¾ç‰‡å¸§åˆ°ç¼“å­˜æ±  */
 	SpriteFrameCache* frameCache = SpriteFrameCache::getInstance();
 	frameCache->addSpriteFramesWithFile("player1run.plist", "player1run.png");
 
 	SpriteFrame* frame = NULL;
 	Vector<SpriteFrame*> frameVec;
 
-	/* ÓÃÒ»¸öÁĞ±í±£´æËùÓĞSpriteFrame¶ÔÏó */
+	/* ç”¨ä¸€ä¸ªåˆ—è¡¨ä¿å­˜æ‰€æœ‰SpriteFrameå¯¹è±¡ */
 	for (int i = 2 + direct * 5; i <= 5 + direct * 5; i++)
 	{
-		/* ´ÓSpriteFrame»º´æ³ØÖĞ»ñÈ¡SpriteFrame¶ÔÏó */
+		/* ä»SpriteFrameç¼“å­˜æ± ä¸­è·å–SpriteFrameå¯¹è±¡ */
 		frame = frameCache->getSpriteFrameByName(StringUtils::format("A%d.png", i));
 		frameVec.pushBack(frame);
 	}
 
-	/* Ê¹ÓÃSpriteFrameÁĞ±í´´½¨¶¯»­¶ÔÏó */
+	/* ä½¿ç”¨SpriteFrameåˆ—è¡¨åˆ›å»ºåŠ¨ç”»å¯¹è±¡ */
 	Animation* animation = Animation::createWithSpriteFrames(frameVec);
-	animation->setDelayPerUnit(0.1f);
+	animation->setDelayPerUnit(0.15f);
 
-	/* ½«¶¯»­°ü×°³ÉÒ»¸ö¶¯×÷ */
+	/* å°†åŠ¨ç”»åŒ…è£…æˆä¸€ä¸ªåŠ¨ä½œ */
 	Animate* action = Animate::create(animation);
 
 	auto callbackFunc = [&]()

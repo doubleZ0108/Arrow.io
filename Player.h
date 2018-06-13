@@ -7,23 +7,21 @@ using namespace cocos2d;
 
 class Player : public Entity {
 public:
-	Player();
-	~Player();
 	CREATE_FUNC(Player);
 	virtual bool init();
-	///////////////////////////////////////
-	void runway1(std::map<EventKeyboard::KeyCode, bool>keys);
-	void runway2(Point point);
+
+	//void run1(Player *player, std::map<EventKeyboard::KeyCode, bool>keys, Player *smallplayer);
+	void runway1(std::map<EventKeyboard::KeyCode, bool>keys, Player *smallplayer);
+	void runway2(Point point, Player *smallplayer);
 
 	Size visibleSize = CCDirector::getInstance()->getVisibleSize();
-	float x_coord = visibleSize.width / 2;
-	float y_coord = visibleSize.height / 2;//xy×ø±ê
+	float x_coord = 80.0f;
+	float y_coord = 80.0f;
 	int speed = 3;
 	float radius = 30;
 	int p_hp = 50;
 
 	void hurt(int atk);
-
 	Sprite *sprite;
 	void animationcreate(int direct);
 

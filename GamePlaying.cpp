@@ -11,7 +11,7 @@
 #define k_s (EventKeyboard::KeyCode)142
 #define k_d (EventKeyboard::KeyCode)127
 
-#define MAP_SIZE 1599
+#define MAP_SIZE 1600
 #define MAP1_WIDTH 49
 #define MAP1_HEIGHT 49
 
@@ -22,7 +22,7 @@
 #define EXP_GID 142
 
 #define SM_MAP_SIZE 245
-#define RETE (260.0/1599)  //smallplayer和player移动距离的比
+#define RETE (260.0/1605)  //smallplayer和player移动距离的比
 
 USING_NS_CC;
 
@@ -36,6 +36,8 @@ extern char *FontToUTF8(const char* font);
 
 bool smallmap_switch = true;       //小地图控制开关,true->打开小地图,false->关上小地图
 								   //每次打开小地图的时候小人物的位置要随m_player做相应的调整
+bool music_switch = true;
+bool mode_switch = true;
 //it is define in another .cpp file 
 //and it is used to change character
 
@@ -62,7 +64,7 @@ bool GamePlaying::init()
 	{
 		return false;
 	}
-	//MusicPrinter();
+	MusicPrinter();
 	MapPrinter();
 	ScenePrinter();
 	SmallmapPrinter();
@@ -87,11 +89,7 @@ void GamePlaying::MapPrinter()
 	//将meta设置为属性层
 	meta = tiledmap->layerNamed("meta");
 	meta->setVisible(false);
-	////////////////////////////////////////
-
-
 }
-
 void GamePlaying::ScenePrinter()
 {
 	float x = rect.origin.x + rect.size.width / 2;
@@ -108,27 +106,29 @@ void GamePlaying::ScenePrinter()
 	x = rect.origin.x + rect.size.width*(10.0f / 11.0f);
 	y = rect.origin.y + rect.size.height*(1.0f / 10.0f);
 	preturn->setPosition(Vec2(x, y));
+
 	preturn->setScale(1.0f);
 	this->addChild(preturn, 100);   //把返回按钮置于100层，防止遮挡
 
-
-	///////////////////////////////////////////////
-	//add player
 	m_player->sprite = Sprite::create("player1.png");
 	m_player->bindSprite(m_player->sprite);
-	m_player->setScale(2.13, 2.13);
+	m_player->setScale(2.0f, 2.0f);
+	m_player->sprite->setAnchorPoint(Vec2(0.5f, 0.5f));
 	m_player->setPosition(Point(m_player->x_coord, m_player->y_coord));
-	this->addChild(m_player);
+	tiledmap->addChild(m_player,10);
 
 	n_player->sprite = Sprite::create("player2.png");
 	n_player->bindSprite(n_player->sprite);
 	n_player->setScale(1.8, 1.8);
 	n_player->setPosition(Point(n_player->x_coord, n_player->y_coord));
-	this->addChild(n_player);
+	tiledmap->addChild(n_player,10);
 
 	plsum.push_back(m_player);
 	plsum.push_back(n_player);
+
+
 	///////////////////////////////////////////////
+	//血条初始化
 	m_pProgressView = new ProgressView;
 	m_pProgressView->setPosition(ccp(m_player->x_coord, m_player->y_coord + 50));
 	m_pProgressView->setScale(2);
@@ -136,7 +136,7 @@ void GamePlaying::ScenePrinter()
 	m_pProgressView->setForegroundTexture("foreground.png");
 	m_pProgressView->setTotalProgress(50);
 	m_pProgressView->setCurrentProgress(50);
-	this->addChild(m_pProgressView, 2);
+	tiledmap->addChild(m_pProgressView, 2);
 
 	n_pProgressView = new ProgressView;
 	n_pProgressView->setPosition(ccp(n_player->x_coord, n_player->y_coord + 50));
@@ -145,12 +145,13 @@ void GamePlaying::ScenePrinter()
 	n_pProgressView->setForegroundTexture("foreground.png");
 	n_pProgressView->setTotalProgress(50);
 	n_pProgressView->setCurrentProgress(50);
-	this->addChild(n_pProgressView, 2);
+	tiledmap->addChild(n_pProgressView, 2);
 
 	///////////////////////////////////////////////
 	this->scheduleUpdate();
 	
-
+	////////////////////////////////////////////////
+	//add small map
 	Label *smallmapword;
 	if (language_flag)
 	{
@@ -162,8 +163,8 @@ void GamePlaying::ScenePrinter()
 		smallmapword = Label::create(FontToUTF8("全局地图"),
 			"Arial", 40);
 	}
-	x = rect.origin.x + rect.size.width*(34.0f / 40.0f);
-	y = rect.origin.y + rect.size.height*(9.0f / 10.0f);
+	x = rect.origin.x + rect.size.width*(33.7f / 40.0f);
+	y = rect.origin.y + rect.size.height*(18.0f / 20.0f);
 	smallmapword->setPosition(Vec2(x, y));
 	this->addChild(smallmapword, 1);
 
@@ -177,11 +178,43 @@ void GamePlaying::ScenePrinter()
 			"checkbox_normal.png"),
 		NULL);
 	Menu* smallmn = Menu::create(smallMenuItem, NULL);
-	x = rect.origin.x + rect.size.width*(37.5f / 40.0f);
+	x = rect.origin.x + rect.size.width*(37.4f / 40.0f);
 	smallmn->setPosition(Vec2(x, y));
 	this->addChild(smallmn, 1);
 
 	/////////////////////////////////////////////////
+	//播放和暂停游戏音乐
+	Label *musicword;
+	if (language_flag)
+	{
+		musicword = Label::createWithTTF("Game Music",
+			"fonts/Marker Felt.ttf", 40);
+	}
+	else
+	{
+		musicword = Label::create(FontToUTF8("游戏音乐"),
+			"Arial", 40);
+	}
+	x = rect.origin.x + rect.size.width*(33.9f / 40.0f);
+	y = rect.origin.y + rect.size.height*(17.0f / 20.0f);
+	musicword->setPosition(Vec2(x, y));
+	this->addChild(musicword, 1);
+
+	auto musicMenuItem = MenuItemToggle::createWithCallback(
+		CC_CALLBACK_1(GamePlaying::Music_Switch, this),
+		MenuItemImage::create(
+			"checkbox_selected.png",
+			"checkbox_selected.png"),
+		MenuItemImage::create(
+			"checkbox_normal.png",
+			"checkbox_normal.png"),
+		NULL);
+	Menu* musicmn = Menu::create(musicMenuItem, NULL);
+	x = rect.origin.x + rect.size.width*(37.4f / 40.0f);
+	musicmn->setPosition(Vec2(x, y));
+	this->addChild(musicmn, 1);
+
+	////////////////////////////////////////////////
 	//切换不同的游戏模式
 	Label *modeword;
 	if (language_flag)
@@ -194,8 +227,8 @@ void GamePlaying::ScenePrinter()
 		modeword = Label::create(FontToUTF8("游戏模式"),
 			"Arial", 40);
 	}
-	x = rect.origin.x + rect.size.width*(34.0f / 40.0f);
-	y = rect.origin.y + rect.size.height*(8.0f / 10.0f);
+	x = rect.origin.x + rect.size.width*(33.9f / 40.0f);
+	y = rect.origin.y + rect.size.height*(16.0f / 20.0f);
 	modeword->setPosition(Vec2(x, y));
 	this->addChild(modeword, 1);
 
@@ -209,9 +242,11 @@ void GamePlaying::ScenePrinter()
 			"checkbox_normal.png"),
 		NULL);
 	Menu* modemn = Menu::create(modeMenuItem, NULL);
-	x = rect.origin.x + rect.size.width*(37.5f / 40.0f);
+	x = rect.origin.x + rect.size.width*(37.4f / 40.0f);
 	modemn->setPosition(Vec2(x, y));
 	this->addChild(modemn, 1);
+
+
 	/*
 	////////////////////////////////////////
 	//starting cortoon淡入淡出
@@ -229,20 +264,46 @@ void GamePlaying::ScenePrinter()
 }
 void GamePlaying::MusicPrinter()
 {
-	CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Escape.mp3");
+	static Label *OnorOff = 0;
+	float x, y;
+	if (music_switch)
+	{
+		CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Escape.mp3");
+		if (OnorOff) { OnorOff->removeFromParentAndCleanup(true); }
+		if (language_flag)
+		{
+			OnorOff = Label::createWithTTF("ON",
+				"fonts/Marker Felt.ttf", 40);
+		}
+		else
+		{
+			OnorOff = Label::create(FontToUTF8("播放"),
+				"Arial", 40);
+		}
+	}
+	else
+	{
+		CocosDenshion::SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
+		OnorOff->removeFromParentAndCleanup(true);
+		if (language_flag)
+		{
+			OnorOff = Label::createWithTTF("OFF",
+				"fonts/Marker Felt.ttf", 40);
+		}
+		else
+		{
+			OnorOff = Label::create(FontToUTF8("暂停"),
+				"Arial", 40);
+		}
+	}
+	x = rect.origin.x + rect.size.width*(39.0f / 40.0f);
+	y = rect.origin.y + rect.size.height*(17.0f / 20.0f);
+	OnorOff->setPosition(Vec2(x, y));
+	this->addChild(OnorOff, 1);
 }
-void GamePlaying::Smallmap_Switch(Ref* pSender)
-{
-	smallmap_switch = (smallmap_switch ? false : true); 
-	//将开着的小地图关上，将关着的小地图打开
-	SmallmapPrinter();
-}
-void GamePlaying::Mode_Switch(Ref * pSender)
-{
-	this->waytorun = (this->waytorun ? false : true);
-}
+
 void GamePlaying::SmallmapPrinter()
-{	
+{
 	static Label *OnorOff = 0;
 	float x, y;
 	if (smallmap_switch)        //如果要打开小地图，则重新构建，因为每次的小人物位置不同
@@ -254,7 +315,7 @@ void GamePlaying::SmallmapPrinter()
 		m_smallmap = Sprite::create("smallmap.png");
 		m_smallmap->setOpacity(220);     //设置小地图的透明度
 										 //m_smallmap->setColor(Color3B(0, 0, 205));
-		m_smallmap->setAnchorPoint(Vec2(0.0f,0.0f));
+		m_smallmap->setAnchorPoint(Vec2(0.0f, 0.0f));
 		x = rect.origin.x + rect.size.width*0.0f;
 		y = rect.origin.y + rect.size.height*(2.0f / 3.0f - 0.01f);  //减0.01是为了消去一个极其小的位置偏差
 		m_smallmap->setPosition(Vec2(x, y));
@@ -297,33 +358,51 @@ void GamePlaying::SmallmapPrinter()
 		}
 	}
 	x = rect.origin.x + rect.size.width*(39.0f / 40.0f);
-	y = rect.origin.y + rect.size.height*(9.0f / 10.0f);
+	y = rect.origin.y + rect.size.height*(18.0f / 20.0f);
 	OnorOff->setPosition(Vec2(x, y));
 	this->addChild(OnorOff, 1);
+}
+void GamePlaying::Smallmap_Switch(Ref* pSender)
+{
+	smallmap_switch = (smallmap_switch ? false : true); 
+	//将开着的小地图关上，将关着的小地图打开
+	SmallmapPrinter();
+}
+
+void GamePlaying::Mode_Switch(Ref * pSender)
+{
+	waytorun = (waytorun ? false : true);
+	onEnter();
+}
+
+void GamePlaying::Music_Switch(Ref * pSender)
+{
+	music_switch = (music_switch ? false : true);
+	MusicPrinter();
 }
 
 bool GamePlaying::up(bool flag)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (y + tileSize.height < MAP_SIZE && isCanReach(x, y + DIFF + 1))   //往上的判断多+1消除卡墙bug
+	if (y + tileSize.height < MAP_SIZE && isCanReach(x, y + DIFF - 8))   //往上的判断多+1消除卡墙bug
 	{	//如果精灵上面那格不是地图的上边界
 		//之所以是一格大小的一半,是因为精灵的锚点在中心,上面一个的下边界只需要再加16
 		//sprite->setPositionY(y + 32);  //把精灵置于上面一格的位置
-		if (flag)
-		{
-			runEvent();
-			HPjudge(Vec2(x / tileSize.width,
-				(mapSize.height*tileSize.height - y) / tileSize.height));
-			EXPjudge(Vec2(x / tileSize.width,
-				(mapSize.height*tileSize.height - y) / tileSize.height));
-		}
-		if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
-		{   //调整地图,使人物尽量居中
-			//地图移动速度与人物移动速度保持一直，获得最佳游戏体验，尽享丝滑
-			tiledmap->setPositionY(tiledmap->getPositionY() - m_player->speed);
-			y_move += m_player->speed;
-		}
-		return true;
+			if (flag)
+			{
+				runEvent();
+				HPjudge(Vec2(x / tileSize.width,
+					(mapSize.height*tileSize.height - y) / tileSize.height));
+				EXPjudge(Vec2(x / tileSize.width,
+					(mapSize.height*tileSize.height - y) / tileSize.height));
+			}
+			if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
+			{   //调整地图,使人物尽量居中
+				//地图移动速度与人物移动速度保持一直，获得最佳游戏体验，尽享丝滑
+				tiledmap->setPositionY(tiledmap->getPositionY() - m_player->speed);
+				y_move += m_player->speed;
+			}
+			return true;
 	}
 	return false;
 }
@@ -526,13 +605,16 @@ void GamePlaying::EXP_grow(float dt)
 	}
 }
 //我也不知道onEnter是什么意思只是照着抄的，只知道这里是监控室
+
 void GamePlaying::onEnter()
 {
 	Scene::onEnter();
 	//////////////////////////////////////
+	auto keylistener = EventListenerKeyboard::create();
+	auto touchlistener = EventListenerTouchOneByOne::create();
+	auto mouselistener = EventListenerMouse::create();
 	if (waytorun)
 	{
-		auto keylistener = EventListenerKeyboard::create();
 		//键盘监听器，用于人物移动
 		keylistener->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *event)
 		{
@@ -548,7 +630,6 @@ void GamePlaying::onEnter()
 		eventDispatcher1->addEventListenerWithSceneGraphPriority(keylistener, this);
 
 
-		auto touchlistener = EventListenerTouchOneByOne::create();
 		//触摸监听器，用于人物攻击
 		touchlistener->onTouchBegan = [&](Touch* touch, Event *event)
 		{
@@ -564,32 +645,30 @@ void GamePlaying::onEnter()
 	}
 	else
 	{
-		auto keylistener = EventListenerKeyboard::create();
 		//键盘监听器，用于人物移动
 		keylistener->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *event)
 		{
-			if (keyCode == (EventKeyboard::KeyCode)32)
+			if (keyCode == (EventKeyboard::KeyCode)59)
 				touchon = true;
 		};
 
 		EventDispatcher *eventDispatcher1 = Director::getInstance()->getEventDispatcher();
 		eventDispatcher1->addEventListenerWithSceneGraphPriority(keylistener, this);
 
-		auto mouselistener = EventListenerMouse::create();
 		mouselistener->onMouseMove = [&](Event *event)
 		{
 			EventMouse* e = (EventMouse*)event;
-			Point pos1, pos2;
-			pos1.x = e->getCursorX();
-			pos1.y = e->getCursorY();
-			pos = pos1;
-			pos.y += (Director::getInstance()->getVisibleSize()).height;
+			pos.x = e->getCursorX();
+			pos.y = e->getCursorY();
+			pos.x += this->x_move;
+			pos.y += this->y_move;
 		};
 
 		EventDispatcher *eventDispatcher2 = Director::getInstance()->getEventDispatcher();
 		eventDispatcher2->addEventListenerWithSceneGraphPriority(mouselistener, this);
 
 	}
+	////////////////////////////////////////
 }
 
 void GamePlaying::update(float delta)
@@ -597,6 +676,22 @@ void GamePlaying::update(float delta)
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
 	m_player->x_coord = x; m_player->y_coord = y;
 	//CCLOG("x=%f , y=%f", x, y);
+	/////////////////////////////////////////
+	//血条位置&长度设定
+	m_pProgressView->setCurrentProgress(m_player->p_hp);
+	m_pProgressView->setPosition(ccp(m_player->x_coord, m_player->y_coord + 50));
+	n_pProgressView->setCurrentProgress(n_player->p_hp);
+	n_pProgressView->setPosition(ccp(n_player->x_coord, n_player->y_coord + 50));
+	//////////////////////////////////////////
+	if (!waytorun)
+	{
+		keys[k_w] = keys[k_a] = keys[k_s] = keys[k_d] = false;
+		if (pos.x - x > 0) { keys[k_d] = true; }
+		else { keys[k_a] = true; }
+
+		if (pos.y - y > 0) { keys[k_w] = true; }
+		else { keys[k_s] = true; }
+	}
 
 	if (keys[k_w] || keys[k_a] || keys[k_s] || keys[k_d])//分别是wasd，参见#define
 	{
@@ -700,11 +795,6 @@ void GamePlaying::update(float delta)
 		}
 	}
 
-	m_pProgressView->setCurrentProgress(m_player->p_hp);
-	m_pProgressView->setPosition(ccp(m_player->x_coord, m_player->y_coord + 50));
-	n_pProgressView->setCurrentProgress(n_player->p_hp);
-	n_pProgressView->setPosition(ccp(n_player->x_coord, n_player->y_coord + 50));
-
 	if (touchon)
 	{
 		attack();
@@ -729,8 +819,11 @@ void GamePlaying::update(float delta)
 			if (bub->collidePlayer(pl))
 			{
 				Sprite* star = Sprite::create("attacked.png");
-				star->setScale(2.4, 2.4);
-				star->setPosition(pl->x_coord, pl->y_coord);
+				star->setScale(1.5f, 1.5f);
+				srand(time(NULL));
+				auto randx = rand() % 20 - 10, randy = rand() % 20 - 10;
+				star->setPosition(pl->x_coord + randx,
+					pl->y_coord + randy);
 				this->addChild(star);
 				MoveBy* moveBy = MoveBy::create(0.2f, Point(0, 0));
 				star->runAction(Sequence::create(moveBy, CallFunc::create(CC_CALLBACK_0(Sprite::removeFromParent, star)), NULL));
@@ -743,8 +836,8 @@ void GamePlaying::update(float delta)
 void GamePlaying::runEvent()
 {
 	if (waytorun)
-		m_player->runway1(keys);
-	else m_player->runway2(pos);
+		m_player->runway1(keys, m_smallplayer);
+	else m_player->runway2(pos, m_smallplayer);
 }
 
 void GamePlaying::attack()
@@ -752,14 +845,15 @@ void GamePlaying::attack()
 	//   log("attack in x = %f  y = %f", pos.x, pos.y);
 	auto Abullet = BulletBase::create();
 	Abullet->bindSprite(Sprite::create("arrow.png"));
-	Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
+	Abullet->setPosition(Point(m_player->x_coord - x_move, m_player->y_coord - y_move));
 	this->addChild(Abullet);
 
 	float angle;
 	float dx, dy;
 	dx = pos.x - m_player->x_coord;
 	dy = pos.y - m_player->y_coord;
-
+	log("player %f  %f", m_player->x_coord, m_player->y_coord);
+	log("pos  %f  %f", pos.x, pos.y);
 	if (dy == 0)
 	{
 		if (dx >= 0)
@@ -781,7 +875,6 @@ void GamePlaying::attack()
 
 	Abullet->attacking(m_player, Abullet, pos);
 }
-
 void GamePlaying::menuStartScene(Ref* pSender)
 {
 	auto sc = StartScene::createScene();        //缩放交替的切换动画

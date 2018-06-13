@@ -77,6 +77,7 @@ public:
 	void SmallmapPrinter();
 	void Smallmap_Switch(Ref* pSender);
 	void Mode_Switch(Ref* pSender);
+	void Music_Switch(Ref* pSender);
 
 	bool up(bool flag); //true代表我需要调用runEvent函数实实在在的移动
 	bool right(bool flag);//false代表我只是想判断这个方向能不能走，其实不想移动
@@ -92,26 +93,29 @@ public:
 	CREATE_FUNC(GamePlaying);
 
 	virtual void update(float delta);
-	void onEnter();
 	void runEvent();
+	void onEnter();
 	void attack();
 
 private:
-	bool waytorun = 0;
-	Player* m_player = Player::create();		//主角1
-	Player* n_player = Player::create();       //主角2，作为不动靶，闲的话也可以加一套操作系统当多人线下对战
+	Player * m_player = Player::create();		//主角1
+	Player* n_player = Player::create();       //主角2，作为不动靶，闲的话也可
 	std::map<EventKeyboard::KeyCode, bool>keys;//记录按键状态
 	bool touchon = false;//是否单击
-	Point pos;//鼠标坐标，用于攻击、移动
+	Point pos;//单击坐标，用于攻击
 	std::vector<Player*>plsum;
 	std::vector<BulletBase*>bubsum;
-	///////////////////////////////
-	ProgressView *m_pProgressView;
-	ProgressView *n_pProgressView;
+
+	bool waytorun = false;  //true->键盘移动鼠标攻击
 
 	Sprite *m_smallmap;
 	//LayerColor *m_smallmap;
 	Player *m_smallplayer;
+
+	///////////////////////////////
+	//血条
+	ProgressView *m_pProgressView;
+	ProgressView *n_pProgressView;
 };
 
 #endif //_GAMEPLAYING_H_

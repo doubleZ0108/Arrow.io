@@ -153,13 +153,6 @@ void HelpScene::ScenePrinter()
 	//    CCActionInterval* jumpTiles = CCJumpTiles3D::create(5, CCSize(20, 20), 5, 20); 
 	//    gridNodeTarget->runAction(jumpTiles); 
 
-	auto toggleMenuItem = MenuItemToggle::createWithCallback(
-		CC_CALLBACK_1(HelpScene::Func, this),
-		MenuItemFont::create("On"),
-		MenuItemFont::create("Off"),
-		NULL);
-	Menu* mn = Menu::create(toggleMenuItem, NULL);
-	this->addChild(mn);
 }
 
 void HelpScene::Func(Ref* pSender)

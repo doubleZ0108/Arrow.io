@@ -28,8 +28,6 @@ void BulletBase::attacking(Player *player, BulletBase *Abullet, Point pos)
 	float xchange = (pos.x - player->x_coord) / length * Abullet->range;
 	float ychange = (pos.y - player->y_coord) / length * Abullet->range;
 	//在cocos2dx中你甚至能学几何
-	//direct.x = xchange;
-	//direct.y = ychange;
 
 	auto moveBy = MoveBy::create(time, Point(xchange, ychange));
 	point.x = player->x_coord;
