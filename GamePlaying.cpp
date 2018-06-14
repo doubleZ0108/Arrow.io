@@ -41,6 +41,8 @@ bool mode_switch = true;
 
 int which_map = 1;
 int which_player = 1;
+
+bool magent = false;
 //it is define in another .cpp file 
 //and it is used to change character
 
@@ -115,18 +117,58 @@ void GamePlaying::ScenePrinter()
 	preturn->setScale(1.0f);
 	this->addChild(preturn, 100);   //把返回按钮置于100层，防止遮挡
 
+	///////////////////////////////////////////////
+	PlayerPrinter();
+	SettingPrinter();
+	//////////////////////////////////////////////
+
+	//磁铁石技能开关
+	auto magnetMenuItem = MenuItemToggle::createWithCallback(
+		CC_CALLBACK_1(GamePlaying::Magent_change, this),
+		MenuItemFont::create("Magnet"),
+		MenuItemFont::create("Origin"),
+		NULL);
+
+	Menu* magnetmn = Menu::create(magnetMenuItem, NULL);
+	x = rect.origin.x + rect.size.width*(33.7f / 40.0f);
+	y = rect.origin.y + rect.size.height*(10.0f / 20.0f);
+	magnetmn->setPosition(Vec2(x, y));
+	this->addChild(magnetmn, 1);
+
+	/*
+	////////////////////////////////////////
+	//starting cortoon淡入淡出
+	auto *actionFade = CCFadeOut::create(3.0f);
+	auto *actionFadeBack = actionFade->reverse();
+	auto *sequence1 = CCSequence::create(actionFade, actionFadeBack, NULL);
+	//starting cortoon 颜色变化
+	auto *actionTint = CCTintBy::create(2, -255, -127, -50);
+	auto *actionTinback = actionTint->reverse();
+	auto *sequence2 = CCSequence::create(actionTint, actionTint, NULL);
+	//chose the sequence that you prefer
+	cover->runAction(sequence2);*/
+
+}
+
+void GamePlaying::Magent_change(Ref * pSender)
+{
+	magent = (magent ? false : true);
+}
+
+void GamePlaying::PlayerPrinter()
+{
 	m_player->sprite = Sprite::create("player1.png");
 	m_player->bindSprite(m_player->sprite);
 	m_player->setScale(2.0f, 2.0f);
 	m_player->sprite->setAnchorPoint(Vec2(0.5f, 0.5f));
 	m_player->setPosition(Point(m_player->x_coord, m_player->y_coord));
-	tiledmap->addChild(m_player,10);
+	tiledmap->addChild(m_player, 10);
 
 	n_player->sprite = Sprite::create("player2.png");
 	n_player->bindSprite(n_player->sprite);
 	n_player->setScale(1.8, 1.8);
 	n_player->setPosition(Point(n_player->x_coord, n_player->y_coord));
-	tiledmap->addChild(n_player,10);
+	tiledmap->addChild(n_player, 10);
 
 	plsum.push_back(m_player);
 	plsum.push_back(n_player);
@@ -154,7 +196,10 @@ void GamePlaying::ScenePrinter()
 
 	///////////////////////////////////////////////
 	this->scheduleUpdate();
-	
+}
+void GamePlaying::SettingPrinter()
+{
+	float x, y;
 	////////////////////////////////////////////////
 	//add small map
 	Label *smallmapword;
@@ -250,22 +295,6 @@ void GamePlaying::ScenePrinter()
 	x = rect.origin.x + rect.size.width*(37.4f / 40.0f);
 	modemn->setPosition(Vec2(x, y));
 	this->addChild(modemn, 1);
-
-
-	/*
-	////////////////////////////////////////
-	//starting cortoon淡入淡出
-	auto *actionFade = CCFadeOut::create(3.0f);
-	auto *actionFadeBack = actionFade->reverse();
-	auto *sequence1 = CCSequence::create(actionFade, actionFadeBack, NULL);
-	//starting cortoon 颜色变化
-	auto *actionTint = CCTintBy::create(2, -255, -127, -50);
-	auto *actionTinback = actionTint->reverse();
-	auto *sequence2 = CCSequence::create(actionTint, actionTint, NULL);
-	//chose the sequence that you prefer
-	cover->runAction(sequence2);*/
-
-
 }
 
 void GamePlaying::MusicPrinter()
@@ -439,6 +468,7 @@ void GamePlaying::ModePrinter()
 	OnorOff->setPosition(Vec2(x, y));
 	this->addChild(OnorOff, 1);
 }
+
 void GamePlaying::Mode_Switch(Ref * pSender)
 {
 	waytorun = (waytorun ? false : true);
@@ -457,16 +487,27 @@ bool GamePlaying::up(bool flag)
 			if (flag)
 			{
 				runEvent();
-				for (int i = -32; i <= 32; i += 32)
+				if (magent)
 				{
-					for (int j = -32; j <= 32; j += 32)
+					for (int i = -32; i <= 32; i += 32)
 					{
-						HPjudge(Vec2((x + i) / tileSize.width,
-							(mapSize.height*tileSize.height - y + j) / tileSize.height));
-						EXPjudge(Vec2((x + i) / tileSize.width,
-							(mapSize.height*tileSize.height - y + j) / tileSize.height));
+						for (int j = -32; j <= 32; j += 32)
+						{
+							HPjudge(Vec2((x + i) / tileSize.width,
+								(mapSize.height*tileSize.height - y + j) / tileSize.height));
+							EXPjudge(Vec2((x + i) / tileSize.width,
+								(mapSize.height*tileSize.height - y + j) / tileSize.height));
+						}
 					}
 				}
+				else
+				{
+					HPjudge(Vec2(x / tileSize.width,
+						(mapSize.height*tileSize.height - y) / tileSize.height));
+					EXPjudge(Vec2(x / tileSize.width,
+						(mapSize.height*tileSize.height - y) / tileSize.height));
+				}
+				
 			}
 			if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
 			{   //调整地图,使人物尽量居中
@@ -486,15 +527,25 @@ bool GamePlaying::right(bool flag)
 		if (flag)
 		{
 			runEvent();
-			for (int i = -32; i <= 32; i += 32)
+			if (magent)
 			{
-				for (int j = -32; j <= 32; j += 32)
+				for (int i = -32; i <= 32; i += 32)
 				{
-					HPjudge(Vec2((x + i) / tileSize.width,
-						(mapSize.height*tileSize.height - y + j) / tileSize.height));
-					EXPjudge(Vec2((x + i) / tileSize.width,
-						(mapSize.height*tileSize.height - y + j) / tileSize.height));
+					for (int j = -32; j <= 32; j += 32)
+					{
+						HPjudge(Vec2((x + i) / tileSize.width,
+							(mapSize.height*tileSize.height - y + j) / tileSize.height));
+						EXPjudge(Vec2((x + i) / tileSize.width,
+							(mapSize.height*tileSize.height - y + j) / tileSize.height));
+					}
 				}
+			}
+			else
+			{
+				HPjudge(Vec2(x / tileSize.width,
+					(mapSize.height*tileSize.height - y) / tileSize.height));
+				EXPjudge(Vec2(x / tileSize.width,
+					(mapSize.height*tileSize.height - y) / tileSize.height));
 			}
 		}
 		if ((x + tiledmap->getPositionX() > size.width / 2) && ((MAP_SIZE - x) > size.width / 2))
@@ -514,15 +565,25 @@ bool GamePlaying::left(bool flag)
 		if (flag)
 		{
 			runEvent();
-			for (int i = -32; i <= 32; i += 32)
+			if (magent)
 			{
-				for (int j = -32; j <= 32; j += 32)
+				for (int i = -32; i <= 32; i += 32)
 				{
-					HPjudge(Vec2((x + i) / tileSize.width,
-						(mapSize.height*tileSize.height - y + j) / tileSize.height));
-					EXPjudge(Vec2((x + i) / tileSize.width,
-						(mapSize.height*tileSize.height - y + j) / tileSize.height));
+					for (int j = -32; j <= 32; j += 32)
+					{
+						HPjudge(Vec2((x + i) / tileSize.width,
+							(mapSize.height*tileSize.height - y + j) / tileSize.height));
+						EXPjudge(Vec2((x + i) / tileSize.width,
+							(mapSize.height*tileSize.height - y + j) / tileSize.height));
+					}
 				}
+			}
+			else
+			{
+				HPjudge(Vec2(x / tileSize.width,
+					(mapSize.height*tileSize.height - y) / tileSize.height));
+				EXPjudge(Vec2(x / tileSize.width,
+					(mapSize.height*tileSize.height - y) / tileSize.height));
 			}
 		}
 		if ((x + tiledmap->getPositionX() < size.width / 2) && tiledmap->getPositionX() != 0)
@@ -542,18 +603,26 @@ bool GamePlaying::down(bool flag)
 		if (flag)
 		{
 			runEvent();
-			for (int i = -32; i <= 32; i += 32)
+			if (magent)
 			{
-				for (int j = -32; j <= 32; j += 32)
+				for (int i = -32; i <= 32; i += 32)
 				{
-					HPjudge(Vec2((x+i) / tileSize.width,
-						(mapSize.height*tileSize.height - y+j) / tileSize.height));
-					EXPjudge(Vec2((x+i) / tileSize.width,
-						(mapSize.height*tileSize.height - y+j) / tileSize.height));
+					for (int j = -32; j <= 32; j += 32)
+					{
+						HPjudge(Vec2((x + i) / tileSize.width,
+							(mapSize.height*tileSize.height - y + j) / tileSize.height));
+						EXPjudge(Vec2((x + i) / tileSize.width,
+							(mapSize.height*tileSize.height - y + j) / tileSize.height));
+					}
 				}
 			}
-			
-
+			else
+			{
+				HPjudge(Vec2(x / tileSize.width,
+					(mapSize.height*tileSize.height - y) / tileSize.height));
+				EXPjudge(Vec2(x / tileSize.width,
+					(mapSize.height*tileSize.height - y) / tileSize.height));
+			}
 		}
 		if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
 		{

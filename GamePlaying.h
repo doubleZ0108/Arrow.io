@@ -71,12 +71,16 @@ public:
 	// a selector callback
 	void menuStartScene(Ref* pSender);
 
+	void PlayerPrinter();
+	void SettingPrinter();
 	void MapPrinter();
 	void ScenePrinter();
 	void MusicPrinter();
 	void SmallmapPrinter();
 	void ModePrinter();
-
+	////////////////////////
+	void Magent_change(Ref* pSender);
+	//////////////////////////
 	void Smallmap_Switch(Ref* pSender);
 	void Mode_Switch(Ref* pSender);
 	void Music_Switch(Ref* pSender);
