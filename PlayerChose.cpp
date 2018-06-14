@@ -5,6 +5,8 @@ USING_NS_CC;
 
 extern bool language_flag;   //true->English   false->Chinese
 extern char *FontToUTF8(const char* font);
+
+extern int which_player;
 //it is define in another .cpp file 
 //and it is used to change character
 
@@ -68,88 +70,99 @@ void PlayerChose::ScenePrinter()
 	this->addChild(preturn);
 
 	//////////////////////////////////////
-	//add two tiledmap sceneshot
-	auto pre_map1 = Sprite::create("pre_player.png");
-	x = rect.origin.x + rect.size.width*(1.0f / 3.0f);
+	//add two player sceneshot
+	auto pre_player1 = Sprite::create("pre_player.png");
+	x = rect.origin.x + rect.size.width*(1.0f / 4.0f);
 	y = rect.origin.y + rect.size.height*(1.0f / 2.0f);
-	pre_map1->setPosition(Vec2(x, y));
-	this->addChild(pre_map1);
+	pre_player1->setPosition(Vec2(x, y));
 
-	auto pre_map2 = Sprite::create("pre_player.png");
-	x = rect.origin.x + rect.size.width*(2.0f / 3.0f);
-	pre_map2->setPosition(Vec2(x, y));
-	this->addChild(pre_map2);
+	auto gridNodeTarget_1 = NodeGrid::create();
+	this->addChild(gridNodeTarget_1);
+	gridNodeTarget_1->addChild(pre_player1);
 
-	//爆炸效果*/
-	/*CCParticleSystem* particleSystem = CCParticleExplosion::create();
-	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
-	addChild(particleSystem);*/
-	//火焰效果  
-	/*CCParticleSystem* particleSystem = CCParticleFire::create();
-	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
-	addChild(particleSystem);*/
-	//烟花效果  
-	/*CCParticleSystem* particleSystem = CCParticleFireworks::create();
-	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
-	addChild(particleSystem);*/
-	//星系效果  
-	/*CCParticleSystem* particleSystem = CCParticleGalaxy::create();
-	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
-	addChild(particleSystem);*/
-	//下雨效果  
-	/*CCParticleSystem* particleSystem = CCParticleRain::create();
-	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
-	addChild(particleSystem);*/
-	//下雪效果  
-	/*CCParticleSystem* particleSystem = CCParticleSnow::create();
-	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("snow.jpg"));
-	addChild(particleSystem);*/
-	//漩涡效果  这个比较迷
-	/*CCParticleSystem* particleSystem = CCParticleSpiral::create();
-	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
-	addChild(particleSystem);*/
+	auto pre_player2 = Sprite::create("pre_player.png");
+	x = rect.origin.x + rect.size.width*(3.0f / 4.0f);
+	pre_player2->setPosition(Vec2(x, y));
 
-	/*CCSprite* sp = CCSprite::create("fire.jpg");
-	x = rect.origin.x + rect.size.width / 2;
-	y = rect.origin.y + rect.size.height / 2;
-	sp->setPosition(Vec2(x, y));
-	auto gridNodeTarget = NodeGrid::create();
-	this->addChild(gridNodeTarget);
-	gridNodeTarget->addChild(sp);*/
+	auto gridNodeTarget_2 = NodeGrid::create();
+	this->addChild(gridNodeTarget_2);
+	gridNodeTarget_2->addChild(pre_player2);
 
 
-	//3D晃动的特效  不会消失但是会变形
-	/* CCActionInterval* shaky3D = CCShaky3D::create(5, CCSize(10, 10), 15, false);
-	gridNodeTarget->runAction(shaky3D);*/
+	/////////////////////////////////////////////
+	// Make pre_map1 touchable  
+	auto listener1 = EventListenerTouchOneByOne::create();//创建一个触摸监听  
+	listener1->setSwallowTouches(true); //设置是否想下传递触摸  
 
-	//液体特效  不会消失但是会变形
-	/*CCActionInterval* liquid = CCLiquid::create(5, CCSize(10, 10), 4, 20);
-	gridNodeTarget->runAction(liquid);*/
+										//通过 lambda 表达式 直接实现触摸事件的回掉方法  
+	listener1->onTouchBegan = [=](Touch* touch, Event* event)
+	{
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
 
-	//瓷砖洗牌特效   这个骚  让这个精灵消失
-	//    CCActionInterval* shuffle = CCShuffleTiles::create(5, CCSize(50, 50), 50); 
-	//    gridNodeTarget->runAction(shuffle); 
+		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
+		Size s = target->getContentSize();
+		Rect rect = Rect(0, 0, s.width, s.height);
 
-	//部落格效果,从左下角到右上角   骚*2 直接让这个精灵消失
-	/*CCActionInterval* fadeOutTRTiles = CCFadeOutTRTiles::create(5, CCSize(50, 50));
-	gridNodeTarget->runAction(fadeOutTRTiles); */
+		if (rect.containsPoint(locationInNode))
+		{
+			CCActionInterval* fadeOutTRTiles = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+			gridNodeTarget_2->runAction(fadeOutTRTiles);
 
-	//部落格效果，从右上角到左下角 
-	//    CCActionInterval* fadeOutBLTiles  = CCFadeOutBLTiles::create(5, CCSize(50, 50)); 
-	//    gridNodeTarget->runAction(fadeOutBLTiles); 
+			CCActionInterval* shaky3D = CCShaky3D::create(5, CCSize(10, 10), 15, false);
+			gridNodeTarget_1->runAction(shaky3D);
 
-	//折叠效果 从下到上  让这个精灵消失
-	//    CCActionInterval* fadeOutUpTiles = CCFadeOutUpTiles::create(5, CCSize(10, 10)); 
-	//    gridNodeTarget->runAction(fadeOutUpTiles); 
+			log("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
+			target->setOpacity(180);
+			return true;
+		}
+		return false;
+	};
+	listener1->onTouchEnded = [=](Touch* touch, Event* event)
+	{
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+		target->setOpacity(255);
+		which_player = 1;
+		log("which_map %d", which_player);
+		_eventDispatcher->removeEventListener(listener1);
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, pre_player1);
 
+	/////////////////////////////////////////////
+	// Make pre_map2 touchable  
+	auto listener2 = EventListenerTouchOneByOne::create();//创建一个触摸监听  
+	listener2->setSwallowTouches(true); //设置是否想下传递触摸  
 
-	//方块消失特效 
-	//    CCActionInterval* turnOffFiels = CCTurnOffTiles::create(4, CCSize(50, 50)); 
-	//    gridNodeTarget->runAction(turnOffFiels); 
+	listener2->onTouchBegan = [=](Touch* touch, Event* event)
+	{
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
 
-	//跳动的方块特效  不会消失，而且不会变形
-	//    CCActionInterval* jumpTiles = CCJumpTiles3D::create(5, CCSize(20, 20), 5, 20); 
-	//    gridNodeTarget->runAction(jumpTiles); 
+		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
+		Size s = target->getContentSize();
+		Rect rect = Rect(0, 0, s.width, s.height);
+
+		if (rect.containsPoint(locationInNode))
+		{
+			CCActionInterval* fadeOutUpTiles = CCFadeOutUpTiles::create(4, CCSize(10, 10));
+			gridNodeTarget_1->runAction(fadeOutUpTiles);
+
+			CCActionInterval* liquid = CCLiquid::create(5, CCSize(10, 10), 4, 20);
+			gridNodeTarget_2->runAction(liquid);
+			log("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
+			target->setOpacity(180);
+			return true;
+		}
+		return false;
+	};
+	listener2->onTouchEnded = [=](Touch* touch, Event* event)
+	{
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+		target->setOpacity(255);
+		which_player = 2;
+		log("which_map %d", which_player);
+		_eventDispatcher->removeEventListener(listener2);
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, pre_player2);
+	
 
 }
 void PlayerChose::menuStartScene(Ref* pSender)

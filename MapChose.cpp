@@ -7,7 +7,7 @@ extern bool language_flag;   //true->English   false->Chinese
 extern char *FontToUTF8(const char* font);
 //it is define in another .cpp file 
 //and it is used to change character
-int which_map = 1;
+extern int which_map;
 
 Scene* MapChose::createScene()
 {
@@ -103,8 +103,8 @@ void MapChose::ScenePrinter()
 
 		if (rect.containsPoint(locationInNode))
 		{
-			CCActionInterval* fadeOutTRTiles = CCFadeOutTRTiles::create(5, CCSize(50, 50));
-			gridNodeTarget_2->runAction(fadeOutTRTiles); 
+			CCActionInterval* shuffle = CCShuffleTiles::create(5, CCSize(50, 50), 50);
+			gridNodeTarget_2->runAction(shuffle); 
 
 			log("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
 			target->setOpacity(180);
@@ -137,8 +137,9 @@ void MapChose::ScenePrinter()
 
 		if (rect.containsPoint(locationInNode))
 		{
-			CCActionInterval* fadeOutUpTiles = CCFadeOutUpTiles::create(5, CCSize(10, 10));
-			gridNodeTarget_1->runAction(fadeOutUpTiles);
+			CCActionInterval* turnOffFiels = CCTurnOffTiles::create(3, CCSize(50, 50));
+			gridNodeTarget_1->runAction(turnOffFiels); 
+
 			log("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
 			target->setOpacity(180);
 			return true;

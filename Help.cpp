@@ -105,42 +105,38 @@ void HelpScene::ScenePrinter()
 	gridNodeTarget->addChild(sp);
 	
 
-	//3D晃动的特效 
-	   /* CCActionInterval* shaky3D = CCShaky3D::create(5, CCSize(10, 10), 15, false); 
-		gridNodeTarget->runAction(shaky3D);*/
+	
+
+	/*CCSprite* sp = CCSprite::create("fire.jpg");
+	x = rect.origin.x + rect.size.width / 2;
+	y = rect.origin.y + rect.size.height / 2;
+	sp->setPosition(Vec2(x, y));
+	auto gridNodeTarget = NodeGrid::create();
+	this->addChild(gridNodeTarget);
+	gridNodeTarget->addChild(sp);*/
 
 
-	//3D瓷砖晃动特效 
-	//    CCActionInterval* shakyTiles3D = CCShakyTiles3D::create(5, CCSize(10, 10), 5, false); 
-	//    gridNodeTarget->runAction(shakyTiles3D); 
+	//3D晃动的特效  不会消失但是会变形
+	/* CCActionInterval* shaky3D = CCShaky3D::create(5, CCSize(10, 10), 15, false);
+	gridNodeTarget->runAction(shaky3D);*/
 
+	//液体特效  不会消失但是会变形
+	/*CCActionInterval* liquid = CCLiquid::create(5, CCSize(10, 10), 4, 20);
+	gridNodeTarget->runAction(liquid);*/
 
-	//X轴 3D反转特效 
-	//    CCActionInterval* filpX = CCFlipX3D::create(5); 
-	//    gridNodeTarget->runAction(filpX); 
- 
-
-	//水波纹特效 
-	//    CCActionInterval* ripple = CCRipple3D::create(5, CCSize(10, 10), CCPointMake(240, 160), 240, 4, 160); 
-	//    gridNodeTarget->runAction(ripple); 
-
-	//液体特效 
-	//    CCActionInterval* liquid = CCLiquid::create(5, CCSize(10, 10), 4, 20); 
-	//    gridNodeTarget->runAction(liquid); 
-
-	//瓷砖洗牌特效   这个骚
+	//瓷砖洗牌特效   这个骚  让这个精灵消失
 	//    CCActionInterval* shuffle = CCShuffleTiles::create(5, CCSize(50, 50), 50); 
 	//    gridNodeTarget->runAction(shuffle); 
 
-	//部落格效果,从左下角到右上角   骚*2
-	    /*CCActionInterval* fadeOutTRTiles = CCFadeOutTRTiles::create(5, CCSize(50, 50)); 
-	    gridNodeTarget->runAction(fadeOutTRTiles); */
+	//部落格效果,从左下角到右上角   骚*2 直接让这个精灵消失
+	/*CCActionInterval* fadeOutTRTiles = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+	gridNodeTarget->runAction(fadeOutTRTiles); */
 
 	//部落格效果，从右上角到左下角 
 	//    CCActionInterval* fadeOutBLTiles  = CCFadeOutBLTiles::create(5, CCSize(50, 50)); 
 	//    gridNodeTarget->runAction(fadeOutBLTiles); 
 
-	//折叠效果 从下到上 
+	//折叠效果 从下到上  让这个精灵消失
 	//    CCActionInterval* fadeOutUpTiles = CCFadeOutUpTiles::create(5, CCSize(10, 10)); 
 	//    gridNodeTarget->runAction(fadeOutUpTiles); 
 
@@ -149,10 +145,9 @@ void HelpScene::ScenePrinter()
 	//    CCActionInterval* turnOffFiels = CCTurnOffTiles::create(4, CCSize(50, 50)); 
 	//    gridNodeTarget->runAction(turnOffFiels); 
 
-	//跳动的方块特效 
+	//跳动的方块特效  不会消失，而且不会变形
 	//    CCActionInterval* jumpTiles = CCJumpTiles3D::create(5, CCSize(20, 20), 5, 20); 
 	//    gridNodeTarget->runAction(jumpTiles); 
-
 }
 
 void HelpScene::Func(Ref* pSender)

@@ -38,6 +38,9 @@ bool smallmap_switch = true;       //小地图控制开关,true->打开小地图,false->关上
 								   //每次打开小地图的时候小人物的位置要随m_player做相应的调整
 bool music_switch = true;
 bool mode_switch = true;
+
+int which_map = 1;
+int which_player = 1;
 //it is define in another .cpp file 
 //and it is used to change character
 
@@ -64,10 +67,12 @@ bool GamePlaying::init()
 	{
 		return false;
 	}
+	
 	MusicPrinter();
 	MapPrinter();
 	ScenePrinter();
 	SmallmapPrinter();
+	ModePrinter();
 
 	schedule(schedule_selector(GamePlaying::EXP_grow), 0.1f);
 	schedule(schedule_selector(GamePlaying::HP_grow), 1.5f);
@@ -262,49 +267,72 @@ void GamePlaying::ScenePrinter()
 
 
 }
+
 void GamePlaying::MusicPrinter()
 {
-	static Label *OnorOff = 0;
+	Label *OnorOff;
 	float x, y;
 	if (music_switch)
 	{
-		CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Escape.mp3");
-		if (OnorOff) { OnorOff->removeFromParentAndCleanup(true); }
+		if (this->getChildByName("MUSIC_OFF"))
+		{//逻辑链是这样的,如果有一个名字叫做MUSIC_OFF的精灵了
+			//就证明已经不是init调的这个函数了
+			//那就继续播放刚刚暂停的音乐
+			this->getChildByName("MUSIC_OFF")->removeFromParentAndCleanup(true);
+			CocosDenshion::SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
+		}
+		else
+		{
+			//init才会调到这,从头播放音乐
+			CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Escape.mp3");
+		}
+		
 		if (language_flag)
 		{
 			OnorOff = Label::createWithTTF("ON",
-				"fonts/Marker Felt.ttf", 40);
+				"fonts/Marker Felt.ttf", 30);
 		}
 		else
 		{
 			OnorOff = Label::create(FontToUTF8("播放"),
-				"Arial", 40);
+				"Arial", 30);
 		}
+		OnorOff->setName("MUSIC_ON");
 	}
 	else
 	{
 		CocosDenshion::SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
-		OnorOff->removeFromParentAndCleanup(true);
+		
+		if (this->getChildByName("MUSIC_ON"))
+		{
+			this->getChildByName("MUSIC_ON")->removeFromParentAndCleanup(true);
+		}
 		if (language_flag)
 		{
 			OnorOff = Label::createWithTTF("OFF",
-				"fonts/Marker Felt.ttf", 40);
+				"fonts/Marker Felt.ttf", 30);
 		}
 		else
 		{
 			OnorOff = Label::create(FontToUTF8("暂停"),
-				"Arial", 40);
+				"Arial", 30);
 		}
+		OnorOff->setName("MUSIC_OFF");
 	}
 	x = rect.origin.x + rect.size.width*(39.0f / 40.0f);
 	y = rect.origin.y + rect.size.height*(17.0f / 20.0f);
 	OnorOff->setPosition(Vec2(x, y));
 	this->addChild(OnorOff, 1);
 }
+void GamePlaying::Music_Switch(Ref * pSender)
+{
+	music_switch = (music_switch ? false : true);
+	MusicPrinter();
+}
 
 void GamePlaying::SmallmapPrinter()
 {
-	static Label *OnorOff = 0;
+	Label *OnorOff;
 	float x, y;
 	if (smallmap_switch)        //如果要打开小地图，则重新构建，因为每次的小人物位置不同
 	{
@@ -329,33 +357,44 @@ void GamePlaying::SmallmapPrinter()
 			Vec2(m_player->getPositionX()*RETE, m_player->getPositionY()*RETE));
 		m_smallmap->addChild(m_smallplayer);
 
-		if (OnorOff) { OnorOff->removeFromParentAndCleanup(true); }
+		if (this->getChildByName("SMALLMAP_OFF"))
+		{
+			this->getChildByName("SMALLMAP_OFF")->removeFromParentAndCleanup(true);
+		}
 		if (language_flag)
 		{
 			OnorOff = Label::createWithTTF("ON",
-				"fonts/Marker Felt.ttf", 40);
+				"fonts/Marker Felt.ttf", 30);
 		}
 		else
 		{
 			OnorOff = Label::create(FontToUTF8("开启"),
-				"Arial", 40);
+				"Arial", 30);
 		}
+		OnorOff->setName("SMALLMAP_ON");
 	}
 	else      //如果要关上就直接销毁精灵
 	{
-		m_smallmap->removeFromParentAndCleanup(true);
-
-		OnorOff->removeFromParentAndCleanup(true);
+		if (m_smallmap)
+		{
+			m_smallmap->removeFromParentAndCleanup(true);
+		}
+		
+		if (this->getChildByName("SMALLMAP_ON"))
+		{
+			this->getChildByName("SMALLMAP_ON")->removeFromParentAndCleanup(true);
+		}
 		if (language_flag)
 		{
 			OnorOff = Label::createWithTTF("OFF",
-				"fonts/Marker Felt.ttf", 40);
+				"fonts/Marker Felt.ttf", 30);
 		}
 		else
 		{
 			OnorOff = Label::create(FontToUTF8("关闭"),
-				"Arial", 40);
+				"Arial", 30);
 		}
+		OnorOff->setName("SMALLMAP_OFF");
 	}
 	x = rect.origin.x + rect.size.width*(39.0f / 40.0f);
 	y = rect.origin.y + rect.size.height*(18.0f / 20.0f);
@@ -364,21 +403,48 @@ void GamePlaying::SmallmapPrinter()
 }
 void GamePlaying::Smallmap_Switch(Ref* pSender)
 {
-	smallmap_switch = (smallmap_switch ? false : true); 
+	smallmap_switch = (smallmap_switch ? false : true);
 	//将开着的小地图关上，将关着的小地图打开
 	SmallmapPrinter();
 }
 
+void GamePlaying::ModePrinter()
+{
+	Label *OnorOff;
+	float x, y;
+	if (mode_switch)
+	{
+		if (this->getChildByName("MODE2"))
+		{
+			this->getChildByName("MODE2")->removeFromParentAndCleanup(true);
+		}
+
+		OnorOff = Label::createWithTTF("1",
+			"fonts/Marker Felt.ttf", 30);
+		OnorOff->setName("MODE1");
+	}
+	else
+	{
+		if (this->getChildByName("MODE1"))
+		{
+			this->getChildByName("MODE1")->removeFromParentAndCleanup(true);
+		}
+
+		OnorOff = Label::createWithTTF("2",
+			"fonts/Marker Felt.ttf", 30);
+		OnorOff->setName("MODE2");
+	}
+	x = rect.origin.x + rect.size.width*(39.0f / 40.0f);
+	y = rect.origin.y + rect.size.height*(16.0f / 20.0f);
+	OnorOff->setPosition(Vec2(x, y));
+	this->addChild(OnorOff, 1);
+}
 void GamePlaying::Mode_Switch(Ref * pSender)
 {
 	waytorun = (waytorun ? false : true);
+	mode_switch = (mode_switch ? false : true);
+	ModePrinter();
 	onEnter();
-}
-
-void GamePlaying::Music_Switch(Ref * pSender)
-{
-	music_switch = (music_switch ? false : true);
-	MusicPrinter();
 }
 
 bool GamePlaying::up(bool flag)
@@ -391,10 +457,16 @@ bool GamePlaying::up(bool flag)
 			if (flag)
 			{
 				runEvent();
-				HPjudge(Vec2(x / tileSize.width,
-					(mapSize.height*tileSize.height - y) / tileSize.height));
-				EXPjudge(Vec2(x / tileSize.width,
-					(mapSize.height*tileSize.height - y) / tileSize.height));
+				for (int i = -32; i <= 32; i += 32)
+				{
+					for (int j = -32; j <= 32; j += 32)
+					{
+						HPjudge(Vec2((x + i) / tileSize.width,
+							(mapSize.height*tileSize.height - y + j) / tileSize.height));
+						EXPjudge(Vec2((x + i) / tileSize.width,
+							(mapSize.height*tileSize.height - y + j) / tileSize.height));
+					}
+				}
 			}
 			if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
 			{   //调整地图,使人物尽量居中
@@ -414,10 +486,16 @@ bool GamePlaying::right(bool flag)
 		if (flag)
 		{
 			runEvent();
-			HPjudge(Vec2(x / tileSize.width,
-				(mapSize.height*tileSize.height - y) / tileSize.height));
-			EXPjudge(Vec2(x / tileSize.width,
-				(mapSize.height*tileSize.height - y) / tileSize.height));
+			for (int i = -32; i <= 32; i += 32)
+			{
+				for (int j = -32; j <= 32; j += 32)
+				{
+					HPjudge(Vec2((x + i) / tileSize.width,
+						(mapSize.height*tileSize.height - y + j) / tileSize.height));
+					EXPjudge(Vec2((x + i) / tileSize.width,
+						(mapSize.height*tileSize.height - y + j) / tileSize.height));
+				}
+			}
 		}
 		if ((x + tiledmap->getPositionX() > size.width / 2) && ((MAP_SIZE - x) > size.width / 2))
 		{
@@ -436,10 +514,16 @@ bool GamePlaying::left(bool flag)
 		if (flag)
 		{
 			runEvent();
-			HPjudge(Vec2(x / tileSize.width,
-				(mapSize.height*tileSize.height - y) / tileSize.height));
-			EXPjudge(Vec2(x / tileSize.width,
-				(mapSize.height*tileSize.height - y) / tileSize.height));
+			for (int i = -32; i <= 32; i += 32)
+			{
+				for (int j = -32; j <= 32; j += 32)
+				{
+					HPjudge(Vec2((x + i) / tileSize.width,
+						(mapSize.height*tileSize.height - y + j) / tileSize.height));
+					EXPjudge(Vec2((x + i) / tileSize.width,
+						(mapSize.height*tileSize.height - y + j) / tileSize.height));
+				}
+			}
 		}
 		if ((x + tiledmap->getPositionX() < size.width / 2) && tiledmap->getPositionX() != 0)
 		{
@@ -458,10 +542,17 @@ bool GamePlaying::down(bool flag)
 		if (flag)
 		{
 			runEvent();
-			HPjudge(Vec2(x / tileSize.width,
-				(mapSize.height*tileSize.height - y) / tileSize.height));
-			EXPjudge(Vec2(x / tileSize.width,
-				(mapSize.height*tileSize.height - y) / tileSize.height));
+			for (int i = -32; i <= 32; i += 32)
+			{
+				for (int j = -32; j <= 32; j += 32)
+				{
+					HPjudge(Vec2((x+i) / tileSize.width,
+						(mapSize.height*tileSize.height - y+j) / tileSize.height));
+					EXPjudge(Vec2((x+i) / tileSize.width,
+						(mapSize.height*tileSize.height - y+j) / tileSize.height));
+				}
+			}
+			
 
 		}
 		if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
@@ -877,6 +968,13 @@ void GamePlaying::attack()
 }
 void GamePlaying::menuStartScene(Ref* pSender)
 {
+	CocosDenshion::SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
+	
+	//返回按钮之前把一切回到最初状态
+	smallmap_switch = true; 
+	music_switch = true;
+	mode_switch = true;
+
 	auto sc = StartScene::createScene();        //缩放交替的切换动画
 	auto reScene = TransitionShrinkGrow::create(1.0f, sc);
 	Director::getInstance()->replaceScene(reScene);

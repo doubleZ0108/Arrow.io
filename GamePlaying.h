@@ -75,6 +75,8 @@ public:
 	void ScenePrinter();
 	void MusicPrinter();
 	void SmallmapPrinter();
+	void ModePrinter();
+
 	void Smallmap_Switch(Ref* pSender);
 	void Mode_Switch(Ref* pSender);
 	void Music_Switch(Ref* pSender);
