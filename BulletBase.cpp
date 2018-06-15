@@ -1,5 +1,5 @@
 #include "Bulletbase.h"
-
+#include "GamePlaying.h"
 BulletBase::BulletBase()
 {
 }

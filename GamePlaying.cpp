@@ -29,7 +29,6 @@ USING_NS_CC;
 std::vector<HP_MESS> GamePlaying::hp_auto_arise;   //用于储存随机安置的回血道具的相关信息
 std::vector<EXP_MESS> GamePlaying::exp_auto_arise;   //用于储存随机安置的经验道具的相关信息
 
-
 extern bool language_flag;  //true->English   false->Chinese
 extern int is_paused;       //关于is_paused的具体解释请见 "HelloWorldScene.h"
 extern char *FontToUTF8(const char* font);
@@ -52,14 +51,12 @@ Scene* GamePlaying::createScene()
 
 	return scene;
 }
-
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
 	printf("Error while loading: %s\n", filename);
 	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
-
 // on "init" you need to initialize your instance
 bool GamePlaying::init()
 {
@@ -124,7 +121,7 @@ void GamePlaying::ScenePrinter()
 
 	//磁铁石技能开关
 	auto magnetMenuItem = MenuItemToggle::createWithCallback(
-		CC_CALLBACK_1(GamePlaying::Magent_change, this),
+		CC_CALLBACK_1( GamePlaying::Magent_change, this),
 		MenuItemFont::create("Magnet"),
 		MenuItemFont::create("Origin"),
 		NULL);
@@ -148,11 +145,6 @@ void GamePlaying::ScenePrinter()
 	//chose the sequence that you prefer
 	cover->runAction(sequence2);*/
 
-}
-
-void GamePlaying::Magent_change(Ref * pSender)
-{
-	magent = (magent ? false : true);
 }
 
 void GamePlaying::PlayerPrinter()
@@ -468,13 +460,17 @@ void GamePlaying::ModePrinter()
 	OnorOff->setPosition(Vec2(x, y));
 	this->addChild(OnorOff, 1);
 }
-
 void GamePlaying::Mode_Switch(Ref * pSender)
 {
 	waytorun = (waytorun ? false : true);
 	mode_switch = (mode_switch ? false : true);
 	ModePrinter();
 	onEnter();
+}
+
+void GamePlaying::Magent_change(Ref * pSender)
+{
+	magent = (magent ? false : true);
 }
 
 bool GamePlaying::up(bool flag)
@@ -487,27 +483,7 @@ bool GamePlaying::up(bool flag)
 			if (flag)
 			{
 				runEvent();
-				if (magent)
-				{
-					for (int i = -32; i <= 32; i += 32)
-					{
-						for (int j = -32; j <= 32; j += 32)
-						{
-							HPjudge(Vec2((x + i) / tileSize.width,
-								(mapSize.height*tileSize.height - y + j) / tileSize.height));
-							EXPjudge(Vec2((x + i) / tileSize.width,
-								(mapSize.height*tileSize.height - y + j) / tileSize.height));
-						}
-					}
-				}
-				else
-				{
-					HPjudge(Vec2(x / tileSize.width,
-						(mapSize.height*tileSize.height - y) / tileSize.height));
-					EXPjudge(Vec2(x / tileSize.width,
-						(mapSize.height*tileSize.height - y) / tileSize.height));
-				}
-				
+				tofindEat(x, y);
 			}
 			if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
 			{   //调整地图,使人物尽量居中
@@ -527,26 +503,7 @@ bool GamePlaying::right(bool flag)
 		if (flag)
 		{
 			runEvent();
-			if (magent)
-			{
-				for (int i = -32; i <= 32; i += 32)
-				{
-					for (int j = -32; j <= 32; j += 32)
-					{
-						HPjudge(Vec2((x + i) / tileSize.width,
-							(mapSize.height*tileSize.height - y + j) / tileSize.height));
-						EXPjudge(Vec2((x + i) / tileSize.width,
-							(mapSize.height*tileSize.height - y + j) / tileSize.height));
-					}
-				}
-			}
-			else
-			{
-				HPjudge(Vec2(x / tileSize.width,
-					(mapSize.height*tileSize.height - y) / tileSize.height));
-				EXPjudge(Vec2(x / tileSize.width,
-					(mapSize.height*tileSize.height - y) / tileSize.height));
-			}
+			tofindEat(x, y);
 		}
 		if ((x + tiledmap->getPositionX() > size.width / 2) && ((MAP_SIZE - x) > size.width / 2))
 		{
@@ -565,26 +522,7 @@ bool GamePlaying::left(bool flag)
 		if (flag)
 		{
 			runEvent();
-			if (magent)
-			{
-				for (int i = -32; i <= 32; i += 32)
-				{
-					for (int j = -32; j <= 32; j += 32)
-					{
-						HPjudge(Vec2((x + i) / tileSize.width,
-							(mapSize.height*tileSize.height - y + j) / tileSize.height));
-						EXPjudge(Vec2((x + i) / tileSize.width,
-							(mapSize.height*tileSize.height - y + j) / tileSize.height));
-					}
-				}
-			}
-			else
-			{
-				HPjudge(Vec2(x / tileSize.width,
-					(mapSize.height*tileSize.height - y) / tileSize.height));
-				EXPjudge(Vec2(x / tileSize.width,
-					(mapSize.height*tileSize.height - y) / tileSize.height));
-			}
+			tofindEat(x, y);
 		}
 		if ((x + tiledmap->getPositionX() < size.width / 2) && tiledmap->getPositionX() != 0)
 		{
@@ -603,26 +541,7 @@ bool GamePlaying::down(bool flag)
 		if (flag)
 		{
 			runEvent();
-			if (magent)
-			{
-				for (int i = -32; i <= 32; i += 32)
-				{
-					for (int j = -32; j <= 32; j += 32)
-					{
-						HPjudge(Vec2((x + i) / tileSize.width,
-							(mapSize.height*tileSize.height - y + j) / tileSize.height));
-						EXPjudge(Vec2((x + i) / tileSize.width,
-							(mapSize.height*tileSize.height - y + j) / tileSize.height));
-					}
-				}
-			}
-			else
-			{
-				HPjudge(Vec2(x / tileSize.width,
-					(mapSize.height*tileSize.height - y) / tileSize.height));
-				EXPjudge(Vec2(x / tileSize.width,
-					(mapSize.height*tileSize.height - y) / tileSize.height));
-			}
+			tofindEat(x, y);
 		}
 		if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
 		{
@@ -764,7 +683,31 @@ void GamePlaying::EXP_grow(float dt)
 		tiledmap->addChild(exp_auto_arise[now_vec_maxindex].exp_potion);
 	}
 }
-//我也不知道onEnter是什么意思只是照着抄的，只知道这里是监控室
+void GamePlaying::tofindEat(const float x, const float y)
+{
+	if (magent)
+	{
+		for (int i = -32; i <= 32; i += 32)
+		{
+			for (int j = -32; j <= 32; j += 32)
+			{
+				HPjudge(Vec2((x + i) / tileSize.width,
+					(mapSize.height*tileSize.height - y + j) / tileSize.height));
+				EXPjudge(Vec2((x + i) / tileSize.width,
+					(mapSize.height*tileSize.height - y + j) / tileSize.height));
+			}
+		}
+	}
+	else
+	{
+		HPjudge(Vec2(x / tileSize.width,
+			(mapSize.height*tileSize.height - y) / tileSize.height));
+		EXPjudge(Vec2(x / tileSize.width,
+			(mapSize.height*tileSize.height - y) / tileSize.height));
+	}
+}
+
+
 
 void GamePlaying::onEnter()
 {
@@ -972,8 +915,12 @@ void GamePlaying::update(float delta)
 		}
 		else it++;
 	}
-	for (auto bub : bubsum)
+	for (auto &bub : bubsum)
 	{
+		/*if (!isCanReach(bub->getPositionX(), bub->getPositionY()))
+		{
+			bub->hide();
+		}*/
 		for (auto pl : plsum)
 		{
 			if (bub->collidePlayer(pl))
@@ -992,7 +939,7 @@ void GamePlaying::update(float delta)
 	}
 
 }
-//主角跑动的函数，不恒居中因为场景这一块不是我写的……到时候看着改吧
+
 void GamePlaying::runEvent()
 {
 	if (waytorun)

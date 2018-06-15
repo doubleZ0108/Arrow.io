@@ -45,9 +45,12 @@ struct EXP_MESS
 class GamePlaying : public Scene
 {
 private:
+	/////////////////////////////////////////////
+	//各种坐标的计算
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	Rect rect = Director::getInstance()->getOpenGLView()->getVisibleRect();
+	/////////////////////////////////////////////
 
 private:
 	Size size;
@@ -71,6 +74,8 @@ public:
 	// a selector callback
 	void menuStartScene(Ref* pSender);
 
+	//////////////////////////////////
+	//各种界面的绘制
 	void PlayerPrinter();
 	void SettingPrinter();
 	void MapPrinter();
@@ -78,23 +83,35 @@ public:
 	void MusicPrinter();
 	void SmallmapPrinter();
 	void ModePrinter();
-	////////////////////////
+	////////////////////////////////////
+
 	void Magent_change(Ref* pSender);
-	//////////////////////////
+
+	///////////////////////////////////
+	//各种开关的回调函数
 	void Smallmap_Switch(Ref* pSender);
 	void Mode_Switch(Ref* pSender);
 	void Music_Switch(Ref* pSender);
+	////////////////////////////////////
 
+	////////////////////////////////////
+	//各个方向的判断和墙壁检测
 	bool up(bool flag); //true代表我需要调用runEvent函数实实在在的移动
 	bool right(bool flag);//false代表我只是想判断这个方向能不能走，其实不想移动
 	bool left(bool flag);
 	bool down(bool flag);
 	bool isCanReach(float x, float y);
+	//////////////////////////////////
 
+	/////////////////////////////////////////
+	//道具的随机出现函数 和 判断并吃掉道具的函数
 	void HPjudge(const Vec2 &pos);
 	void HP_grow(float dt);
 	void EXPjudge(const Vec2 &pos);
 	void EXP_grow(float dt);
+	void tofindEat(const float x, const float y);
+	/////////////////////////////////////////
+
 	// implement the "static create()" method manually
 	CREATE_FUNC(GamePlaying);
 
