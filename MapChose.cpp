@@ -69,7 +69,7 @@ void MapChose::ScenePrinter()
 	this->addChild(preturn);
 	//////////////////////////////////////
 	//add two tiledmap sceneshot
-	auto pre_map1 = Sprite::create("pre_map.png");
+	auto pre_map1 = Sprite::create("smallmap1.png");
 	x = rect.origin.x + rect.size.width*(1.0f / 4.0f);
 	y = rect.origin.y + rect.size.height*(1.0f / 2.0f);
 	pre_map1->setPosition(Vec2(x, y));
@@ -78,7 +78,7 @@ void MapChose::ScenePrinter()
 	this->addChild(gridNodeTarget_1);
 	gridNodeTarget_1->addChild(pre_map1);
 
-	auto pre_map2 = Sprite::create("pre_map.png");
+	auto pre_map2 = Sprite::create("smallmap2.png");
 	x = rect.origin.x + rect.size.width*(3.0f / 4.0f);
 	pre_map2->setPosition(Vec2(x, y));
 

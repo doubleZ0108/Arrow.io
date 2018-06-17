@@ -96,10 +96,10 @@ public:
 
 	////////////////////////////////////
 	//各个方向的判断和墙壁检测
-	bool up(bool flag); //true代表我需要调用runEvent函数实实在在的移动
-	bool right(bool flag);//false代表我只是想判断这个方向能不能走，其实不想移动
-	bool left(bool flag);
-	bool down(bool flag);
+	bool up(bool flag, int ifxie=0); //true代表我需要调用runEvent函数实实在在的移动
+	bool right(bool flag, int ifxie=0);//false代表我只是想判断这个方向能不能走，其实不想移动
+	bool left(bool flag, int ifxie=0);
+	bool down(bool flag, int ifxie=0);
 	bool isCanReach(float x, float y);
 	//////////////////////////////////
 
@@ -129,7 +129,7 @@ private:
 	std::vector<Player*>plsum;
 	std::vector<BulletBase*>bubsum;
 
-	bool waytorun = false;  //true->键盘移动鼠标攻击
+	bool waytorun = true;  //true->键盘移动鼠标攻击
 
 	Sprite *m_smallmap;
 	//LayerColor *m_smallmap;

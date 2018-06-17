@@ -12,18 +12,34 @@
 #define k_d (EventKeyboard::KeyCode)127
 
 #define MAP_SIZE 1600
-#define MAP1_WIDTH 49
-#define MAP1_HEIGHT 49
+#define MAP_WIDTH 49
+#define MAP_HEIGHT 49
 
 #define DIFF 16   //人物和墙壁间的距离差值（比较玄学的测试，主要用于检测某一个方向是否有不可以走的地方
-#define GAP_GID 145
-#define NOR_GID 138
-#define HP_GID 137
-#define EXP_GID 142
+
+#define GAP1_GID 145
+#define NOR1_GID 138
+#define HP1_GID 137
+#define EXP1_GID 142
+
+#define GAP2_GID 300
+#define NOR2_GID 293
+#define HP2_GID 294
+#define EXP2_GID 299
+
+#define GAP3_GID 0
+#define NOR3_GID 0
+#define HP3_GID 0
+#define EXP3_GID 0
+
+#define GAP_GID (1==which_map?GAP1_GID : (2==which_map? GAP2_GID : GAP3_GID))
+#define NOR_GID (1==which_map?NOR1_GID : (2==which_map? NOR2_GID : GAP3_GID))
+#define HP_GID (1==which_map?HP1_GID : (2==which_map? HP2_GID : GAP3_GID))
+#define EXP_GID (1==which_map?EXP1_GID : (2==which_map? EXP2_GID : GAP3_GID))
 
 #define SM_MAP_SIZE 245
-#define RETE (260.0/1605)  //smallplayer和player移动距离的比
-
+#define RETE (260.0/1600)  //smallplayer和player移动距离的比
+#define XIE 0.707
 USING_NS_CC;
 
 std::vector<HP_MESS> GamePlaying::hp_auto_arise;   //用于储存随机安置的回血道具的相关信息
@@ -38,7 +54,7 @@ bool smallmap_switch = true;       //小地图控制开关,true->打开小地图,false->关上
 bool music_switch = true;
 bool mode_switch = true;
 
-int which_map = 1;
+int which_map = 2;
 int which_player = 1;
 
 bool magent = false;
@@ -73,6 +89,7 @@ bool GamePlaying::init()
 	SmallmapPrinter();
 	ModePrinter();
 
+
 	schedule(schedule_selector(GamePlaying::EXP_grow), 0.1f);
 	schedule(schedule_selector(GamePlaying::HP_grow), 1.5f);
 
@@ -83,12 +100,24 @@ void GamePlaying::MapPrinter()
 {
 	size = Director::getInstance()->getVisibleSize();
 	//打开第一张瓦片地图
-	tiledmap = TMXTiledMap::create("ArcherBattle_TiledMap_1.tmx");
+	if (1 == which_map)
+	{
+		tiledmap = TMXTiledMap::create("ArcherBattle_TiledMap_1.tmx");
+	}
+	else if (2 == which_map)
+	{
+		tiledmap = TMXTiledMap::create("ArcherBattle_TiledMap_2.tmx");
+	}
+	else if (3 == which_map)
+	{
+
+	}
+	
 	this->addChild(tiledmap);
 	//////////////////////////////////////////
 	mapSize = tiledmap->getMapSize();      // 获取以tiles数量为单位的地图尺寸
 	tileSize = tiledmap->getTileSize();    // 获取以像素点为单位的tile尺寸属性
-	log("tileSize %f %f", tileSize.width, tileSize.height);
+	//log("tileSize %f %f", tileSize.width, tileSize.height);
 	/////////////////////////////////////////
 	//将meta设置为属性层
 	meta = tiledmap->layerNamed("meta");
@@ -152,7 +181,11 @@ void GamePlaying::PlayerPrinter()
 	m_player->sprite = Sprite::create("player1.png");
 	m_player->bindSprite(m_player->sprite);
 	m_player->setScale(2.0f, 2.0f);
+	
+	//zzzzzzzzzzzzzzzzzz
 	m_player->sprite->setAnchorPoint(Vec2(0.5f, 0.5f));
+	//log("ancher %f %f", m_player->sprite->getAnchorPoint().x, m_player->sprite->getAnchorPoint().y);
+	//zzzzzzzzzzzzzzzzzzz
 	m_player->setPosition(Point(m_player->x_coord, m_player->y_coord));
 	tiledmap->addChild(m_player, 10);
 
@@ -160,10 +193,10 @@ void GamePlaying::PlayerPrinter()
 	n_player->bindSprite(n_player->sprite);
 	n_player->setScale(1.8, 1.8);
 	n_player->setPosition(Point(n_player->x_coord, n_player->y_coord));
-	tiledmap->addChild(n_player, 10);
+	//tiledmap->addChild(n_player, 10);
 
 	plsum.push_back(m_player);
-	plsum.push_back(n_player);
+	//plsum.push_back(n_player);
 
 
 	///////////////////////////////////////////////
@@ -184,7 +217,7 @@ void GamePlaying::PlayerPrinter()
 	n_pProgressView->setForegroundTexture("foreground.png");
 	n_pProgressView->setTotalProgress(50);
 	n_pProgressView->setCurrentProgress(50);
-	tiledmap->addChild(n_pProgressView, 2);
+	//tiledmap->addChild(n_pProgressView, 2);
 
 	///////////////////////////////////////////////
 	this->scheduleUpdate();
@@ -361,12 +394,19 @@ void GamePlaying::SmallmapPrinter()
 		//add a smallmap to draw something and besides the smallmap is also a cover
 		//cccv的第四个参数取值0~225，越大越不透明
 		//m_smallmap = LayerColor::create(ccc4(0, 0, 0, 100), 250, 250);
-		m_smallmap = Sprite::create("smallmap.png");
+		switch (which_map)
+		{
+		case 1:m_smallmap = Sprite::create("smallmap1.png"); break;
+		case 2:m_smallmap = Sprite::create("smallmap2.png"); break;
+		case 3:m_smallmap = Sprite::create("smallmap3.png"); break;
+		default:m_smallmap = nullptr;
+		}
+		
 		m_smallmap->setOpacity(220);     //设置小地图的透明度
 										 //m_smallmap->setColor(Color3B(0, 0, 205));
 		m_smallmap->setAnchorPoint(Vec2(0.0f, 0.0f));
 		x = rect.origin.x + rect.size.width*0.0f;
-		y = rect.origin.y + rect.size.height*(2.0f / 3.0f - 0.01f);  //减0.01是为了消去一个极其小的位置偏差
+		y = rect.origin.y + rect.size.height*(2.0f / 3.0f - 0.02f);  //减0.02是为了消去一个极其小的位置偏差
 		m_smallmap->setPosition(Vec2(x, y));
 		this->addChild(m_smallmap, 1);
 
@@ -427,6 +467,7 @@ void GamePlaying::Smallmap_Switch(Ref* pSender)
 	smallmap_switch = (smallmap_switch ? false : true);
 	//将开着的小地图关上，将关着的小地图打开
 	SmallmapPrinter();
+	
 }
 
 void GamePlaying::ModePrinter()
@@ -473,32 +514,67 @@ void GamePlaying::Magent_change(Ref * pSender)
 	magent = (magent ? false : true);
 }
 
-bool GamePlaying::up(bool flag)
+bool GamePlaying::up(bool flag,int ifxie)  //ifxie默认参数为false，默认是直着走
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (y + tileSize.height < MAP_SIZE && isCanReach(x, y + DIFF - 8))   //往上的判断多+1消除卡墙bug
+	if (y + tileSize.height < MAP_SIZE
+		&& isCanReach(x+DIFF, y)
+		&& isCanReach(x-DIFF, y) 
+		&& isCanReach(x, y))   //往上的判断多+1消除卡墙bug
 	{	//如果精灵上面那格不是地图的上边界
 		//之所以是一格大小的一半,是因为精灵的锚点在中心,上面一个的下边界只需要再加16
 		//sprite->setPositionY(y + 32);  //把精灵置于上面一格的位置
-			if (flag)
+		if (flag)
+		{
+			runEvent();
+			tofindEat(x, y);
+
+			if (!ifxie)
 			{
-				runEvent();
-				tofindEat(x, y);
+				if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
+				{
+					tiledmap->setPositionY(tiledmap->getPositionY() 
+						- m_player->speed);//调整地图,使人物尽量居中
+				       //地图移动速度与人物移动速度保持一直，获得最佳游戏体验，尽享丝滑
+					y_move += m_player->speed;
+				}
 			}
-			if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
-			{   //调整地图,使人物尽量居中
-				//地图移动速度与人物移动速度保持一直，获得最佳游戏体验，尽享丝滑
-				tiledmap->setPositionY(tiledmap->getPositionY() - m_player->speed);
-				y_move += m_player->speed;
+			else if (1 == ifxie)
+			{
+				if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
+				{
+					tiledmap->setPositionY(tiledmap->getPositionY()
+						- m_player->speed*XIE);
+					tiledmap->setPositionX(tiledmap->getPositionX()
+						- m_player->speed*XIE);
+					x_move += m_player->speed*XIE;
+					y_move += m_player->speed*XIE;
+				}
+				
 			}
-			return true;
+			else if (2 == ifxie)
+			{
+				if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
+				{
+					tiledmap->setPositionY(tiledmap->getPositionY()
+						- m_player->speed*XIE);
+					tiledmap->setPositionX(tiledmap->getPositionX()
+						+ m_player->speed*XIE);
+					x_move -= m_player->speed*XIE;
+					y_move += m_player->speed*XIE;
+				}
+			}
+		}
+		return true;
 	}
 	return false;
 }
-bool GamePlaying::right(bool flag)
+bool GamePlaying::right(bool flag, int ifxie)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (x + tileSize.width < MAP_SIZE && isCanReach(x + 3 * DIFF, y))
+	if (x + tileSize.width < MAP_SIZE 
+		&& isCanReach(x + 2*DIFF, y - DIFF)
+		&& isCanReach(x + 2*DIFF, y - 2*DIFF))
 	{
 		if (flag)
 		{
@@ -507,17 +583,20 @@ bool GamePlaying::right(bool flag)
 		}
 		if ((x + tiledmap->getPositionX() > size.width / 2) && ((MAP_SIZE - x) > size.width / 2))
 		{
-			tiledmap->setPositionX(tiledmap->getPositionX() - m_player->speed);
+			tiledmap->setPositionX(tiledmap->getPositionX() 
+				- m_player->speed);
 			x_move += m_player->speed;
 		}
 		return true;
 	}
 	return false;
 }
-bool GamePlaying::left(bool flag)
+bool GamePlaying::left(bool flag, int ifxie)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (x>tileSize.width && isCanReach(x - DIFF - 1, y))  //往左的判断多-1消除卡墙bug
+	if (x>tileSize.width 
+		&& isCanReach(x - 2*DIFF, y - DIFF)
+		&& isCanReach(x - 2*DIFF, y - 2*DIFF))
 	{
 		if (flag)
 		{
@@ -526,27 +605,60 @@ bool GamePlaying::left(bool flag)
 		}
 		if ((x + tiledmap->getPositionX() < size.width / 2) && tiledmap->getPositionX() != 0)
 		{
-			tiledmap->setPositionX(tiledmap->getPositionX() + m_player->speed);
+			tiledmap->setPositionX(tiledmap->getPositionX() 
+				+ m_player->speed);
 			x_move -= m_player->speed;
 		}
 		return true;
 	}
 	return false;
 }
-bool GamePlaying::down(bool flag)
+bool GamePlaying::down(bool flag, int ifxie)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (y>tileSize.height && isCanReach(x, y - 3 * DIFF))
+	
+	if (y>tileSize.height 
+		&& isCanReach(x, y - 4*DIFF)
+		&& isCanReach(x-DIFF, y-4*DIFF))
 	{
 		if (flag)
 		{
 			runEvent();
 			tofindEat(x, y);
-		}
-		if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
-		{
-			tiledmap->setPositionY(tiledmap->getPositionY() + m_player->speed);
-			y_move -= m_player->speed;
+
+			if (!ifxie)
+			{
+				if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
+				{
+					tiledmap->setPositionY(tiledmap->getPositionY()
+						+ m_player->speed);
+					y_move -= m_player->speed;
+				}
+			}
+			else if (1 == ifxie)
+			{
+				if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
+				{
+					tiledmap->setPositionY(tiledmap->getPositionY()
+						+ m_player->speed*XIE);
+					tiledmap->setPositionX(tiledmap->getPositionX()
+						- m_player->speed*XIE);
+					x_move += m_player->speed*XIE;
+					y_move -= m_player->speed*XIE;
+				}
+			}
+			else if (2 == ifxie)
+			{
+				if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
+				{
+					tiledmap->setPositionY(tiledmap->getPositionY()
+						+ m_player->speed*XIE);
+					tiledmap->setPositionX(tiledmap->getPositionX()
+						+ m_player->speed*XIE);
+					x_move -= m_player->speed*XIE;
+					y_move -= m_player->speed*XIE;
+				}
+			}
 		}
 		return true;
 	}
@@ -554,20 +666,18 @@ bool GamePlaying::down(bool flag)
 }
 bool GamePlaying::isCanReach(float x, float y)
 {
-	bool result;
-	//log("ancherpoint %f %f", m_player->getAnchorPoint().x, m_player->getAnchorPoint().y);
-	double mapX = ((x - DIFF) / 32);        //减去16是由于人物的锚点在中心
-	double mapY = (MAP1_HEIGHT - (y - DIFF) / 32);   //49为Tiled里地图的坐标最大值
+	double mapX = x/ 32.0;        //减去16是由于人物的锚点在中心
+	double mapY = MAP_HEIGHT - y/32.0;   //49为Tiled里地图的坐标最大值
 	int tileGid = meta->tileGIDAt(Vec2(mapX, mapY)); //32是一格的大小
+
 	if (tileGid != GAP_GID)
 	{
-		result = true;
+		return true;
 	}
 	else
 	{
-		result = false;
+		return false;
 	}
-	return result;
 }
 
 void GamePlaying::HPjudge(const Vec2 &pos)
@@ -607,8 +717,8 @@ void GamePlaying::HP_grow(float dt)
 	int metax, metay;
 	srand(time(NULL));
 	//为了让回血道具产生的更稀疏（其实并没有什么差2333333                 
-	metax = ((rand()%MAP1_WIDTH)*(rand()%MAP1_WIDTH)) % MAP1_WIDTH;
-	metay = ((rand() % MAP1_HEIGHT)*(rand() % MAP1_HEIGHT)) % MAP1_HEIGHT;
+	metax = ((rand()%MAP_WIDTH)*(rand()%MAP_WIDTH)) % MAP_WIDTH;
+	metay = ((rand() % MAP_HEIGHT)*(rand() % MAP_HEIGHT)) % MAP_HEIGHT;
 
 	int gid = meta->getTileGIDAt(Vec2(1.0*metax, 1.0*metay));
 	if (GAP_GID != gid && HP_GID != gid && EXP_GID != gid)
@@ -662,8 +772,8 @@ void GamePlaying::EXP_grow(float dt)
 	if (exp_auto_arise.size() > 100) { return; }
 	int metax, metay;
 	srand(time(NULL));               
-	metax = rand() % MAP1_WIDTH;
-	metay = rand() % MAP1_HEIGHT;
+	metax = rand() % MAP_WIDTH;
+	metay = rand() % MAP_HEIGHT;
 
 	int gid = meta->getTileGIDAt(Vec2(1.0*metax, 1.0*metay));
 	if (GAP_GID != gid && HP_GID != gid && EXP_GID != gid)
@@ -789,11 +899,23 @@ void GamePlaying::update(float delta)
 	if (!waytorun)
 	{
 		keys[k_w] = keys[k_a] = keys[k_s] = keys[k_d] = false;
-		if (pos.x - x > 0) { keys[k_d] = true; }
-		else { keys[k_a] = true; }
+		if (pos.x - x > 32.0f) 
+		{ 
+			keys[k_d] = true; 
+		}
+		else if (x - pos.x>32.0f)
+		{ 
+			keys[k_a] = true; 
+		}
 
-		if (pos.y - y > 0) { keys[k_w] = true; }
-		else { keys[k_s] = true; }
+		if (pos.y - y > 32.0f) 
+		{ 
+			keys[k_w] = true; 
+		}
+		else if(y - pos.y > 32.0f)
+		{ 
+			keys[k_s] = true; 
+		}
 	}
 
 	if (keys[k_w] || keys[k_a] || keys[k_s] || keys[k_d])//分别是wasd，参见#define
@@ -806,8 +928,9 @@ void GamePlaying::update(float delta)
 			bool flagup = up(false), flagright = right(false);
 			if (flagup && flagright)			//如果往上和往右都可以走
 			{
-				up(true);              //虽然调用的是up(true)但是实际runEventl()里走的方向还是右上的
-				right(false);		  //仅仅调up方向的移动函数还不够用,还需要通过调用right(false)来让地图能同步的移动
+				up(true,1);              //虽然调用的是up(true)但是实际runEventl()里走的方向还是右上的
+					  //仅仅调up方向的移动函数还不够用,还需要通过调用right(false)来让地图能同步的移动
+
 			}
 			else if (flagup && !flagright)  //如果只是往上可以走，那表现的效果就是沿着墙往上跑
 			{
@@ -827,9 +950,7 @@ void GamePlaying::update(float delta)
 			bool flagup = up(false), flagleft = left(false);
 			if (flagup && flagleft)
 			{
-				up(true);
-				left(false);
-
+				up(true,2);
 			}
 			else if (flagup && !flagleft)
 			{
@@ -847,8 +968,7 @@ void GamePlaying::update(float delta)
 			bool flagleft = left(false), flagdown = down(false);
 			if (flagleft && flagdown)
 			{
-				down(true);
-				left(false);
+				down(true,2);
 			}
 			else if (flagleft && !flagdown)
 			{
@@ -866,8 +986,7 @@ void GamePlaying::update(float delta)
 			bool flagdown = down(false), flagright = right(false);
 			if (flagdown && flagright)
 			{
-				down(true);
-				right(false);
+				down(true,1);
 			}
 			else if (flagdown && !flagright)
 			{
@@ -919,7 +1038,7 @@ void GamePlaying::update(float delta)
 	{
 		/*if (!isCanReach(bub->getPositionX(), bub->getPositionY()))
 		{
-			bub->hide();
+		bub->hide();
 		}*/
 		for (auto pl : plsum)
 		{
@@ -942,14 +1061,14 @@ void GamePlaying::update(float delta)
 
 void GamePlaying::runEvent()
 {
-	if (waytorun)
+	//if(waytorun)
 		m_player->runway1(keys, m_smallplayer);
-	else m_player->runway2(pos, m_smallplayer);
+	//else m_player->runway2(pos, m_smallplayer);
 }
 
 void GamePlaying::attack()
 {
-	//   log("attack in x = %f  y = %f", pos.x, pos.y);
+	log("attack in x = %f  y = %f", pos.x, pos.y);
 	auto Abullet = BulletBase::create();
 	Abullet->bindSprite(Sprite::create("arrow.png"));
 	Abullet->setPosition(Point(m_player->x_coord - x_move, m_player->y_coord - y_move));
@@ -959,8 +1078,6 @@ void GamePlaying::attack()
 	float dx, dy;
 	dx = pos.x - m_player->x_coord;
 	dy = pos.y - m_player->y_coord;
-	log("player %f  %f", m_player->x_coord, m_player->y_coord);
-	log("pos  %f  %f", pos.x, pos.y);
 	if (dy == 0)
 	{
 		if (dx >= 0)

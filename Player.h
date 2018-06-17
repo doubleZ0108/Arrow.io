@@ -15,8 +15,8 @@ public:
 	void runway2(Point point, Player *smallplayer);
 
 	Size visibleSize = CCDirector::getInstance()->getVisibleSize();
-	float x_coord = 80.0f;
-	float y_coord = 80.0f;
+	float x_coord = 90.0f;
+	float y_coord = 90.0f;
 	int speed = 3;
 	float radius = 30;
 	int p_hp = 50;
