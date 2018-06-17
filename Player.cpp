@@ -11,7 +11,6 @@
 extern bool smallmap_switch;       //小地图控制开关,true->打开小地图,false->关上小地图
 bool Player::init()
 {
-
 	return true;
 }
 
@@ -106,9 +105,10 @@ void Player::runway2(Point point, Player *smallplayer)
 	}
 
 }
+
 void Player::hurt(int atk)
 {
-	p_hp -= atk;
+	p_hp -= atk * defpower;
 	if (p_hp <= 0)
 		die();
 }
@@ -138,8 +138,9 @@ void Player::restart()
 	unbeat = 1;
 
 	this->sprite->setAnchorPoint(Point(0.5, 0.5));
-	x_coord = rand() % 600 + 100;
-	y_coord = rand() % 300 + 100;
+	x_coord = rand() % 1400 + 100;
+	y_coord = rand() % 1400 + 100;
+
 	this->setPosition(x_coord, y_coord);
 
 	auto * rotateto = RotateTo::create(0, 0);
@@ -192,4 +193,33 @@ void Player::animationcreate(int direct)
 	Action* actions = Sequence::create(action, callFunc, NULL);
 
 	sprite->runAction(actions);
+}
+
+void Player::hpraise(int num)
+{
+	p_hp += num * 10;
+
+	if (p_hp >= hpLimit)
+		p_hp = hpLimit;
+
+	//log("HP : %f", p_hp);
+}
+
+bool Player::expraise(int num)
+{
+	exp += num * 2;
+	bool whether = 0;
+	while (exp >= explimit() && level <= 10)
+	{
+		exp -= explimit();
+		level++;
+		whether = 1;
+	}
+	//log("exp : %d", exp);
+	return whether;
+}
+
+int Player::explimit()
+{
+	return (5 * level*level + 15 * level);
 }

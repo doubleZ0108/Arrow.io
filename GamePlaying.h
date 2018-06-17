@@ -5,10 +5,47 @@
 #include "Player.h"
 #include "BulletBase.h"
 #include "ProgressView.h"
+#include "ExpProgress.h"
 #include <windows.h>  
 #include <vector>
 #define KEY_DOWN(vk_code) (GetAsyncKeyState(vk_code) & 0x8000 ? 1 : 0)  
 #define KEY_UP(vk_code) (GetAsyncKeyState(vk_code) & 0x8000 ? 0 : 1)  
+
+#define k_w (EventKeyboard::KeyCode)146
+#define k_a (EventKeyboard::KeyCode)124
+#define k_s (EventKeyboard::KeyCode)142
+#define k_d (EventKeyboard::KeyCode)127
+
+#define MAP_SIZE 1600
+#define MAP_WIDTH 49
+#define MAP_HEIGHT 49
+
+#define DIFF 16   //人物和墙壁间的距离差值（比较玄学的测试，主要用于检测某一个方向是否有不可以走的地方
+
+#define GAP1_GID 145
+#define NOR1_GID 138
+#define HP1_GID 137
+#define EXP1_GID 142
+
+#define GAP2_GID 300
+#define NOR2_GID 293
+#define HP2_GID 294
+#define EXP2_GID 299
+
+#define GAP3_GID 405
+#define NOR3_GID 398
+#define HP3_GID 399
+#define EXP3_GID 404
+
+#define GAP_GID (1==which_map?GAP1_GID : (2==which_map? GAP2_GID : GAP3_GID))
+#define NOR_GID (1==which_map?NOR1_GID : (2==which_map? NOR2_GID : NOR3_GID))
+#define HP_GID (1==which_map?HP1_GID : (2==which_map? HP2_GID : HP3_GID))
+#define EXP_GID (1==which_map?EXP1_GID : (2==which_map? EXP2_GID : EXP3_GID))
+
+#define SM_MAP_SIZE 245
+#define RETE (260.0/1600)  //smallplayer和player移动距离的比
+#define XIE 0.707
+
 USING_NS_CC;
 struct HP_MESS
 {
@@ -86,6 +123,7 @@ public:
 	////////////////////////////////////
 
 	void Magent_change(Ref* pSender);
+	void Weapon_change(Ref* pSender);
 
 	///////////////////////////////////
 	//各种开关的回调函数
@@ -119,7 +157,9 @@ public:
 	void runEvent();
 	void onEnter();
 	void attack();
-
+	/////////////////////////
+	void levelup();
+	/////////////////////////
 private:
 	Player * m_player = Player::create();		//主角1
 	Player* n_player = Player::create();       //主角2，作为不动靶，闲的话也可
@@ -134,11 +174,16 @@ private:
 	Sprite *m_smallmap;
 	//LayerColor *m_smallmap;
 	Player *m_smallplayer;
+	Player *n_smallplayer;
 
 	///////////////////////////////
 	//血条
 	ProgressView *m_pProgressView;
 	ProgressView *n_pProgressView;
+
+	/////////////////////////
+	ExpProgress *expPro;
+	Label *lv;
 };
 
 #endif //_GAMEPLAYING_H_

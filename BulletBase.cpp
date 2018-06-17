@@ -1,5 +1,5 @@
 #include "Bulletbase.h"
-#include "GamePlaying.h"
+
 BulletBase::BulletBase()
 {
 }
@@ -14,19 +14,45 @@ bool BulletBase::init()
 	return true;
 }
 
-BulletBase* BulletBase::create(Sprite *sprite)
-{
-	BulletBase* abullet = new BulletBase();
-	return abullet;
-}
-
-void BulletBase::attacking(Player *player, BulletBase *Abullet, Point pos)
+void BulletBase::attacking(Player *player, Point pos)
 {
 	comefrom = player;
-	float time = (Abullet->range) / (Abullet->flyspeed);//单位为秒
+	if (comefrom->weapon == 1)
+	{
+		atkpower = 5;
+		flyspeed = 500;
+		range = 400;
+		arrow(player, pos);
+	}
+	else if (comefrom->weapon == 2)
+	{
+		atkpower = 6;
+		range = 300;
+		ground(player, pos);
+	}
+	else if (comefrom->weapon == 3)
+	{
+		atkpower = 15;
+		flyspeed = 300;
+		range = 50;
+		knife(player, pos);
+	}
+	else if (comefrom->weapon == 4)
+	{
+		atkpower = 6;
+		flyspeed = 700;
+		range = 400;
+		arrow(player, pos);
+	}
+}
+
+void BulletBase::arrow(Player *player, Point pos)
+{
+	range *= comefrom->atkrange;
+	float time = (range) / (flyspeed);//单位为秒
 	float length = sqrt((player->x_coord - pos.x)*(player->x_coord - pos.x) + (player->y_coord - pos.y)*(player->y_coord - pos.y));
-	float xchange = (pos.x - player->x_coord) / length * Abullet->range;
-	float ychange = (pos.y - player->y_coord) / length * Abullet->range;
+	float xchange = (pos.x - player->x_coord) / length * range;
+	float ychange = (pos.y - player->y_coord) / length * range;
 	//在cocos2dx中你甚至能学几何
 
 	auto moveBy = MoveBy::create(time, Point(xchange, ychange));
@@ -43,9 +69,7 @@ void BulletBase::attacking(Player *player, BulletBase *Abullet, Point pos)
 	rcs = sqrt(xcs*xcs + ycs * ycs);
 	flyrange = 0;
 
-	Abullet->runAction(moveBy);
-	//将子弹位移动作和子弹消失动作合并，后期可以考虑子弹停留效果（现在不写是因为碰撞判定问题……
-	//话说这个函数边执行边把自己这个对象删除，结果居然不出bug，看来360强力卸载是能卸掉360的
+	this->runAction(moveBy);
 }
 
 void BulletBase::hide()
@@ -64,12 +88,10 @@ void BulletBase::pointChange(float dt)
 			point.x += xcs;
 			point.y += ycs;
 			flyrange += rcs;
-			//			log("x = %f  y = %f", point.x, point.y);
 		}
 		else
 		{
 			point = target;
-			//			log("x = %f  y = %f", point.x, point.y);
 			this->hide();
 		}
 	}
@@ -87,9 +109,51 @@ bool BulletBase::collidePlayer(Player *player)
 		if (dx < player->radius && dy < player->radius)
 		{
 			this->hide();
-			player->hurt(atkpower);
+			player->hurt(atkpower*comefrom->atkpower);
 			return true;
 		}
 	}
 	return false;
+}
+
+void BulletBase::ground(Player* player, Point pos)
+{
+	xcs = ycs = rcs = 0;
+	point = pos;
+	MoveBy *moveBy = MoveBy::create(2.0f, ccp(0, 0));
+	auto callbackFunc = [&]()
+	{
+		this->hide();
+	};
+	CallFunc* callFunc = CallFunc::create(callbackFunc);
+
+	Action* actions = Sequence::create(moveBy, callFunc, NULL);
+
+	this->runAction(actions);
+}
+
+void BulletBase::knife(Player *player, Point pos)
+{
+	range *= comefrom->atkrange;
+	float time = (range) / (flyspeed);//单位为秒
+	float length = sqrt((player->x_coord - pos.x)*(player->x_coord - pos.x) + (player->y_coord - pos.y)*(player->y_coord - pos.y));
+	float xchange = (pos.x - player->x_coord) / length * range;
+	float ychange = (pos.y - player->y_coord) / length * range;
+	//在cocos2dx中你甚至能学几何
+
+	auto moveBy = MoveBy::create(time, Point(xchange, ychange));
+	point.x = player->x_coord;
+	point.y = player->y_coord;
+	target.x = point.x + xchange;
+	target.y = point.y + ychange;
+
+	//	log("start x = %f  y = %f", point.x, point.y);
+	//	log("target x = %f  y = %f", target.x, target.y);
+
+	xcs = xchange / time * 0.02;
+	ycs = ychange / time * 0.02;
+	rcs = sqrt(xcs * xcs + ycs * ycs);
+	flyrange = 0;
+
+	this->runAction(moveBy);
 }

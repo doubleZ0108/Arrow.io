@@ -13,27 +13,28 @@ public:
 	CREATE_FUNC(BulletBase);
 	virtual bool init();
 
-	BulletBase *create(Sprite *sprite);
-	bool init(Sprite *sprite);
-
-	int atkpower = 5;
-	int flyspeed = 500;
-	float range = 200;
 	Player *comefrom;//子弹来源
 
-	void attacking(Player *player, BulletBase *Abullet, Point pos);
+	void attacking(Player *player, Point pos);
 	bool collidePlayer(Player *player);//判断碰撞
-
-	void pointChange(float dt);
 
 	bool exist = false;//子弹存在
 
-	void hide();
+	void hide();	Point point;//子弹当前坐标
 private:
-	Point point;//子弹当前坐标
+
 	Point target;//预定攻击坐标
 	float xcs, ycs, rcs;//x y r单位时间改变量
 	float flyrange;//已飞行距离
+
+	int atkpower;
+	int flyspeed;
+	float range;
+
+	void pointChange(float dt);
+	void arrow(Player *player, Point pos);
+	void ground(Player* player, Point pos);
+	void knife(Player* player, Point pos);
 };
 
 #endif

@@ -79,12 +79,20 @@ void MapChose::ScenePrinter()
 	gridNodeTarget_1->addChild(pre_map1);
 
 	auto pre_map2 = Sprite::create("smallmap2.png");
-	x = rect.origin.x + rect.size.width*(3.0f / 4.0f);
+	x = rect.origin.x + rect.size.width*(2.0f / 4.0f);
 	pre_map2->setPosition(Vec2(x, y));
 
 	auto gridNodeTarget_2 = NodeGrid::create();
 	this->addChild(gridNodeTarget_2);
 	gridNodeTarget_2->addChild(pre_map2);
+
+	auto pre_map3 = Sprite::create("smallmap3.png");
+	x = rect.origin.x + rect.size.width*(3.0f / 4.0f);
+	pre_map3->setPosition(Vec2(x, y));
+
+	auto gridNodeTarget_3 = NodeGrid::create();
+	this->addChild(gridNodeTarget_3);
+	gridNodeTarget_3->addChild(pre_map3);
 
 
 	/////////////////////////////////////////////
@@ -103,8 +111,10 @@ void MapChose::ScenePrinter()
 
 		if (rect.containsPoint(locationInNode))
 		{
-			CCActionInterval* shuffle = CCShuffleTiles::create(5, CCSize(50, 50), 50);
-			gridNodeTarget_2->runAction(shuffle); 
+			CCActionInterval* shuffle1 = CCShuffleTiles::create(5, CCSize(50, 50), 50);
+			gridNodeTarget_2->runAction(shuffle1); 
+			CCActionInterval* shuffle2 = CCShuffleTiles::create(5, CCSize(50, 50), 50);
+			gridNodeTarget_3->runAction(shuffle2);
 
 			log("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
 			target->setOpacity(180);
@@ -137,8 +147,10 @@ void MapChose::ScenePrinter()
 
 		if (rect.containsPoint(locationInNode))
 		{
-			CCActionInterval* turnOffFiels = CCTurnOffTiles::create(3, CCSize(50, 50));
-			gridNodeTarget_1->runAction(turnOffFiels); 
+			CCActionInterval* turnOffFiels1 = CCTurnOffTiles::create(3, CCSize(50, 50));
+			gridNodeTarget_1->runAction(turnOffFiels1); 
+			CCActionInterval* turnOffFiels2 = CCTurnOffTiles::create(3, CCSize(50, 50));
+			gridNodeTarget_3->runAction(turnOffFiels2);
 
 			log("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
 			target->setOpacity(180);
@@ -155,6 +167,44 @@ void MapChose::ScenePrinter()
 		_eventDispatcher->removeEventListener(listener2);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, pre_map2);
+
+	/////////////////////////////////////////////
+	// Make pre_map3 touchable  
+	auto listener3 = EventListenerTouchOneByOne::create();//创建一个触摸监听  
+	listener3->setSwallowTouches(true); //设置是否想下传递触摸  
+
+	listener3->onTouchBegan = [=](Touch* touch, Event* event)
+	{
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+
+		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
+		Size s = target->getContentSize();
+		Rect rect = Rect(0, 0, s.width, s.height);
+
+		if (rect.containsPoint(locationInNode))
+		{
+			CCActionInterval* shuffle1 = CCShuffleTiles::create(5, CCSize(50, 50), 50);
+			gridNodeTarget_1->runAction(shuffle1);
+			CCActionInterval* shuffle2 = CCShuffleTiles::create(5, CCSize(50, 50), 50);
+			gridNodeTarget_2->runAction(shuffle2);
+
+			log("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
+			target->setOpacity(180);
+			return true;
+		}
+		return false;
+	};
+	listener3->onTouchEnded = [=](Touch* touch, Event* event)
+	{
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+		target->setOpacity(255);
+		which_map = 3;
+		log("which_map %d", which_map);
+		_eventDispatcher->removeEventListener(listener2);
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener3, pre_map3);
+
+
 	
 }
 void MapChose::menuStartScene(Ref* pSender)
