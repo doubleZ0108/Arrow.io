@@ -5,7 +5,9 @@
 USING_NS_CC;
 extern bool language_flag;   //true->English   false->Chinese
 extern int is_paused;        //关于is_paused的具体解释请见 "HelloWorldScene.h"
+extern double window_size;
 extern char *FontToUTF8(const char* font);
+
 //it is define in another .cpp file 
 //and it is used to change character
 
@@ -37,6 +39,8 @@ bool SettingScene::init()
 	SizePrinter();
 	return true;
 }
+
+
 
 void SettingScene::ScenePrinter()
 {
@@ -244,13 +248,13 @@ void SettingScene::SizePrinter()
 	}
 	else
 	{
-		sizeword_small = Label::create(FontToUTF8("小小小"), 
+		sizeword_small = Label::create(FontToUTF8("小窗口"), 
 			"Arial", 40);
 	}
 	auto *psizeword_small = MenuItemLabel::create(sizeword_small, this,
 		menu_selector(SettingScene::size_change_tosmall));
 	auto* size_button_small = Menu::create(psizeword_small, NULL);
-	x = rect.origin.x + rect.size.width*(5.0f / 10.0f);
+	x = rect.origin.x + rect.size.width*(4.5f / 10.0f);
 	y = rect.origin.y + rect.size.height*(1.0f / 3.0f);
 	size_button_small->setPosition(Vec2(x, y));
 	size_button_small->setColor(Color3B::BLACK);
@@ -263,7 +267,7 @@ void SettingScene::SizePrinter()
 	}
 	else
 	{
-		sizeword_middle = Label::create(FontToUTF8("中中中"),
+		sizeword_middle = Label::create(FontToUTF8("中窗口"),
 			"Arial", 40);
 	}
 	auto *psizeword_middle = MenuItemLabel::create(sizeword_middle, this,
@@ -281,13 +285,13 @@ void SettingScene::SizePrinter()
 	}
 	else
 	{
-		sizeword_large = Label::create(FontToUTF8("大大大"),
+		sizeword_large = Label::create(FontToUTF8("大窗口"),
 			"Arial", 40);
 	}
 	auto *psizeword_large = MenuItemLabel::create(sizeword_large, this,
 		menu_selector(SettingScene::size_change_tolarge));
 	auto* size_button_large = Menu::create(psizeword_large, NULL);
-	x = rect.origin.x + rect.size.width*(7.0f / 10.0f);
+	x = rect.origin.x + rect.size.width*(7.5f / 10.0f);
 	size_button_large->setPosition(Vec2(x, y));
 	size_button_large->setColor(Color3B::BLACK);
 	this->addChild(size_button_large);
@@ -296,6 +300,13 @@ void SettingScene::SizePrinter()
 void SettingScene::menuHellowWorldScene(Ref* pSender)
 {
 	is_paused = continue_music;
+
+	auto* setting_default = UserDefault::getInstance();
+	setting_default->setIntegerForKey("language", language_flag);
+	setting_default->setIntegerForKey("music", is_paused);
+	setting_default->setDoubleForKey("size", window_size);
+	setting_default->flush();
+
 	auto sc = HelloWorld::createScene();
 	auto reScene = TransitionSlideInR::create(1.0f, sc);  //从右边推入的动画
 	Director::getInstance()->replaceScene(reScene);
@@ -341,19 +352,23 @@ void SettingScene::language_change_toenglish(cocos2d::Object * pSender)
 
 void SettingScene::size_change_tosmall(cocos2d::Object * pSender)
 {
-	auto director = Director::getInstance();
-	auto glview = director->getOpenGLView();
-	glview->setFrameZoomFactor(0.6f);
+	window_size = 0.6f;
+	size_change();
 }
 void SettingScene::size_change_tomiddle(cocos2d::Object * pSender)
 {
-	auto director = Director::getInstance();
-	auto glview = director->getOpenGLView();
-	glview->setFrameZoomFactor(1.0f);
+	window_size = 1.0f;
+	size_change();
 }
 void SettingScene::size_change_tolarge(cocos2d::Object * pSender)
 {
+	window_size = 1.35f;
+	size_change();
+}
+
+void SettingScene::size_change()
+{
 	auto director = Director::getInstance();
 	auto glview = director->getOpenGLView();
-	glview->setFrameZoomFactor(1.35f);
+	glview->setFrameZoomFactor(window_size);
 }

@@ -27,6 +27,7 @@ public:
 	void size_change_tosmall(cocos2d::Object* pSender);
 	void size_change_tomiddle(cocos2d::Object* pSender);
 	void size_change_tolarge(cocos2d::Object* pSender);
+	void size_change();
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(SettingScene);

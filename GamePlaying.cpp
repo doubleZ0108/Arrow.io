@@ -5,7 +5,6 @@
 #include <math.h>
 #include <vector>
 #include <algorithm>
-
 USING_NS_CC;
 
 std::vector<HP_MESS> GamePlaying::hp_auto_arise;   //用于储存随机安置的回血道具的相关信息
@@ -48,12 +47,12 @@ bool GamePlaying::init()
 	{
 		return false;
 	}
-	
 	MusicPrinter();
 	MapPrinter();
 	ScenePrinter();
 	SmallmapPrinter();
 	ModePrinter();
+	
 
 
 	schedule(schedule_selector(GamePlaying::EXP_grow), 0.15f);
@@ -712,8 +711,8 @@ void GamePlaying::HP_grow(float dt)
 	{
 	this->unschedule(schedule_selector(StartScene::HP_grow));
 	}*/
-	//限定场上回血道具的数量，超过30个的时候就先停止产生
-	if (hp_auto_arise.size() > 30) { return; }
+	//限定场上回血道具的数量，超过25个的时候就先停止产生
+	if (hp_auto_arise.size() > 25) { return; }
 	int metax, metay;
 	srand(time(NULL));
 	//为了让回血道具产生的更稀疏（其实并没有什么差2333333                 
@@ -1541,7 +1540,7 @@ void GamePlaying::attack()
 void GamePlaying::menuStartScene(Ref* pSender)
 {
 	CocosDenshion::SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
-	
+
 	//返回按钮之前把一切回到最初状态
 	smallmap_switch = true; 
 	music_switch = true;

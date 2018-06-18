@@ -31,6 +31,7 @@ bool HelpScene::init()
 	}
 
 	ScenePrinter();
+	PagePrinter();
 
 	return true;
 }
@@ -46,12 +47,12 @@ void HelpScene::ScenePrinter()
 
 	///////////////////////////////////////////
 	//add Setting_Background
-
-	x = rect.origin.x + rect.size.width / 2;
-	y = rect.origin.y + rect.size.height / 2;
-	auto *background = Sprite::create("Help_Background.png");
+	/*auto *background = Sprite::create("Help_Background.png");
 	background->setPosition(Vec2(x, y));
 	this->addChild(background);
+
+	Texture2D * pic = Director::getInstance()->getTextureCache()->addImage("blue.png");
+	background->setTexture(pic);*/
 
 	///////////////////////////////////
 	//a return button which click to back to HelloWorldScene
@@ -65,7 +66,7 @@ void HelpScene::ScenePrinter()
 	y = rect.origin.y + rect.size.height*(1.0f / 10.0f);
 	preturn->setPosition(Vec2(x, y));
 	preturn->setScale(1.0f);
-	this->addChild(preturn);
+	this->addChild(preturn,10);
 
 	//爆炸效果*/
 	/*CCParticleSystem* particleSystem = CCParticleExplosion::create();
@@ -96,13 +97,13 @@ void HelpScene::ScenePrinter()
 	particleSystem->setTexture(CCTextureCache::sharedTextureCache()->addImage("fire.jpg"));
 	addChild(particleSystem);*/
 
-	CCSprite* sp = CCSprite::create("fire.jpg");
+	/*CCSprite* sp = CCSprite::create("fire.jpg");
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 2;
 	sp->setPosition(Vec2(x, y));
 	auto gridNodeTarget = NodeGrid::create();
 	this->addChild(gridNodeTarget);
-	gridNodeTarget->addChild(sp);
+	gridNodeTarget->addChild(sp);*/
 	
 
 	
@@ -150,6 +151,65 @@ void HelpScene::ScenePrinter()
 	//    gridNodeTarget->runAction(jumpTiles); 
 }
 
+void HelpScene::PagePrinter()
+{
+	auto listener = EventListenerTouchOneByOne::create();
+	listener->setSwallowTouches(true); //设置是否想下传递触摸  
+	listener->onTouchBegan = [&](Touch * touch, Event * unused_event)
+	{
+		return true;
+	};
+	listener->onTouchEnded = [&](Touch * touch, Event * unused_event)
+	{
+
+	};
+	Director::getInstance()->getEventDispatcher()->
+		addEventListenerWithSceneGraphPriority(listener, this);
+
+	//滑动关卡  
+	Size WinSize = Director::getInstance()->getWinSize();
+
+	pageView = PageView::create();
+	pageView->setSize(Size(WinSize.width, WinSize.height));
+	pageView->setPosition(Vec2::ZERO);
+	//8个滑动选项卡  
+	auto rect = Director::getInstance()->getOpenGLView()->getVisibleRect();
+	float x = rect.origin.x + rect.size.width / 2;
+	float y = rect.origin.y + rect.size.height / 2;
+
+	for (int i = 0; i < 8; i++)
+	{
+		auto layout = Layout::create();
+		layout->setSize(Size(WinSize.width, WinSize.height));
+
+		/*auto imageView = ImageView::create(StringUtils::format("lv%d.png", i));
+		imageView->setSize(Size(pWidth, pHeight));
+		imageView->setPosition(Vec2(layout->getSize().width / 2, layout->getSize().height / 2));
+		layout->setScale(3.0f);
+		layout->addChild(imageView);*/
+		auto sprite = Sprite::create(StringUtils::format("lv%d.png", i));
+		sprite->setScale(3.0f);
+		y = rect.origin.y + rect.size.height / 2;
+		sprite->setPosition(Vec2(x, y));
+		layout->addChild(sprite);
+
+		auto label = Label::create(StringUtils::format("lv%d", i), "Arial", 46);
+		label->setColor(Color3B(192, 192, 192));
+		y = rect.origin.y + rect.size.height*(1.0f / 3.0f);
+		label->setPosition(Vec2(x, y));
+		layout->addChild(label);
+
+		pageView->addPage(layout);
+
+	}
+
+	auto JumpSceneCallback_lambda= [&](Ref * pSender, PageView::EventType type)
+	{};
+	pageView->addEventListener(JumpSceneCallback_lambda);
+
+	this->addChild(pageView);
+}
+
 void HelpScene::Func(Ref* pSender)
 {
 	//this->runAction(PageTurn3D::create(3.0f,Size(15,10)));
@@ -160,4 +220,5 @@ void HelpScene::menuHellowWorldScene(Ref* pSender)
 	auto reScene = TransitionFadeBL::create(1.0f, sc);
 	Director::getInstance()->replaceScene(reScene);
 }
+
 
