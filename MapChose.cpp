@@ -1,6 +1,7 @@
 #include "MapChose.h"
 #include "Start.h"
 
+
 USING_NS_CC;
 
 extern bool language_flag;   //true->English   false->Chinese
@@ -11,28 +12,29 @@ extern int which_map;
 
 Scene* MapChose::createScene()
 {
-	return MapChose::create();
+	auto scene = Scene::create();
+	auto layer = MapChose::create();
+	scene->addChild(layer);
+	return scene;
 }
-
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
 	printf("Error while loading: %s\n", filename);
 	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in MapChose.cpp\n");
 }
-
 // on "init" you need to initialize your instance
 bool MapChose::init()
 {
 	//////////////////////////////
 	// 1. super init first
-	if (!Scene::init())
+	if (!Layer::init())
 	{
 		return false;
 	}
 
 	ScenePrinter();
-
+	NetworkPrinter();
 	return true;
 }
 
@@ -128,6 +130,11 @@ void MapChose::ScenePrinter()
 		target->setOpacity(255);
 		which_map = 1;
 		log("which_map %d", which_map);
+
+		////////////////////////////
+		_sioClient->emit("mapchose", "1");
+		//////////////////////////
+
 		_eventDispatcher->removeEventListener(listener1);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, pre_map1);
@@ -164,6 +171,7 @@ void MapChose::ScenePrinter()
 		target->setOpacity(255);
 		which_map = 2;
 		log("which_map %d", which_map);
+		_sioClient->emit("mapchose", "2");
 		_eventDispatcher->removeEventListener(listener2);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, pre_map2);
@@ -200,16 +208,36 @@ void MapChose::ScenePrinter()
 		target->setOpacity(255);
 		which_map = 3;
 		log("which_map %d", which_map);
+		_sioClient->emit("mapchose", "3");
 		_eventDispatcher->removeEventListener(listener2);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener3, pre_map3);
-
-
-	
 }
+
+void MapChose::NetworkPrinter()
+{
+	_sioClient = network::SocketIO::connect("http://120.78.208.162:2333", *this);
+}
+
 void MapChose::menuStartScene(Ref* pSender)
 {
 	auto sc = StartScene::createScene();        //按列分割界面的切换动画
 	auto reScene = TransitionSlideInR::create(1.0f, sc);  //从右边推入的动画
 	Director::getInstance()->replaceScene(reScene);
+}
+void MapChose::onConnect(SIOClient * client)
+{
+	log("success");
+}
+
+void MapChose::onMessage(SIOClient * client, const std::string & data)
+{
+}
+
+void MapChose::onError(SIOClient * client, const std::string & data)
+{
+}
+
+void MapChose::onClose(SIOClient * client)
+{
 }

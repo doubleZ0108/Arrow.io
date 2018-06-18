@@ -5,6 +5,9 @@
 #include <math.h>
 #include <vector>
 #include <algorithm>
+#include <cstdio>
+#include <cstring>
+#include <string>
 USING_NS_CC;
 
 std::vector<HP_MESS> GamePlaying::hp_auto_arise;   //用于储存随机安置的回血道具的相关信息
@@ -23,13 +26,15 @@ int which_map = 3;
 int which_player = 1;
 
 bool magent = false;
+int viewsize = 1.0f;
 //it is define in another .cpp file 
 //and it is used to change character
 
 Scene* GamePlaying::createScene()
 {
-	auto scene = GamePlaying::create();
-
+	auto scene = Scene::create();
+	auto layer = GamePlaying::create();
+	scene->addChild(layer);
 	return scene;
 }
 // Print useful error message instead of segfaulting when files are not there.
@@ -43,21 +48,23 @@ bool GamePlaying::init()
 {
 	//////////////////////////////
 	// 1. super init first
-	if (!Scene::init())
+	if (!Layer::init())
 	{
 		return false;
 	}
+	NetworkPrinter();
 	MusicPrinter();
 	MapPrinter();
 	ScenePrinter();
 	SmallmapPrinter();
 	ModePrinter();
-	
-
 
 	schedule(schedule_selector(GamePlaying::EXP_grow), 0.15f);
 	schedule(schedule_selector(GamePlaying::HP_grow), 2.0f);
 
+	//_sioClient->on("HP position", CC_CALLBACK_2(GamePlaying::HP_recieve, this));
+	//_sioClient->on("EXP position", CC_CALLBACK_2(GamePlaying::EXP_recieve, this));
+	//_sioClient->on("n_player keys", CC_CALLBACK_2(GamePlaying::runEvent_n, this));
 	return true;
 }
 
@@ -154,6 +161,11 @@ void GamePlaying::ScenePrinter()
 	//chose the sequence that you prefer
 	cover->runAction(sequence2);*/
 
+}
+
+void GamePlaying::NetworkPrinter()
+{
+	_sioClient = network::SocketIO::connect("http://120.78.208.162:2333", *this);
 }
 
 void GamePlaying::PlayerPrinter()
@@ -525,7 +537,8 @@ bool GamePlaying::up(bool flag,int ifxie)  //ifxie默认参数为false，默认是直着走
 
 			if (!ifxie)
 			{
-				if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
+				if ((y*viewsize + tiledmap->getPositionY() > size.height / 2)
+					&& ((MAP_SIZE - y/viewsize) > size.height / 2))
 				{
 					tiledmap->setPositionY(tiledmap->getPositionY() 
 						- m_player->speed);//调整地图,使人物尽量居中
@@ -535,7 +548,8 @@ bool GamePlaying::up(bool flag,int ifxie)  //ifxie默认参数为false，默认是直着走
 			}
 			else if (1 == ifxie)
 			{
-				if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
+				if ((y*viewsize + tiledmap->getPositionY() > size.height / 2) 
+					&& ((MAP_SIZE - y/viewsize) > size.height / 2))
 				{
 					tiledmap->setPositionY(tiledmap->getPositionY()
 						- m_player->speed*XIE);
@@ -548,7 +562,8 @@ bool GamePlaying::up(bool flag,int ifxie)  //ifxie默认参数为false，默认是直着走
 			}
 			else if (2 == ifxie)
 			{
-				if ((y + tiledmap->getPositionY() > size.height / 2) && ((MAP_SIZE - y) > size.height / 2))
+				if ((y*viewsize + tiledmap->getPositionY() > size.height / 2) 
+					&& ((MAP_SIZE - y/viewsize) > size.height / 2))
 				{
 					tiledmap->setPositionY(tiledmap->getPositionY()
 						- m_player->speed*XIE);
@@ -575,7 +590,8 @@ bool GamePlaying::right(bool flag, int ifxie)
 			runEvent();
 			tofindEat(x, y);
 		}
-		if ((x + tiledmap->getPositionX() > size.width / 2) && ((MAP_SIZE - x) > size.width / 2))
+		if ((x*viewsize + tiledmap->getPositionX() > size.width / 2) 
+			&& ((MAP_SIZE - x/viewsize) > size.width / 2))
 		{
 			tiledmap->setPositionX(tiledmap->getPositionX() 
 				- m_player->speed);
@@ -597,7 +613,8 @@ bool GamePlaying::left(bool flag, int ifxie)
 			runEvent();
 			tofindEat(x, y);
 		}
-		if ((x + tiledmap->getPositionX() < size.width / 2) && tiledmap->getPositionX() != 0)
+		if ((x + tiledmap->getPositionX() < size.width / 2) 
+			&& tiledmap->getPositionX() != 0)
 		{
 			tiledmap->setPositionX(tiledmap->getPositionX() 
 				+ m_player->speed);
@@ -622,7 +639,8 @@ bool GamePlaying::down(bool flag, int ifxie)
 
 			if (!ifxie)
 			{
-				if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
+				if ((y + tiledmap->getPositionY() < size.height / 2) 
+					&& tiledmap->getPositionY() != 0)
 				{
 					tiledmap->setPositionY(tiledmap->getPositionY()
 						+ m_player->speed);
@@ -631,7 +649,8 @@ bool GamePlaying::down(bool flag, int ifxie)
 			}
 			else if (1 == ifxie)
 			{
-				if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
+				if ((y + tiledmap->getPositionY() < size.height / 2) 
+					&& tiledmap->getPositionY() != 0)
 				{
 					tiledmap->setPositionY(tiledmap->getPositionY()
 						+ m_player->speed*XIE);
@@ -643,7 +662,8 @@ bool GamePlaying::down(bool flag, int ifxie)
 			}
 			else if (2 == ifxie)
 			{
-				if ((y + tiledmap->getPositionY() < size.height / 2) && tiledmap->getPositionY() != 0)
+				if ((y + tiledmap->getPositionY() < size.height / 2)
+					&& tiledmap->getPositionY() != 0)
 				{
 					tiledmap->setPositionY(tiledmap->getPositionY()
 						+ m_player->speed*XIE);
@@ -718,7 +738,7 @@ void GamePlaying::HP_grow(float dt)
 	//为了让回血道具产生的更稀疏（其实并没有什么差2333333                 
 	metax = ((rand()%MAP_WIDTH)*(rand()%MAP_WIDTH)) % MAP_WIDTH;
 	metay = ((rand() % MAP_HEIGHT)*(rand() % MAP_HEIGHT)) % MAP_HEIGHT;
-
+	
 	int gid = meta->getTileGIDAt(Vec2(1.0*metax, 1.0*metay));
 	if (GAP_GID != gid && HP_GID != gid && EXP_GID != gid)
 	{
@@ -735,6 +755,11 @@ void GamePlaying::HP_grow(float dt)
 		hp_auto_arise[now_vec_maxindex].hp_potion->setPosition(
 			Vec2(spritex, spritey));
 		tiledmap->addChild(hp_auto_arise[now_vec_maxindex].hp_potion);
+
+		char HParr[20];
+		sprintf(HParr, "%d %d", metax, metay);
+		std::string HP_pos = HParr;
+		_sioClient->emit("HP position", HP_pos);
 	}
 }
 void GamePlaying::EXPjudge(const Vec2 & pos)
@@ -780,6 +805,7 @@ void GamePlaying::EXP_grow(float dt)
 	metax = rand() % MAP_WIDTH;
 	metay = rand() % MAP_HEIGHT;
 
+
 	int gid = meta->getTileGIDAt(Vec2(1.0*metax, 1.0*metay));
 	if (GAP_GID != gid && HP_GID != gid && EXP_GID != gid)
 	{
@@ -796,7 +822,48 @@ void GamePlaying::EXP_grow(float dt)
 		exp_auto_arise[now_vec_maxindex].exp_potion->setPosition(
 			Vec2(spritex, spritey));
 		tiledmap->addChild(exp_auto_arise[now_vec_maxindex].exp_potion);
+
+		char EXParr[20];
+		sprintf(EXParr, "%d %d", metax, metay);
+		std::string EXP_pos = EXParr;
+		_sioClient->emit("EXP position", EXP_pos);
 	}
+}
+void GamePlaying::HP_recieve(SIOClient * client, const std::string & data)
+{
+	int metax = data.c_str()[0] - '0', metay = data.c_str()[1] - '0';
+	int gid = meta->getTileGIDAt(Vec2(1.0*metax, 1.0*metay));
+	meta->setTileGID(HP_GID, Vec2(1.0*metax, 1.0*metay));
+
+	//类的构造函数，添加一个回血道具
+	hp_auto_arise.push_back(HP_MESS(Sprite::create("HP_tiledmap.png"), metax, metay));
+
+	int now_vec_maxindex = hp_auto_arise.size() - 1;
+	float spritex = metax * tileSize.width, spritey = (mapSize.height - metay)*tileSize.height;
+	hp_auto_arise[now_vec_maxindex].hp_potion->ignoreAnchorPointForPosition(false);
+	hp_auto_arise[now_vec_maxindex].hp_potion->setAnchorPoint(Vec2(0.0f, 1.0f));
+
+	hp_auto_arise[now_vec_maxindex].hp_potion->setPosition(
+		Vec2(spritex, spritey));
+	tiledmap->addChild(hp_auto_arise[now_vec_maxindex].hp_potion);
+}
+void GamePlaying::EXP_recieve(SIOClient * client, const std::string & data)
+{
+	int metax = data.c_str()[0] - '0', metay = data.c_str()[1] - '0';
+	int gid = meta->getTileGIDAt(Vec2(1.0*metax, 1.0*metay));
+	meta->setTileGID(EXP_GID, Vec2(1.0*metax, 1.0*metay));
+
+	//类的构造函数，添加一个回血道具
+	exp_auto_arise.push_back(EXP_MESS(Sprite::create("EXP_tiledmap.png"), metax, metay));
+
+	int now_vec_maxindex = exp_auto_arise.size() - 1;
+	float spritex = metax * tileSize.width, spritey = (mapSize.height - metay)*tileSize.height;
+	exp_auto_arise[now_vec_maxindex].exp_potion->ignoreAnchorPointForPosition(false);
+	exp_auto_arise[now_vec_maxindex].exp_potion->setAnchorPoint(Vec2(0.0f, 1.0f));
+
+	exp_auto_arise[now_vec_maxindex].exp_potion->setPosition(
+		Vec2(spritex, spritey));
+	tiledmap->addChild(exp_auto_arise[now_vec_maxindex].exp_potion);
 }
 void GamePlaying::tofindEat(const float x, const float y)
 {
@@ -822,10 +889,23 @@ void GamePlaying::tofindEat(const float x, const float y)
 	}
 }
 
+void GamePlaying::onConnect(SIOClient * client)
+{
+}
+void GamePlaying::onMessage(SIOClient * client, const std::string & data)
+{
+}
+void GamePlaying::onError(SIOClient * client, const std::string & data)
+{
+}
+void GamePlaying::onClose(SIOClient * client)
+{
+}
+
 
 void GamePlaying::onEnter()
 {
-	Scene::onEnter();
+	Layer::onEnter();
 
 	auto keylistener = EventListenerKeyboard::create();
 	auto mouselistener = EventListenerMouse::create();
@@ -952,6 +1032,8 @@ void GamePlaying::update(float delta)
 			bool flagup = up(false), flagright = right(false);
 			if (flagup && flagright)			//如果往上和往右都可以走
 			{
+				if(_sioClient)
+					_sioClient->emit("n_player keys", "wd");
 				if ((x + tiledmap->getPositionX() > size.width / 2)
 					&& ((MAP_SIZE - x) > size.width / 2))
 				{
@@ -963,12 +1045,15 @@ void GamePlaying::update(float delta)
 			else if (flagup && !flagright)  //如果只是往上可以走，那表现的效果就是沿着墙往上跑
 			{
 				keys[k_d] = false;         //把右方向的键盘监听关掉，表现为相当于只按了w
+				if (_sioClient)
+					_sioClient->emit("n_player keys", "w");
 				up(true);
-
 			}
 			else if (!flagup && flagright)
 			{
 				keys[k_w] = false;
+				if (_sioClient)
+					_sioClient->emit("n_player keys", "d");
 				right(true);
 			}
 
@@ -978,6 +1063,8 @@ void GamePlaying::update(float delta)
 			bool flagup = up(false), flagleft = left(false);
 			if (flagup && flagleft)
 			{
+				if (_sioClient)
+					_sioClient->emit("n_player keys", "wa");
 				if ((x + tiledmap->getPositionX() < size.width / 2)
 					&& tiledmap->getPositionX() != 0)
 				{
@@ -988,11 +1075,15 @@ void GamePlaying::update(float delta)
 			else if (flagup && !flagleft)
 			{
 				keys[k_a] = false;
+				if (_sioClient)
+					_sioClient->emit("n_player keys", "w");
 				up(true);
 			}
 			else if (!flagup && flagleft)
 			{
 				keys[k_w] = false;
+				if (_sioClient)
+					_sioClient->emit("n_player keys", "a");
 				left(true);
 			}
 		}
@@ -1001,6 +1092,8 @@ void GamePlaying::update(float delta)
 			bool flagleft = left(false), flagdown = down(false);
 			if (flagleft && flagdown)
 			{
+				if (_sioClient)
+					_sioClient->emit("n_player keys", "as");
 				if ((x + tiledmap->getPositionX() < size.width / 2)
 					&& tiledmap->getPositionX() != 0)
 				{
@@ -1011,11 +1104,15 @@ void GamePlaying::update(float delta)
 			else if (flagleft && !flagdown)
 			{
 				keys[k_s] = false;
+				if (_sioClient)
+					_sioClient->emit("n_player keys", "a");
 				left(true);
 			}
 			else if (!flagleft && flagdown)
 			{
 				keys[k_a] = false;
+				if (_sioClient)
+					_sioClient->emit("n_player keys", "s");
 				down(true);
 			}
 		}
@@ -1024,6 +1121,8 @@ void GamePlaying::update(float delta)
 			bool flagdown = down(false), flagright = right(false);
 			if (flagdown && flagright)
 			{
+				if (_sioClient)
+					_sioClient->emit("n_player keys", "sd");
 				if ((x + tiledmap->getPositionX() > size.width / 2)
 					&& ((MAP_SIZE - x) > size.width / 2))
 				{
@@ -1034,28 +1133,40 @@ void GamePlaying::update(float delta)
 			else if (flagdown && !flagright)
 			{
 				keys[k_d] = false;
+				if (_sioClient)
+					_sioClient->emit("n_player keys", "s");
 				down(true);
 			}
 			else if (!flagdown && flagright)
 			{
 				keys[k_s] = false;
+				if (_sioClient)
+					_sioClient->emit("n_player keys", "d");
 				right(true);
 			}
 		}
 		else if (keys[k_w])
 		{
+			if (_sioClient)
+				_sioClient->emit("n_player keys", "w");
 			up(true);
 		}
 		else if (keys[k_a])
 		{
+			if (_sioClient)
+				_sioClient->emit("n_player keys", "a");
 			left(true);
 		}
 		else if (keys[k_s])
 		{
+			if (_sioClient)
+				_sioClient->emit("n_player keys", "s");
 			down(true);
 		}
 		else if (keys[k_d])
 		{
+			if (_sioClient)
+				_sioClient->emit("n_player keys", "d");
 			right(true);
 		}
 	}
@@ -1110,6 +1221,35 @@ void GamePlaying::runEvent()
 		m_player->runway1(keys, m_smallplayer);
 	//else m_player->runway2(pos, m_smallplayer);
 }
+void GamePlaying::runEvent_n(SIOClient * client, const std::string & data)
+{
+	keys_n[k_w] = keys_n[k_a] = keys_n[k_s] = keys_n[k_d] = false;
+
+	char key1 = data.c_str()[0], key2 = 0;
+	if (data.size() > 1) { key2 = data.c_str()[1]; }
+	switch (key1)
+	{
+	case 'w':keys_n[k_w] = true; break;
+	case 'a':keys_n[k_a] = true; break;
+	case 's':keys_n[k_s] = true; break;
+	case 'd':keys_n[k_d] = true; break;
+	default:break;
+	}
+	if (key2)
+	{
+		switch (key2)
+		{
+		case 'w':keys_n[k_w] = true; break;
+		case 'a':keys_n[k_a] = true; break;
+		case 's':keys_n[k_s] = true; break;
+		case 'd':keys_n[k_d] = true; break;
+		default:break;
+		}
+	}
+	n_player->runway1(keys_n, n_smallplayer);
+}
+
+
 void GamePlaying::attack()
 {
 	if (n_player->p_hp == n_player->hpLimit)
@@ -1545,7 +1685,8 @@ void GamePlaying::menuStartScene(Ref* pSender)
 	smallmap_switch = true; 
 	music_switch = true;
 	mode_switch = true;
-
+	/*tiledmap->setScale(1.5f);
+	viewsize = 4.0f;*/
 	auto sc = StartScene::createScene();        //缩放交替的切换动画
 	auto reScene = TransitionShrinkGrow::create(1.0f, sc);
 	Director::getInstance()->replaceScene(reScene);

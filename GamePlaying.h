@@ -8,6 +8,8 @@
 #include "ExpProgress.h"
 #include <windows.h>  
 #include <vector>
+#include "network\SocketIO.h"
+
 #define KEY_DOWN(vk_code) (GetAsyncKeyState(vk_code) & 0x8000 ? 1 : 0)  
 #define KEY_UP(vk_code) (GetAsyncKeyState(vk_code) & 0x8000 ? 0 : 1)  
 
@@ -47,6 +49,7 @@
 #define XIE 0.707
 
 USING_NS_CC;
+using namespace cocos2d::network;
 struct HP_MESS
 {
 	Sprite* hp_potion;   //道具药水图片的精灵
@@ -79,9 +82,10 @@ struct EXP_MESS
 		else { return false; }
 	}
 };
-class GamePlaying : public Scene
+class GamePlaying : public cocos2d::Layer, public cocos2d::network::SocketIO::SIODelegate
 {
 private:
+
 	/////////////////////////////////////////////
 	//各种坐标的计算
 	Size visibleSize = Director::getInstance()->getVisibleSize();
@@ -104,6 +108,7 @@ private:
 	static std::vector<HP_MESS> hp_auto_arise;
 	static std::vector<EXP_MESS> exp_auto_arise;
 public:
+	SIOClient * _sioClient;
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
@@ -113,6 +118,7 @@ public:
 
 	//////////////////////////////////
 	//各种界面的绘制
+	void NetworkPrinter();
 	void PlayerPrinter();
 	void SettingPrinter();
 	void MapPrinter();
@@ -147,14 +153,25 @@ public:
 	void HP_grow(float dt);
 	void EXPjudge(const Vec2 &pos);
 	void EXP_grow(float dt);
+	void HP_recieve(SIOClient* client, const std::string& data);
+	void EXP_recieve(SIOClient* client, const std::string& data);
 	void tofindEat(const float x, const float y);
 	/////////////////////////////////////////
+
+	////////////////////////////////
+	//network
+	void onConnect(SIOClient* client);
+	void onMessage(SIOClient* client, const std::string& data);
+	void onError(SIOClient* client, const std::string& data);
+	void onClose(SIOClient* client);
+	/////////////////////////////
 
 	// implement the "static create()" method manually
 	CREATE_FUNC(GamePlaying);
 
 	virtual void update(float delta);
 	void runEvent();
+	void runEvent_n(SIOClient* client, const std::string& data);
 	void onEnter();
 	void attack();
 	/////////////////////////
@@ -164,6 +181,7 @@ private:
 	Player * m_player = Player::create();		//主角1
 	Player* n_player = Player::create();       //主角2，作为不动靶，闲的话也可
 	std::map<EventKeyboard::KeyCode, bool>keys;//记录按键状态
+	std::map<EventKeyboard::KeyCode, bool>keys_n;
 	bool touchon = false;//是否单击
 	Point pos;//单击坐标，用于攻击
 	std::vector<Player*>plsum;

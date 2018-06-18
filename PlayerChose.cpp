@@ -12,7 +12,10 @@ extern int which_player;
 
 Scene* PlayerChose::createScene()
 {
-	return PlayerChose::create();
+	auto scene = Scene::create();
+	auto layer = PlayerChose::create();
+	scene->addChild(layer);
+	return scene;
 }
 
 // Print useful error message instead of segfaulting when files are not there.
@@ -27,13 +30,13 @@ bool PlayerChose::init()
 {
 	//////////////////////////////
 	// 1. super init first
-	if (!Scene::init())
+	if (!Layer::init())
 	{
 		return false;
 	}
 
 	ScenePrinter();
-
+	NetworkPrinter();
 	return true;
 }
 
@@ -123,6 +126,7 @@ void PlayerChose::ScenePrinter()
 		target->setOpacity(255);
 		which_player = 1;
 		log("which_map %d", which_player);
+		_sioClient->emit("playerchose", "1");
 		_eventDispatcher->removeEventListener(listener1);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, pre_player1);
@@ -159,11 +163,27 @@ void PlayerChose::ScenePrinter()
 		target->setOpacity(255);
 		which_player = 2;
 		log("which_map %d", which_player);
+		_sioClient->emit("playerchose", "2");
 		_eventDispatcher->removeEventListener(listener2);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, pre_player2);
 	
-
+}
+void PlayerChose::NetworkPrinter()
+{
+	_sioClient = network::SocketIO::connect("http://120.78.208.162:2333", *this);
+}
+void PlayerChose::onConnect(SIOClient * client)
+{
+}
+void PlayerChose::onMessage(SIOClient * client, const std::string & data)
+{
+}
+void PlayerChose::onError(SIOClient * client, const std::string & data)
+{
+}
+void PlayerChose::onClose(SIOClient * client)
+{
 }
 void PlayerChose::menuStartScene(Ref* pSender)
 {

@@ -199,7 +199,7 @@ void SettingScene::LanguagePrinter()
 	Label *chinese_word;
 	if (language_flag)
 	{
-		chinese_word = Label::create("Chinses", "Arial", 40);
+		chinese_word = Label::create("Chinese", "Arial", 40);
 	}
 	else
 	{
