@@ -10,6 +10,7 @@
 #include <vector>
 #include "network\SocketIO.h"
 
+
 #define KEY_DOWN(vk_code) (GetAsyncKeyState(vk_code) & 0x8000 ? 1 : 0)  
 #define KEY_UP(vk_code) (GetAsyncKeyState(vk_code) & 0x8000 ? 0 : 1)  
 
@@ -47,7 +48,8 @@
 #define SM_MAP_SIZE 245
 #define RETE (260.0/1600)  //smallplayer和player移动距离的比
 #define XIE 0.707
-
+#define TLMAP_SCALE (viewsize==1? 1.0 :(viewsize==2? 1.7: 0.8))//地图缩放时的比例调整
+#define MOUCE_SCALE (viewsize==1? 1.0 :(viewsize==2? 1.35: 0.8))//地图缩放时鼠标的比例调整
 USING_NS_CC;
 using namespace cocos2d::network;
 struct HP_MESS
@@ -128,8 +130,9 @@ public:
 	void ModePrinter();
 	////////////////////////////////////
 
-	void Magent_change(Ref* pSender);
 	void Weapon_change(Ref* pSender);
+	void TLmap_change(Ref* pSender);
+	void Breakwall_change(Ref* pSender);
 
 	///////////////////////////////////
 	//各种开关的回调函数
@@ -181,14 +184,16 @@ public:
 	void runEvent_n(SIOClient* client, const std::string& data);
 	void onEnter();
 	void attack();
-	/////////////////////////
+	void attackweapon(float num);
 	void levelup();
 	/////////////////////////
 private:
 	Player * m_player = Player::create();		//主角1
 	Player* n_player = Player::create();       //主角2，作为不动靶，闲的话也可
 	std::map<EventKeyboard::KeyCode, bool>keys;//记录按键状态
+	std::map<EventKeyboard::KeyCode, bool>keys1;
 	std::map<EventKeyboard::KeyCode, bool>keys_n;
+	std::map<EventKeyboard::KeyCode, bool>keys1_n;
 	bool touchon = false;//是否单击
 	Point pos;//单击坐标，用于攻击
 	std::vector<Player*>plsum;

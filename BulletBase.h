@@ -16,7 +16,7 @@ public:
 	Player *comefrom;//×Óµ¯À´Ô´
 
 	void attacking(Player *player, Point pos);
-	bool collidePlayer(Player *player);//ÅĞ¶ÏÅö×²
+	int collidePlayer(Player *player);//ÅĞ¶ÏÅö×²
 
 	bool exist = false;//×Óµ¯´æÔÚ
 

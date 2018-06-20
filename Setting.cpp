@@ -40,8 +40,6 @@ bool SettingScene::init()
 	return true;
 }
 
-
-
 void SettingScene::ScenePrinter()
 {
 	auto visibleSize = Director::getInstance()->getVisibleSize();

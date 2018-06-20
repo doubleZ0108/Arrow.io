@@ -21,79 +21,40 @@ void Player::runway1(std::map<EventKeyboard::KeyCode, bool>keys, Player *smallpl
 	if (keys[k_w] && !keys[k_a] && !keys[k_s] && !keys[k_d])
 	{
 		ychange = speed;
-		animationcreate(3);
 	}
 	else if (!keys[k_w] && keys[k_a] && !keys[k_s] && !keys[k_d])
 	{
 		xchange = -speed;
-		animationcreate(1);
 	}
 	else if (!keys[k_w] && !keys[k_a] && keys[k_s] && !keys[k_d])
 	{
 		ychange = -speed;
-		animationcreate(0);
 	}
 	else if (!keys[k_w] && !keys[k_a] && !keys[k_s] && keys[k_d])
 	{
 		xchange = speed;
-		animationcreate(2);
 	}
 	else if (keys[k_w] && keys[k_a] && !keys[k_s] && !keys[k_d])
 	{
 		xchange = -XIEBIAN * speed; ychange = XIEBIAN * speed;
-		animationcreate(3);
 	}
 	else if (keys[k_w] && !keys[k_a] && !keys[k_s] && keys[k_d])
 	{
 		xchange = XIEBIAN * speed; ychange = XIEBIAN * speed;
-		animationcreate(3);
 	}
 	else if (!keys[k_w] && keys[k_a] && keys[k_s] && !keys[k_d])
 	{
 		xchange = -XIEBIAN * speed; ychange = -XIEBIAN * speed;
-		animationcreate(0);
 	}
 	else if (!keys[k_w] && !keys[k_a] && keys[k_s] && keys[k_d])
 	{
 		xchange = XIEBIAN * speed; ychange = -XIEBIAN * speed;
-		animationcreate(0);
 	}
+
 	x_coord += xchange;
 	y_coord += ychange;
 
 	//	log("x = %f  y = %f", x_coord, y_coord);
-	this->setPosition(ccp(x_coord, y_coord));
-
-	if (smallmap_switch)
-	{
-		auto moveBy_smallplayer = MoveBy::create(0.1f, Point(xchange*RETE, ychange*(RETE)));
-		smallplayer->setPosition(Vec2(
-			smallplayer->getPositionX() + xchange*RETE,
-			smallplayer->getPositionY() + ychange*(RETE)));
-	}
-
-}
-
-void Player::runway2(Point point, Player *smallplayer)
-{
-	float xchange, ychange;
-	float distance = sqrt((point.x - x_coord)*(point.x - x_coord) + (point.y - y_coord)*(point.y - y_coord));
-	xchange = (point.x - x_coord) / distance * speed;
-	ychange = (point.y - y_coord) / distance * speed;
-
-	x_coord += xchange;
-	y_coord += ychange;
-
-	if (ychange >= xchange && ychange >= -xchange)
-		animationcreate(3);
-	else if (ychange <= xchange && ychange <= -xchange)
-		animationcreate(0);
-	else if (ychange<xchange&&ychange>-xchange)
-		animationcreate(2);
-	else if (ychange>xchange&&ychange<-xchange)
-		animationcreate(1);
-
-	//log("x = %f  y = %f", x_coord, y_coord);
 	this->setPosition(ccp(x_coord, y_coord));
 
 	if (smallmap_switch)
@@ -106,11 +67,15 @@ void Player::runway2(Point point, Player *smallplayer)
 
 }
 
-void Player::hurt(int atk)
+bool Player::hurt(int atk)
 {
 	p_hp -= atk * defpower;
 	if (p_hp <= 0)
+	{
 		die();
+		return true;
+	}
+	return false;
 }
 
 void Player::die()
@@ -197,17 +162,15 @@ void Player::animationcreate(int direct)
 
 void Player::hpraise(int num)
 {
-	p_hp += num * 10;
+	p_hp += hpincrease * num * 10;
 
 	if (p_hp >= hpLimit)
 		p_hp = hpLimit;
-
-	//log("HP : %f", p_hp);
 }
 
 bool Player::expraise(int num)
 {
-	exp += num * 2;
+	exp += expincrease * num * 2;
 	bool whether = 0;
 	while (exp >= explimit() && level <= 10)
 	{
@@ -215,11 +178,61 @@ bool Player::expraise(int num)
 		level++;
 		whether = 1;
 	}
-	//log("exp : %d", exp);
 	return whether;
 }
 
 int Player::explimit()
 {
 	return (5 * level*level + 15 * level);
+}
+
+void Player::attackCD()
+{
+	attackcd = 1;
+
+	MoveBy* moveBy = MoveBy::create(atkCD, ccp(0, 0));
+	auto callbackFunc = [&]()
+	{
+		attackcd = 0;
+	};
+	CallFunc* callFunc = CallFunc::create(callbackFunc);
+
+	Action* actions = Sequence::create(moveBy, callFunc, NULL);
+	this->runAction(actions);
+}
+
+void Player::runanimate(std::map<EventKeyboard::KeyCode, bool>keys1)
+{
+	if (keys1[k_w] && !keys1[k_a] && !keys1[k_s] && !keys1[k_d])
+	{
+		animationcreate(3);
+	}
+	else if (!keys1[k_w] && keys1[k_a] && !keys1[k_s] && !keys1[k_d])
+	{
+		animationcreate(1);
+	}
+	else if (!keys1[k_w] && !keys1[k_a] && keys1[k_s] && !keys1[k_d])
+	{
+		animationcreate(0);
+	}
+	else if (!keys1[k_w] && !keys1[k_a] && !keys1[k_s] && keys1[k_d])
+	{
+		animationcreate(2);
+	}
+	else if (keys1[k_w] && keys1[k_a] && !keys1[k_s] && !keys1[k_d])
+	{
+		animationcreate(3);
+	}
+	else if (keys1[k_w] && !keys1[k_a] && !keys1[k_s] && keys1[k_d])
+	{
+		animationcreate(3);
+	}
+	else if (!keys1[k_w] && keys1[k_a] && keys1[k_s] && !keys1[k_d])
+	{
+		animationcreate(0);
+	}
+	else if (!keys1[k_w] && !keys1[k_a] && keys1[k_s] && keys1[k_d])
+	{
+		animationcreate(0);
+	}
 }

@@ -32,7 +32,7 @@ void BulletBase::attacking(Player *player, Point pos)
 	}
 	else if (comefrom->weapon == 3)
 	{
-		atkpower = 15;
+		atkpower = 10;
 		flyspeed = 300;
 		range = 50;
 		knife(player, pos);
@@ -97,7 +97,7 @@ void BulletBase::pointChange(float dt)
 	}
 }
 
-bool BulletBase::collidePlayer(Player *player)
+int BulletBase::collidePlayer(Player *player)
 {
 	if (this->comefrom != player && player->p_hp > 0 && !player->unbeat)
 	{
@@ -109,11 +109,15 @@ bool BulletBase::collidePlayer(Player *player)
 		if (dx < player->radius && dy < player->radius)
 		{
 			this->hide();
-			player->hurt(atkpower*comefrom->atkpower);
-			return true;
+			if (player->hurt(atkpower*comefrom->atkpower))
+			{
+				if (comefrom->expraise(player->level * 5))//如果升级了
+					return 2;
+			}
+			return 1;
 		}
 	}
-	return false;
+	return 0;
 }
 
 void BulletBase::ground(Player* player, Point pos)

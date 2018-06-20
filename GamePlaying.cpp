@@ -26,9 +26,8 @@ bool mode_switch = true;
 int which_map = 3;
 int which_player = 1;
 
-bool magent = false;
-double viewsize = 1.0f;
-
+int viewsize = 1;
+bool ifbreakwall = false;   //穿墙技能
 std::string ID;
 //it is define in another .cpp file 
 //and it is used to change character
@@ -55,11 +54,11 @@ bool GamePlaying::init()
 	{
 		return false;
 	}
-	NetworkPrinter();
+	/*NetworkPrinter();
 
 	std::string mess = "owner";
 	_sioClient->emit("owner", mess);
-	_sioClient->on("owner", CC_CALLBACK_2(GamePlaying::ID_judge, this));
+	_sioClient->on("owner", CC_CALLBACK_2(GamePlaying::ID_judge, this));*/
 
 	MusicPrinter();
 	MapPrinter();
@@ -67,14 +66,14 @@ bool GamePlaying::init()
 	SmallmapPrinter();
 	ModePrinter();
 
+	schedule(schedule_selector(GamePlaying::EXP_grow), 0.15f);
+	//schedule(schedule_selector(GamePlaying::HP_grow), 2.0f);
 
-	if (ID != "guest")
+	/*if (ID != "guest")
 	{
 		schedule(schedule_selector(GamePlaying::EXP_grow), 0.15f);
 		schedule(schedule_selector(GamePlaying::HP_grow), 2.0f);
 	}
-
-	
 
 	if (ID == "guest")
 	{
@@ -85,7 +84,7 @@ bool GamePlaying::init()
 	
 	_sioClient->on("HP remove", CC_CALLBACK_2(GamePlaying::HP_remove, this));
 	_sioClient->on("EXP remove", CC_CALLBACK_2(GamePlaying::EXP_remove, this));
-	_sioClient->on("n_player keys", CC_CALLBACK_2(GamePlaying::runEvent_n, this));
+	_sioClient->on("n_player keys", CC_CALLBACK_2(GamePlaying::runEvent_n, this));*/
 	return true;
 }
 void GamePlaying::ID_judge(SIOClient * client, const std::string & data)
@@ -95,6 +94,7 @@ void GamePlaying::ID_judge(SIOClient * client, const std::string & data)
 void GamePlaying::MapPrinter()
 {
 	size = Director::getInstance()->getVisibleSize();
+
 	//打开第一张瓦片地图
 	if (1 == which_map)
 	{
@@ -127,13 +127,13 @@ void GamePlaying::ScenePrinter()
 	///////////////////////////////////
 	//a return button which click to back to HelloWorldScene
 	auto *return_button = MenuItemImage::create(
-		"backtoupper.png",
-		"backtoupper_select.png",
+		"closetoupper.png",
+		"closetoupper_select.png",
 		CC_CALLBACK_1(GamePlaying::menuStartScene, this));
 
 	auto *preturn = Menu::create(return_button, NULL);
-	x = rect.origin.x + rect.size.width*(10.0f / 11.0f);
-	y = rect.origin.y + rect.size.height*(1.0f / 10.0f);
+	x = rect.origin.x + rect.size.width*(49.0f / 50.0f);
+	y = rect.origin.y + rect.size.height*(48.0f / 50.0f);
 	preturn->setPosition(Vec2(x, y));
 
 	preturn->setScale(1.0f);
@@ -143,21 +143,9 @@ void GamePlaying::ScenePrinter()
 	PlayerPrinter();
 	SettingPrinter();
 	//////////////////////////////////////////////
-
-	//磁铁石技能开关
-	auto magnetMenuItem = MenuItemToggle::createWithCallback(
-		CC_CALLBACK_1( GamePlaying::Magent_change, this),
-		MenuItemFont::create("Magnet"),
-		MenuItemFont::create("Origin"),
-		NULL);
-
-	Menu* magnetmn = Menu::create(magnetMenuItem, NULL);
-	x = rect.origin.x + rect.size.width*(33.7f / 40.0f);
-	y = rect.origin.y + rect.size.height*(10.0f / 20.0f);
-	magnetmn->setPosition(Vec2(x, y));
-	this->addChild(magnetmn, 1);
 	
 	////////////////////////////////////////////////////
+	//武器
 	auto weaponMenuItem = MenuItemToggle::createWithCallback(
 		CC_CALLBACK_1(GamePlaying::Weapon_change, this),
 		MenuItemFont::create("weapon 1"),
@@ -171,6 +159,35 @@ void GamePlaying::ScenePrinter()
 	y = rect.origin.y + rect.size.height*(9.0f / 20.0f);
 	weaponmn->setPosition(Vec2(x, y));
 	this->addChild(weaponmn, 1);
+
+	////////////////////////////////////////////////////
+	//地图缩放
+	auto tlmapMenuItem = MenuItemToggle::createWithCallback(
+		CC_CALLBACK_1(GamePlaying::TLmap_change, this),
+		MenuItemFont::create("normal"),
+		MenuItemFont::create("explore"),
+		MenuItemFont::create("overlook"),
+		NULL);
+
+	Menu* tlmapmn = Menu::create(tlmapMenuItem, NULL);
+	x = rect.origin.x + rect.size.width*(33.7f / 40.0f);
+	y = rect.origin.y + rect.size.height*(8.0f / 20.0f);
+	tlmapmn->setPosition(Vec2(x, y));
+	this->addChild(tlmapmn, 1);
+
+	////////////////////////////////////////////////////
+	//地图缩放
+	auto breakwallMenuItem = MenuItemToggle::createWithCallback(
+		CC_CALLBACK_1(GamePlaying::Breakwall_change, this),
+		MenuItemFont::create("normal"),
+		MenuItemFont::create("breakwall"),
+		NULL);
+
+	Menu* breakwallmn = Menu::create(breakwallMenuItem, NULL);
+	x = rect.origin.x + rect.size.width*(33.7f / 40.0f);
+	y = rect.origin.y + rect.size.height*(7.0f / 20.0f);
+	breakwallmn->setPosition(Vec2(x, y));
+	this->addChild(breakwallmn, 1);
 
 	/*
 	////////////////////////////////////////
@@ -211,15 +228,15 @@ void GamePlaying::PlayerPrinter()
 	plsum.push_back(n_player);
 
 
-	///////////////////////////////////////////////
+	////////////////////////////////////
 	//血条初始化
 	m_pProgressView = new ProgressView;
 	m_pProgressView->setPosition(ccp(m_player->x_coord, m_player->y_coord + 50));
 	m_pProgressView->setScale(2);
 	m_pProgressView->setBackgroundTexture("background.png");
 	m_pProgressView->setForegroundTexture("foreground.png");
-	m_pProgressView->setTotalProgress(50);
-	m_pProgressView->setCurrentProgress(50);
+	m_pProgressView->setTotalProgress(1);
+	m_pProgressView->setCurrentProgress(m_player->p_hp / m_player->hpLimit);
 	tiledmap->addChild(m_pProgressView, 2);
 
 	n_pProgressView = new ProgressView;
@@ -227,10 +244,9 @@ void GamePlaying::PlayerPrinter()
 	n_pProgressView->setScale(2);
 	n_pProgressView->setBackgroundTexture("background.png");
 	n_pProgressView->setForegroundTexture("foreground.png");
-	n_pProgressView->setTotalProgress(50);
-	n_pProgressView->setCurrentProgress(50);
+	n_pProgressView->setTotalProgress(1);
+	n_pProgressView->setCurrentProgress(n_player->p_hp / n_player->hpLimit);
 	tiledmap->addChild(n_pProgressView, 2);
-
 	///////////////////////////////////////////////
 	this->scheduleUpdate();
 
@@ -267,6 +283,7 @@ void GamePlaying::SettingPrinter()
 			"checkbox_normal.png",
 			"checkbox_normal.png"),
 		NULL);
+	smallMenuItem->setScale(0.9f);
 	Menu* smallmn = Menu::create(smallMenuItem, NULL);
 	x = rect.origin.x + rect.size.width*(37.4f / 40.0f);
 	smallmn->setPosition(Vec2(x, y));
@@ -299,6 +316,7 @@ void GamePlaying::SettingPrinter()
 			"checkbox_normal.png",
 			"checkbox_normal.png"),
 		NULL);
+	musicMenuItem->setScale(0.9f);
 	Menu* musicmn = Menu::create(musicMenuItem, NULL);
 	x = rect.origin.x + rect.size.width*(37.4f / 40.0f);
 	musicmn->setPosition(Vec2(x, y));
@@ -331,6 +349,7 @@ void GamePlaying::SettingPrinter()
 			"checkbox_normal.png",
 			"checkbox_normal.png"),
 		NULL);
+	modeMenuItem->setScale(0.9f);
 	Menu* modemn = Menu::create(modeMenuItem, NULL);
 	x = rect.origin.x + rect.size.width*(37.4f / 40.0f);
 	modemn->setPosition(Vec2(x, y));
@@ -530,10 +549,6 @@ void GamePlaying::Mode_Switch(Ref * pSender)
 	onEnter();
 }
 
-void GamePlaying::Magent_change(Ref * pSender)
-{
-	magent = (magent ? false : true);
-}
 
 void GamePlaying::Weapon_change(Ref * pSender)
 {
@@ -544,16 +559,64 @@ void GamePlaying::Weapon_change(Ref * pSender)
 	}
 }
 
+void GamePlaying::TLmap_change(Ref * pSender)
+{
+	static int counter = 0;
+	++counter;
+	switch (counter % 3)
+	{
+	case 0:
+	{
+		tiledmap->setScale(1.0f);
+		viewsize = 1;
+		break;
+	}
+	case 1:
+	{
+		tiledmap->setScale(1.35f);
+		viewsize = 2;
+		break;
+	}
+	case 2:
+	{
+		tiledmap->setScale(0.8f);
+		viewsize = 0;
+		break;
+	}
+	
+	default:break;
+	}
+}
+
+void GamePlaying::Breakwall_change(Ref * pSender)
+{
+	ifbreakwall = (ifbreakwall ? false : true);
+	if (ifbreakwall)
+	{
+		auto flash = Sprite::create("flash.png");
+		flash->setScale(0.4f);
+		flash->setName("player buff");
+		m_player->addChild(flash);
+	}
+	else
+	{
+		if (m_player->getChildByName("player buff"))
+		{
+			m_player->getChildByName("player buff")->removeFromParentAndCleanup(true);
+		}
+	}
+}
+
 bool GamePlaying::up(bool flag,int ifxie)  //ifxie默认参数为false，默认是直着走
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (y + tileSize.height < MAP_SIZE
-		&& isCanReach(x+DIFF, y)
-		&& isCanReach(x-DIFF, y) 
-		&& isCanReach(x, y))   //往上的判断多+1消除卡墙bug
+	if (y + tileSize.height < MAP_SIZE && (ifbreakwall ||
+		(isCanReach(x + DIFF, y)
+		&& isCanReach(x - DIFF, y)
+		&& isCanReach(x, y) ) ) )   //往上的判断多+1消除卡墙bug
 	{	//如果精灵上面那格不是地图的上边界
 		//之所以是一格大小的一半,是因为精灵的锚点在中心,上面一个的下边界只需要再加16
-		//sprite->setPositionY(y + 32);  //把精灵置于上面一格的位置
+		
 		if (flag)
 		{
 			runEvent();
@@ -561,61 +624,63 @@ bool GamePlaying::up(bool flag,int ifxie)  //ifxie默认参数为false，默认是直着走
 
 			if (!ifxie)
 			{
-				if ((y*viewsize + tiledmap->getPositionY() > size.height / 2)
-					&& ((MAP_SIZE - y/viewsize) > size.height / 2))
+				if ((y + tiledmap->getPositionY() > size.height / 2 / (viewsize == 2 ? 4.0 : 1.0))
+					&& ((MAP_SIZE*TLMAP_SCALE - y) > size.height / 2))
 				{
-					tiledmap->setPositionY(tiledmap->getPositionY() 
-						- m_player->speed*(viewsize==1.0? 1.0:1.2));//调整地图,使人物尽量居中
-				       //地图移动速度与人物移动速度保持一直，获得最佳游戏体验，尽享丝滑
-					y_move += m_player->speed*viewsize*(viewsize == 1.0 ? 1.0 : 1.2);
+					tiledmap->setPositionY(tiledmap->getPositionY()
+						- m_player->speed);//调整地图,使人物尽量居中
+										   //地图移动速度与人物移动速度保持一直，获得最佳游戏体验，尽享丝滑
+					y_move += m_player->speed;
 				}
 			}
 			else if (1 == ifxie)
 			{
-				if ((y + tiledmap->getPositionY() > size.height / 2) 
-					&& ((MAP_SIZE - y) > size.height / 2))
+				if ((y + tiledmap->getPositionY() > size.height / 2 / (viewsize == 2 ? 4.0 : 1.0))
+					&& ((MAP_SIZE*TLMAP_SCALE - y) > size.height / 2))
 				{
 					tiledmap->setPositionY(tiledmap->getPositionY()
-						- m_player->speed*XIE/viewsize);
+						- m_player->speed*XIE);
 					tiledmap->setPositionX(tiledmap->getPositionX()
-						- m_player->speed*XIE/viewsize);
+						- m_player->speed*XIE);
 					x_move += m_player->speed*XIE;
 					y_move += m_player->speed*XIE;
 				}
-				
+
 			}
 			else if (2 == ifxie)
 			{
-				if ((y + tiledmap->getPositionY() > size.height / 2) 
-					&& ((MAP_SIZE - y) > size.height / 2))
+				if ((y + tiledmap->getPositionY() > size.height / 2 / (viewsize == 2 ? 4.0 : 1.0))
+					&& ((MAP_SIZE*TLMAP_SCALE - y) > size.height / 2))
 				{
 					tiledmap->setPositionY(tiledmap->getPositionY()
-						- m_player->speed*XIE/viewsize);
+						- m_player->speed*XIE);
 					tiledmap->setPositionX(tiledmap->getPositionX()
-						+ m_player->speed*XIE/viewsize);
+						+ m_player->speed*XIE);
 					x_move -= m_player->speed*XIE;
 					y_move += m_player->speed*XIE;
 				}
 			}
 		}
+
 		return true;
 	}
+	
 	return false;
 }
 bool GamePlaying::right(bool flag, int ifxie)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (x + tileSize.width < MAP_SIZE 
-		&& isCanReach(x + 2*DIFF, y - DIFF)
-		&& isCanReach(x + 2*DIFF, y - 2*DIFF))
+	if (x + tileSize.width < MAP_SIZE  && (ifbreakwall ||
+		(isCanReach(x + 2*DIFF, y - DIFF)
+		&& isCanReach(x + 2*DIFF, y - 2*DIFF) ) ) )
 	{
 		if (flag)
 		{
 			runEvent();
 			tofindEat(x, y);
 		}
-		if ((x*viewsize + tiledmap->getPositionX() > size.width / 2) 
-			&& ((MAP_SIZE - x/viewsize) > size.width / 2))
+		if ((x + tiledmap->getPositionX() > size.width / 2 / TLMAP_SCALE) 
+			&& ((MAP_SIZE - x) > size.width / 2 / TLMAP_SCALE))
 		{
 			tiledmap->setPositionX(tiledmap->getPositionX() 
 				- m_player->speed);
@@ -628,17 +693,17 @@ bool GamePlaying::right(bool flag, int ifxie)
 bool GamePlaying::left(bool flag, int ifxie)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (x>tileSize.width 
-		&& isCanReach(x - 2*DIFF, y - DIFF)
-		&& isCanReach(x - 2*DIFF, y - 2*DIFF))
+	if (x>tileSize.width  && (ifbreakwall ||
+		( isCanReach(x - 2*DIFF, y - DIFF)
+		&& isCanReach(x - 2*DIFF, y - 2*DIFF) ) ))
 	{
 		if (flag)
 		{
 			runEvent();
 			tofindEat(x, y);
 		}
-		if ((x/viewsize + tiledmap->getPositionX() < size.width / 2) 
-			&& tiledmap->getPositionX() != 0)
+		if ((x + tiledmap->getPositionX() < size.width / 2) 
+			&& tiledmap->getPositionX() < 0)
 		{
 			tiledmap->setPositionX(tiledmap->getPositionX() 
 				+ m_player->speed);
@@ -652,9 +717,9 @@ bool GamePlaying::down(bool flag, int ifxie)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
 	
-	if (y>tileSize.height 
-		&& isCanReach(x, y - 4*DIFF)
-		&& isCanReach(x-DIFF, y-4*DIFF))
+	if (y>tileSize.height && (ifbreakwall ||
+		(isCanReach(x, y - 4*DIFF)
+		&& isCanReach(x-DIFF, y-4*DIFF) ) ) )
 	{
 		if (flag)
 		{
@@ -663,36 +728,36 @@ bool GamePlaying::down(bool flag, int ifxie)
 
 			if (!ifxie)
 			{
-				if ((y*viewsize + tiledmap->getPositionY() < size.height / 2) 
-					&& tiledmap->getPositionY() != 0 )
+				if ((y + tiledmap->getPositionY() < size.height / 2 / TLMAP_SCALE) 
+					&& tiledmap->getPositionY() < 0 )
 				{
 					tiledmap->setPositionY(tiledmap->getPositionY()
-						+ m_player->speed*(viewsize == 1.0 ? 1.0 : 1.2));
-					y_move -= m_player->speed*(viewsize == 1.0 ? 1.0 : 1.2);
+						+ m_player->speed);
+					y_move -= m_player->speed;
 				}
 			}
 			else if (1 == ifxie)
 			{
-				if ((y + tiledmap->getPositionY() < size.height / 2) 
-					&& tiledmap->getPositionY() != 0)
+				if ((y + tiledmap->getPositionY() < size.height / 2 / TLMAP_SCALE) 
+					&& tiledmap->getPositionY() < 0)
 				{
 					tiledmap->setPositionY(tiledmap->getPositionY()
-						+ m_player->speed*XIE/viewsize);
+						+ m_player->speed*XIE);
 					tiledmap->setPositionX(tiledmap->getPositionX()
-						- m_player->speed*XIE/viewsize);
+						- m_player->speed*XIE);
 					x_move += m_player->speed*XIE;
 					y_move -= m_player->speed*XIE;
 				}
 			}
 			else if (2 == ifxie)
 			{
-				if ((y + tiledmap->getPositionY() < size.height / 2)
-					&& tiledmap->getPositionY() != 0)
+				if ((y + tiledmap->getPositionY() < size.height / 2 / TLMAP_SCALE)
+					&& tiledmap->getPositionY() < 0)
 				{
 					tiledmap->setPositionY(tiledmap->getPositionY()
-						+ m_player->speed*XIE/viewsize);
+						+ m_player->speed*XIE);
 					tiledmap->setPositionX(tiledmap->getPositionX()
-						+ m_player->speed*XIE/viewsize);
+						+ m_player->speed*XIE);
 					x_move -= m_player->speed*XIE;
 					y_move -= m_player->speed*XIE;
 				}
@@ -707,7 +772,7 @@ bool GamePlaying::isCanReach(float x, float y)
 	double mapX = x/ 32.0;        //减去16是由于人物的锚点在中心
 	double mapY = MAP_HEIGHT - y/32.0;   //49为Tiled里地图的坐标最大值
 	int tileGid = meta->tileGIDAt(Vec2(mapX, mapY)); //32是一格的大小
-
+	
 	if (tileGid != GAP_GID)
 	{
 		return true;
@@ -724,7 +789,7 @@ void GamePlaying::HPjudge(const Vec2 &pos)
 	{
 		//CCLOG("hero is in HP_tiledmap");
 		m_player->hpraise(1);
-		if (magent)   //如果开启磁铁技能，踩到道具播动画
+		if (m_player->magnet)   //如果开启磁铁技能，踩到道具播动画
 		{
 
 		}
@@ -800,9 +865,9 @@ void GamePlaying::EXPjudge(const Vec2 & pos)
 	if (EXP_GID == meta->getTileGIDAt(pos))
 	{
 		//CCLOG("hero is in EXP_tiledmap");
-		if (m_player->expraise(10))	{levelup();}
+		if (m_player->expraise(2))	{levelup();}
 
-		if (magent)
+		if (m_player->magnet)
 		{
 
 		}
@@ -814,10 +879,10 @@ void GamePlaying::EXPjudge(const Vec2 & pos)
 			if (judgex == exp_now.savex && judgey == exp_now.savey)
 			{
 
-				char mess[10];
+				/*char mess[10];
 				sprintf(mess, "%d %d", judgex, judgey);
 				std::string EXP_pos = mess;
-				_sioClient->emit("EXP remove", EXP_pos);
+				_sioClient->emit("EXP remove", EXP_pos);*/
 
 				exp_now.exp_potion->removeFromParentAndCleanup(true);
 				auto exp_iter = std::find(exp_auto_arise.begin(), exp_auto_arise.end(), exp_now);
@@ -862,13 +927,13 @@ void GamePlaying::EXP_grow(float dt)
 			Vec2(spritex, spritey));
 		tiledmap->addChild(exp_auto_arise[now_vec_maxindex].exp_potion);
 
-		if (!(ID == "guest"))
+		/*if (!(ID == "guest"))
 		{
 			char mess[10];
 			sprintf(mess, "%d %d", metax, metay);
 			std::string EXP_pos = mess;
 			_sioClient->emit("EXP position", EXP_pos);
-		}
+		}*/
 		
 	}
 }
@@ -947,7 +1012,7 @@ void GamePlaying::EXP_remove(SIOClient * client, const std::string & data)
 }
 void GamePlaying::tofindEat(const float x, const float y)
 {
-	if (magent)
+	if (m_player->magnet)
 	{
 		for (int i = -32; i <= 32; i += 32)
 		{
@@ -998,6 +1063,7 @@ void GamePlaying::onEnter()
 		if (waytorun)
 		{
 			keys[keyCode] = true;
+			keys1[keyCode] = true;
 		}
 		else
 		{
@@ -1009,7 +1075,10 @@ void GamePlaying::onEnter()
 	keylistener->onKeyReleased = [&](EventKeyboard::KeyCode keyCode, Event *event)
 	{
 		if (waytorun)
+		{
 			keys[keyCode] = false;
+			keys1[keyCode] = false;
+		}
 	};
 
 	mouselistener->onMouseMove = [&](Event *event)
@@ -1021,6 +1090,8 @@ void GamePlaying::onEnter()
 			pos.y = e->getCursorY();
 			pos.x += this->x_move;
 			pos.y += this->y_move;
+			pos.x /= MOUCE_SCALE;
+			pos.y /= MOUCE_SCALE;
 		}
 	};
 
@@ -1034,6 +1105,8 @@ void GamePlaying::onEnter()
 			pos.y = e->getCursorY();
 			pos.x += this->x_move;
 			pos.y += this->y_move;
+			pos.x /= MOUCE_SCALE;
+			pos.y /= MOUCE_SCALE;
 		}
 	};
 
@@ -1051,11 +1124,11 @@ void GamePlaying::update(float delta)
 	//CCLOG("x=%f , y=%f", x, y);
 	/////////////////////////////////////////
 	//血条位置&长度设定
-	m_pProgressView->setCurrentProgress(m_player->p_hp);
+	m_pProgressView->setCurrentProgress(m_player->p_hp / m_player->hpLimit);
 	m_pProgressView->setPosition(ccp(m_player->x_coord, m_player->y_coord + 50));
-	n_pProgressView->setCurrentProgress(n_player->p_hp);
+	n_pProgressView->setCurrentProgress(n_player->p_hp / n_player->hpLimit);
 	n_pProgressView->setPosition(ccp(n_player->x_coord, n_player->y_coord + 50));
-	//////////////////////////////////////////
+	m_pProgressView->setScale((float)m_player->hpLimit / 50 * 2, 2);
 
 	if (m_player->level == 11)
 		expPro->ExpChange(1, 1);
@@ -1085,27 +1158,33 @@ void GamePlaying::update(float delta)
 	if (!waytorun)
 	{
 		keys[k_w] = keys[k_a] = keys[k_s] = keys[k_d] = false;
-		if (pos.x - x > 32.0f) 
-		{ 
-			keys[k_d] = true; 
+		keys1[k_w] = keys1[k_a] = keys1[k_s] = keys1[k_d] = false;
+		if (pos.x - x > 32.0f)
+		{
+			keys[k_d] = true;
+			keys1[k_d] = true;
 		}
 		else if (x - pos.x>32.0f)
-		{ 
-			keys[k_a] = true; 
+		{
+			keys[k_a] = true;
+			keys1[k_a] = true;
 		}
 
-		if (pos.y - y > 32.0f) 
-		{ 
-			keys[k_w] = true; 
+		if (pos.y - y > 32.0f)
+		{
+			keys[k_w] = true;
+			keys1[k_w] = true;
 		}
-		else if(y - pos.y > 32.0f)
-		{ 
-			keys[k_s] = true; 
+		else if (y - pos.y > 32.0f)
+		{
+			keys[k_s] = true;
+			keys1[k_s] = true;
 		}
 	}
 
 	if (keys[k_w] || keys[k_a] || keys[k_s] || keys[k_d])//分别是wasd，参见#define
 	{
+		
 		//如果同时按了w和d，首先检测是否可以往上并且可以往右
 		//方法是先将分方向判断函数的参数传递为false
 		//这样只会检测是否可以走,不会实际调runEvent函数
@@ -1253,7 +1332,9 @@ void GamePlaying::update(float delta)
 		}
 	}
 
-	if (touchon)
+	m_player->runanimate(keys1);
+
+	if (touchon && !m_player->attackcd)
 	{
 		attack();
 		touchon = false;
@@ -1299,6 +1380,7 @@ void GamePlaying::update(float delta)
 }
 void GamePlaying::runEvent()
 {
+	
 	//if(waytorun)
 		m_player->runway1(keys, m_smallplayer);
 	//else m_player->runway2(pos, m_smallplayer);
@@ -1331,433 +1413,148 @@ void GamePlaying::runEvent_n(SIOClient * client, const std::string & data)
 	n_player->runway1(keys_n, n_smallplayer);
 }
 
-
 void GamePlaying::attack()
 {
-	if (n_player->p_hp == n_player->hpLimit)
-	{
-		smallmap_switch = (smallmap_switch ? false : true);
-		SmallmapPrinter();
-		smallmap_switch = (smallmap_switch ? false : true);
-		SmallmapPrinter();
-	}
-	for (int i = 0; i < m_player->front; i++)
-	{
-		if (m_player->weapon == 1)
-		{
-			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("arrow.png"));
-			Abullet->setPosition(Point(m_player->x_coord , m_player->y_coord ));
-			tiledmap->addChild(Abullet);
+	attackweapon(m_player->front);
 
-			float angle;
-			float dx, dy;
-			dx = pos.x - m_player->x_coord;
-			dy = pos.y - m_player->y_coord;
+	Point pos1, pos2 = pos;
+	pos1.y = m_player->y_coord + pos.x - m_player->x_coord;
+	pos1.x = m_player->x_coord - pos.y + m_player->y_coord;
+	pos = pos1;
+	attackweapon(m_player->leftside);
+	pos = pos2;
 
-			if (dy == 0)
-			{
-				if (dx >= 0)
-					angle = 90;
-				else angle = 270;
-			}
-			else
-			{
-				angle = atan(dx / dy) / 3.1416 * 180;
-				if (dy < 0)
-					angle += 180;
-			}
+	pos1.y = m_player->y_coord - pos.x + m_player->x_coord;
+	pos1.x = m_player->x_coord + pos.y - m_player->y_coord;
+	pos = pos1;
+	attackweapon(m_player->rightside);
+	pos = pos2;
 
-			auto * rotateto = RotateTo::create(0, 45 + angle);
-			Abullet->runAction(rotateto);
+	pos1.y = m_player->y_coord - pos.y + m_player->y_coord;
+	pos1.x = m_player->x_coord - pos.x + m_player->x_coord;
+	pos = pos1;
+	attackweapon(m_player->back);
+	pos = pos2;
 
-			Abullet->exist = true;
-			bubsum.push_back(Abullet);
-
-			Abullet->attacking(m_player, pos);
-		}
-		else if (m_player->weapon == 2)
-		{
-			int num = 300 * m_player->atkrange / 32;
-			float length = sqrt((m_player->x_coord - pos.x)*(m_player->x_coord - pos.x) + (m_player->y_coord - pos.y)*(m_player->y_coord - pos.y));
-			float xchange = (pos.x - m_player->x_coord) / length * 32;
-			float ychange = (pos.y - m_player->y_coord) / length * 32;
-
-			for (int i = 1; i <= num; i++)
-			{
-				auto Abullet = BulletBase::create();
-				Abullet->bindSprite(Sprite::create("ground.png"));
-				Abullet->setPosition(Point(m_player->x_coord + i * xchange, m_player->y_coord + i * ychange));
-				tiledmap->addChild(Abullet);
-				Abullet->exist = true;
-				bubsum.push_back(Abullet);
-				Abullet->attacking(m_player, Point(m_player->x_coord + i * xchange, m_player->y_coord + i * ychange));
-			}
-		}
-		else if (m_player->weapon == 3)
-		{
-			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("knife.png"));
-			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
-			tiledmap->addChild(Abullet);
-
-			float angle;
-			float dx, dy;
-			dx = pos.x - m_player->x_coord;
-			dy = pos.y - m_player->y_coord;
-
-			if (dy == 0)
-			{
-				if (dx >= 0)
-					angle = 90;
-				else angle = 270;
-			}
-			else
-			{
-				angle = atan(dx / dy) / 3.1416 * 180;
-				if (dy < 0)
-					angle += 180;
-			}
-
-			auto * rotateto = RotateTo::create(0, angle);
-			Abullet->runAction(rotateto);
-
-			Abullet->exist = true;
-			bubsum.push_back(Abullet);
-			Abullet->attacking(m_player, pos);
-		}
-		else if (m_player->weapon == 4)
-		{
-			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("darts.png"));
-			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
-			tiledmap->addChild(Abullet);
-
-			auto * rotateto = RotateTo::create(2.0f, 90);
-			Abullet->runAction(rotateto);
-
-			Abullet->exist = true;
-			bubsum.push_back(Abullet);
-			Abullet->attacking(m_player, pos);
-		}
-
-	}
-	for (int i = 0; i < m_player->leftside; i++)
-	{
-		Point pos1, pos2 = pos;
-		pos1.y = m_player->y_coord + pos.x - m_player->x_coord;
-		pos1.x = m_player->x_coord - pos.y + m_player->y_coord;
-		pos = pos1;
-		if (m_player->weapon == 1)
-		{
-			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("arrow.png"));
-			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
-			tiledmap->addChild(Abullet);
-
-			float angle;
-			float dx, dy;
-			dx = pos.x - m_player->x_coord;
-			dy = pos.y - m_player->y_coord;
-
-			if (dy == 0)
-			{
-				if (dx >= 0)
-					angle = 90;
-				else angle = 270;
-			}
-			else
-			{
-				angle = atan(dx / dy) / 3.1416 * 180;
-				if (dy < 0)
-					angle += 180;
-			}
-
-			auto * rotateto = RotateTo::create(0, 45 + angle);
-			Abullet->runAction(rotateto);
-
-			Abullet->exist = true;
-			bubsum.push_back(Abullet);
-
-			Abullet->attacking(m_player, pos);
-		}
-		else if (m_player->weapon == 2)
-		{
-			int num = 300 * m_player->atkrange / 32;
-			float length = sqrt((m_player->x_coord - pos.x)*(m_player->x_coord - pos.x) + (m_player->y_coord - pos.y)*(m_player->y_coord - pos.y));
-			float xchange = (pos.x - m_player->x_coord) / length * 32;
-			float ychange = (pos.y - m_player->y_coord) / length * 32;
-
-			for (int i = 1; i <= num; i++)
-			{
-				auto Abullet = BulletBase::create();
-				Abullet->bindSprite(Sprite::create("ground.png"));
-				Abullet->setPosition(Point(m_player->x_coord + i * xchange, m_player->y_coord + i * ychange));
-				tiledmap->addChild(Abullet);
-				Abullet->exist = true;
-				bubsum.push_back(Abullet);
-				Abullet->attacking(m_player, Point(m_player->x_coord + i * xchange, m_player->y_coord + i * ychange));
-			}
-		}
-		else if (m_player->weapon == 3)
-		{
-			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("knife.png"));
-			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
-			tiledmap->addChild(Abullet);
-
-			float angle;
-			float dx, dy;
-			dx = pos.x - m_player->x_coord;
-			dy = pos.y - m_player->y_coord;
-
-			if (dy == 0)
-			{
-				if (dx >= 0)
-					angle = 90;
-				else angle = 270;
-			}
-			else
-			{
-				angle = atan(dx / dy) / 3.1416 * 180;
-				if (dy < 0)
-					angle += 180;
-			}
-
-			auto * rotateto = RotateTo::create(0, angle);
-			Abullet->runAction(rotateto);
-
-			Abullet->exist = true;
-			bubsum.push_back(Abullet);
-			Abullet->attacking(m_player, pos);
-		}
-		else if (m_player->weapon == 4)
-		{
-			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("darts.png"));
-			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
-			tiledmap->addChild(Abullet);
-
-			auto * rotateto = RotateTo::create(2.0f, 90);
-			Abullet->runAction(rotateto);
-
-			Abullet->exist = true;
-			bubsum.push_back(Abullet);
-			Abullet->attacking(m_player, pos);
-		}
-		pos = pos2;
-	}
-	for (int i = 0; i < m_player->rightside; i++)
-	{
-		Point pos1, pos2 = pos;
-		pos1.y = m_player->y_coord - pos.x + m_player->x_coord;
-		pos1.x = m_player->x_coord + pos.y - m_player->y_coord;
-		pos = pos1;
-		if (m_player->weapon == 1)
-		{
-			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("arrow.png"));
-			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
-			tiledmap->addChild(Abullet);
-
-			float angle;
-			float dx, dy;
-			dx = pos.x - m_player->x_coord;
-			dy = pos.y - m_player->y_coord;
-
-			if (dy == 0)
-			{
-				if (dx >= 0)
-					angle = 90;
-				else angle = 270;
-			}
-			else
-			{
-				angle = atan(dx / dy) / 3.1416 * 180;
-				if (dy < 0)
-					angle += 180;
-			}
-
-			auto * rotateto = RotateTo::create(0, 45 + angle);
-			Abullet->runAction(rotateto);
-
-			Abullet->exist = true;
-			bubsum.push_back(Abullet);
-
-			Abullet->attacking(m_player, pos);
-		}
-		else if (m_player->weapon == 2)
-		{
-			int num = 300 * m_player->atkrange / 32;
-			float length = sqrt((m_player->x_coord - pos.x)*(m_player->x_coord - pos.x) + (m_player->y_coord - pos.y)*(m_player->y_coord - pos.y));
-			float xchange = (pos.x - m_player->x_coord) / length * 32;
-			float ychange = (pos.y - m_player->y_coord) / length * 32;
-
-			for (int i = 1; i <= num; i++)
-			{
-				auto Abullet = BulletBase::create();
-				Abullet->bindSprite(Sprite::create("ground.png"));
-				Abullet->setPosition(Point(m_player->x_coord + i * xchange, m_player->y_coord + i * ychange));
-				tiledmap->addChild(Abullet);
-				Abullet->exist = true;
-				bubsum.push_back(Abullet);
-				Abullet->attacking(m_player, Point(m_player->x_coord + i * xchange, m_player->y_coord + i * ychange));
-			}
-		}
-		else if (m_player->weapon == 3)
-		{
-			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("knife.png"));
-			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
-			tiledmap->addChild(Abullet);
-
-			float angle;
-			float dx, dy;
-			dx = pos.x - m_player->x_coord;
-			dy = pos.y - m_player->y_coord;
-
-			if (dy == 0)
-			{
-				if (dx >= 0)
-					angle = 90;
-				else angle = 270;
-			}
-			else
-			{
-				angle = atan(dx / dy) / 3.1416 * 180;
-				if (dy < 0)
-					angle += 180;
-			}
-
-			auto * rotateto = RotateTo::create(0, angle);
-			Abullet->runAction(rotateto);
-
-			Abullet->exist = true;
-			bubsum.push_back(Abullet);
-			Abullet->attacking(m_player, pos);
-		}
-		else if (m_player->weapon == 4)
-		{
-			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("darts.png"));
-			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
-			tiledmap->addChild(Abullet);
-
-			auto * rotateto = RotateTo::create(2.0f, 90);
-			Abullet->runAction(rotateto);
-
-			Abullet->exist = true;
-			bubsum.push_back(Abullet);
-			Abullet->attacking(m_player, pos);
-		}
-		pos = pos2;
-	}
-	for (int i = 0; i < m_player->back; i++)
-	{
-		Point pos1, pos2 = pos;
-		pos1.y = m_player->y_coord - pos.y + m_player->y_coord;
-		pos1.x = m_player->x_coord - pos.x + m_player->x_coord;
-		pos = pos1;
-		if (m_player->weapon == 1)
-		{
-			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("arrow.png"));
-			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
-			tiledmap->addChild(Abullet);
-
-			float angle;
-			float dx, dy;
-			dx = pos.x - m_player->x_coord;
-			dy = pos.y - m_player->y_coord;
-
-			if (dy == 0)
-			{
-				if (dx >= 0)
-					angle = 90;
-				else angle = 270;
-			}
-			else
-			{
-				angle = atan(dx / dy) / 3.1416 * 180;
-				if (dy < 0)
-					angle += 180;
-			}
-
-			auto * rotateto = RotateTo::create(0, 45 + angle);
-			Abullet->runAction(rotateto);
-
-			Abullet->exist = true;
-			bubsum.push_back(Abullet);
-
-			Abullet->attacking(m_player, pos);
-		}
-		else if (m_player->weapon == 2)
-		{
-			int num = 300 * m_player->atkrange / 32;
-			float length = sqrt((m_player->x_coord - pos.x)*(m_player->x_coord - pos.x) + (m_player->y_coord - pos.y)*(m_player->y_coord - pos.y));
-			float xchange = (pos.x - m_player->x_coord) / length * 32;
-			float ychange = (pos.y - m_player->y_coord) / length * 32;
-
-			for (int i = 1; i <= num; i++)
-			{
-				auto Abullet = BulletBase::create();
-				Abullet->bindSprite(Sprite::create("ground.png"));
-				Abullet->setPosition(Point(m_player->x_coord + i * xchange, m_player->y_coord + i * ychange));
-				tiledmap->addChild(Abullet);
-				Abullet->exist = true;
-				bubsum.push_back(Abullet);
-				Abullet->attacking(m_player, Point(m_player->x_coord + i * xchange, m_player->y_coord + i * ychange));
-			}
-		}
-		else if (m_player->weapon == 3)
-		{
-			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("knife.png"));
-			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
-			tiledmap->addChild(Abullet);
-
-			float angle;
-			float dx, dy;
-			dx = pos.x - m_player->x_coord;
-			dy = pos.y - m_player->y_coord;
-
-			if (dy == 0)
-			{
-				if (dx >= 0)
-					angle = 90;
-				else angle = 270;
-			}
-			else
-			{
-				angle = atan(dx / dy) / 3.1416 * 180;
-				if (dy < 0)
-					angle += 180;
-			}
-
-			auto * rotateto = RotateTo::create(0, angle);
-			Abullet->runAction(rotateto);
-
-			Abullet->exist = true;
-			bubsum.push_back(Abullet);
-			Abullet->attacking(m_player, pos);
-		}
-		else if (m_player->weapon == 4)
-		{
-			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("darts.png"));
-			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
-			tiledmap->addChild(Abullet);
-
-			auto * rotateto = RotateTo::create(2.0f, 90);
-			Abullet->runAction(rotateto);
-
-			Abullet->exist = true;
-			bubsum.push_back(Abullet);
-			Abullet->attacking(m_player, pos);
-		}
-		pos = pos2;
-	}
+	m_player->attackCD();
 }
+
+void GamePlaying::attackweapon(float num)
+{
+	if (num == 0)
+		return;
+
+	Point pos1 = pos;
+	Point pos2 = pos;
+	float xd = (pos1.y - m_player->y_coord) / 20;
+	float yd = (pos1.x - m_player->x_coord) / 20;
+	pos.x -= (num / 2 - 0.5) * xd;
+	pos.y += (num / 2 - 0.5) * yd;
+	for (int i = 0; i < num; i++)
+	{
+		if (m_player->weapon == 1)
+		{
+			auto Abullet = BulletBase::create();
+			Abullet->bindSprite(Sprite::create("arrow.png"));
+			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
+			tiledmap->addChild(Abullet);
+
+			float angle;
+			float dx, dy;
+			dx = pos.x - m_player->x_coord;
+			dy = pos.y - m_player->y_coord;
+
+			if (dy == 0)
+			{
+				if (dx >= 0)
+					angle = 90;
+				else angle = 270;
+			}
+			else
+			{
+				angle = atan(dx / dy) / 3.1416 * 180;
+				if (dy < 0)
+					angle += 180;
+			}
+
+			auto * rotateto = RotateTo::create(0, 45 + angle);
+			Abullet->runAction(rotateto);
+
+			Abullet->exist = true;
+			bubsum.push_back(Abullet);
+
+			Abullet->attacking(m_player, pos);
+		}
+		else if (m_player->weapon == 2)
+		{
+			int num = 300 * m_player->atkrange / 32;
+			float length = sqrt((m_player->x_coord - pos.x)*(m_player->x_coord - pos.x) + (m_player->y_coord - pos.y)*(m_player->y_coord - pos.y));
+			float xchange = (pos.x - m_player->x_coord) / length * 32;
+			float ychange = (pos.y - m_player->y_coord) / length * 32;
+
+			for (int i = 1; i <= num && m_player->x_coord + i * xchange >= 0 && m_player->x_coord + i * xchange <= 1600 && m_player->y_coord + i * ychange >= 0 && m_player->y_coord + i * ychange <= 1600; i++)
+			{
+				auto Abullet = BulletBase::create();
+				Abullet->bindSprite(Sprite::create("ground.png"));
+				Abullet->setPosition(Point(m_player->x_coord + i * xchange, m_player->y_coord + i * ychange));
+				tiledmap->addChild(Abullet);
+				Abullet->exist = true;
+				bubsum.push_back(Abullet);
+				Abullet->attacking(m_player, Point(m_player->x_coord + i * xchange, m_player->y_coord + i * ychange));
+			}
+		}
+		else if (m_player->weapon == 3)
+		{
+			auto Abullet = BulletBase::create();
+			Abullet->bindSprite(Sprite::create("knife.png"));
+			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
+			tiledmap->addChild(Abullet);
+
+			float angle;
+			float dx, dy;
+			dx = pos.x - m_player->x_coord;
+			dy = pos.y - m_player->y_coord;
+
+			if (dy == 0)
+			{
+				if (dx >= 0)
+					angle = 90;
+				else angle = 270;
+			}
+			else
+			{
+				angle = atan(dx / dy) / 3.1416 * 180;
+				if (dy < 0)
+					angle += 180;
+			}
+
+			auto * rotateto = RotateTo::create(0, angle);
+			Abullet->runAction(rotateto);
+
+			Abullet->exist = true;
+			bubsum.push_back(Abullet);
+			Abullet->attacking(m_player, pos);
+		}
+		else if (m_player->weapon == 4)
+		{
+			auto Abullet = BulletBase::create();
+			Abullet->bindSprite(Sprite::create("darts.png"));
+			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
+			tiledmap->addChild(Abullet);
+
+			auto * rotateto = RotateTo::create(2.0f, 90);
+			Abullet->runAction(rotateto);
+
+			Abullet->exist = true;
+			bubsum.push_back(Abullet);
+			Abullet->attacking(m_player, pos);
+		}
+		pos.x += xd;
+		pos.y -= yd;
+	}
+	pos = pos2;
+}
+
 
 void GamePlaying::menuStartScene(Ref* pSender)
 {
@@ -1767,8 +1564,7 @@ void GamePlaying::menuStartScene(Ref* pSender)
 	smallmap_switch = true; 
 	music_switch = true;
 	mode_switch = true;
-	/*tiledmap->setScale(1.5f);
-	viewsize = 4.0f;*/
+
 	auto sc = StartScene::createScene();        //缩放交替的切换动画
 	auto reScene = TransitionShrinkGrow::create(1.0f, sc);
 	Director::getInstance()->replaceScene(reScene);
@@ -1777,7 +1573,26 @@ void GamePlaying::menuStartScene(Ref* pSender)
 void GamePlaying::levelup()
 {
 	log("level up");
-	expPro->LvChange(m_player->level);
+	
 
-	expPro->ButtonAppear(m_player);
+	/*auto flash_sprite = Sprite::create("flash.png");
+	auto level_sprite = Sprite::create("level_sprite.png");
+	float x = rect.origin.x + rect.size.width / 2;
+	float y = rect.origin.y + rect.size.height / 2;
+	flash_sprite->setPosition(Vec2(x, y));
+	level_sprite->setPosition(Vec2(x, y));
+	flash_sprite->setName("flash");
+	level_sprite->setName("level up");
+	this->addChild(flash_sprite);
+	this->addChild(level_sprite);
+
+	if (this->getChildByName("flash"))
+	{
+		this->getChildByName("flash")->removeFromParentAndCleanup(true);
+		this->getChildByName("level up")->removeFromParentAndCleanup(true);
+	}*/
+	
+
+	expPro->LvChange(m_player->level);
+	expPro->player = m_player;
 }

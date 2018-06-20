@@ -16,9 +16,10 @@ public:
 	CREATE_FUNC(ExpProgress);
 	void ExpChange(int exp, int limit);
 	void LvChange(int level);
-	void ButtonAppear(Player* player);
+	void ButtonAppear();
 	void ButtonRemove();
-	void Choices(Player* player, int i);
+	void Choices(int i);
+	Player *player;
 private:
 	ProgressView * expProgressView;
 	Label *lv;
@@ -26,6 +27,8 @@ private:
 	ui::Button *choice2;
 	ui::Button *choice3;
 	int c1, c2, c3;
+	int skillsave = 0;
+	std::vector<bool>unchoose;
 };
 
 #endif
