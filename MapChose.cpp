@@ -31,6 +31,7 @@ bool MapChose::init()
 	{
 		return false;
 	}
+
 	NetworkPrinter();
 	ScenePrinter();
 
@@ -39,7 +40,13 @@ bool MapChose::init()
 
 void MapChose::NetworkPrinter()
 {
-	_sioClient = network::SocketIO::connect("http://120.78.208.162:2333", *this);
+	_sioClient = SIOClient::getInstance();
+	_sioClient = SocketIO::connect("http://120.78.208.162:2333", *this);
+
+	if (!SIOClient::setconnect(_sioClient, 1))
+	{
+		_sioClient = nullptr;
+	}
 }
 
 void MapChose::ScenePrinter()
@@ -75,7 +82,7 @@ void MapChose::ScenePrinter()
 	this->addChild(preturn);
 	//////////////////////////////////////
 	//add two tiledmap sceneshot
-	auto pre_map1 = Sprite::create("smallmap1.png");
+	auto pre_map1 = Sprite::create("Player/Tiled Map/smallmap1.png");
 	x = rect.origin.x + rect.size.width*(1.0f / 4.0f);
 	y = rect.origin.y + rect.size.height*(1.0f / 2.0f);
 	pre_map1->setPosition(Vec2(x, y));
@@ -84,7 +91,7 @@ void MapChose::ScenePrinter()
 	this->addChild(gridNodeTarget_1);
 	gridNodeTarget_1->addChild(pre_map1);
 
-	auto pre_map2 = Sprite::create("smallmap2.png");
+	auto pre_map2 = Sprite::create("Player/Tiled Map/smallmap2.png");
 	x = rect.origin.x + rect.size.width*(2.0f / 4.0f);
 	pre_map2->setPosition(Vec2(x, y));
 
@@ -92,7 +99,7 @@ void MapChose::ScenePrinter()
 	this->addChild(gridNodeTarget_2);
 	gridNodeTarget_2->addChild(pre_map2);
 
-	auto pre_map3 = Sprite::create("smallmap3.png");
+	auto pre_map3 = Sprite::create("Player/Tiled Map/smallmap3.png");
 	x = rect.origin.x + rect.size.width*(3.0f / 4.0f);
 	pre_map3->setPosition(Vec2(x, y));
 

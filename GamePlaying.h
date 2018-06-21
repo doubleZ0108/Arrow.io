@@ -160,6 +160,7 @@ public:
 
 	void ID_judge(SIOClient* client, const std::string& data);
 
+	void DeCode_for_Map(const std::string &buf, int &metax, int &metay);
 	void HP_recieve(SIOClient* client, const std::string& data);
 	void EXP_recieve(SIOClient* client, const std::string& data);
 	void HP_remove(SIOClient* client, const std::string& data);
@@ -168,16 +169,13 @@ public:
 	void tofindEat(const float x, const float y);
 	/////////////////////////////////////////
 
-	////////////////////////////////
-	//network
+	// implement the "static create()" method manually
+	CREATE_FUNC(GamePlaying);
+
 	void onConnect(SIOClient* client);
 	void onMessage(SIOClient* client, const std::string& data);
 	void onError(SIOClient* client, const std::string& data);
 	void onClose(SIOClient* client);
-	/////////////////////////////
-
-	// implement the "static create()" method manually
-	CREATE_FUNC(GamePlaying);
 
 	virtual void update(float delta);
 	void runEvent();

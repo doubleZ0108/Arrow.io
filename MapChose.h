@@ -10,7 +10,7 @@ using namespace cocos2d::network;
 class MapChose : public cocos2d::Layer, public cocos2d::network::SocketIO::SIODelegate
 {
 public:
-	SIOClient * _sioClient;
+	SIOClient * _sioClient = nullptr;
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
