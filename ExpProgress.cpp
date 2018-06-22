@@ -6,7 +6,9 @@
 //#pragma execution_character_set("utf-8");
 
 using namespace cocos2d::ui;
+extern bool language_flag;
 
+extern char *FontToUTF8(const char* font);
 ExpProgress::ExpProgress()
 {
 }
@@ -20,13 +22,23 @@ bool ExpProgress::init()
 	expProgressView = new ProgressView;
 	expProgressView->setPosition(ccp(640, 690));
 	expProgressView->setScale(2, 1.2);
-	expProgressView->setBackgroundTexture("energyback.png");
-	expProgressView->setForegroundTexture("energyfore.png");
+	expProgressView->setBackgroundTexture("Player/Figure/energyback.png");
+	expProgressView->setForegroundTexture("Player/Figure/energyfore.png");
 	expProgressView->setTotalProgress(1);
 	expProgressView->setCurrentProgress(0);
 	addChild(expProgressView);
 
-	lv = Label::create("LV 1", "Arial", 40);
+	if (language_flag)
+	{
+		lv = Label::create("LV 1", "Arial", 40);
+	}
+	else
+	{
+		lv = Label::create(FontToUTF8("等级 1"),
+			"Arial", 40);
+	}
+	
+	
 	lv->setPosition(ccp(640, 690));
 	addChild(lv);
 
@@ -46,11 +58,29 @@ void ExpProgress::LvChange(int level)
 	removeChild(lv);
 	if (level == 11)
 	{
-		lv = Label::create("LV MAX", "Arial", 40);
+		if (language_flag)
+		{
+			lv = Label::create("LV MAX", "Arial", 40);
+		}
+		else
+		{
+			lv = Label::create(FontToUTF8("满级"),
+				"Arial", 40);
+		}
+		
 	}
 	else
 	{
-		lv = Label::create(StringUtils::format("LV %d", level), "Arial", 40);
+		if (language_flag)
+		{
+			lv = Label::create(StringUtils::format("LV %d", level), "Arial", 40);
+		}
+		else
+		{
+			lv = Label::create(StringUtils::format(FontToUTF8("等级 %d"), level),
+				"Arial", 40);
+		}
+		
 	}
 	lv->setPosition(ccp(640, 690));
 	addChild(lv);

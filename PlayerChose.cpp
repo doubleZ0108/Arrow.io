@@ -22,7 +22,7 @@ Scene* PlayerChose::createScene()
 static void problemLoading(const char* filename)
 {
 	printf("Error while loading: %s\n", filename);
-	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in MapChose.cpp\n");
+	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in PlayerChose.cpp\n");
 }
 
 // on "init" you need to initialize your instance
@@ -34,14 +34,8 @@ bool PlayerChose::init()
 	{
 		return false;
 	}
-	NetworkPrinter();
 	ScenePrinter();
 	return true;
-}
-
-void PlayerChose::NetworkPrinter()
-{
-	_sioClient = network::SocketIO::connect("http://120.78.208.162:2333", *this);
 }
 
 void PlayerChose::ScenePrinter()
@@ -58,15 +52,15 @@ void PlayerChose::ScenePrinter()
 
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 2;
-	auto *background = Sprite::create("Help_Background.png");
+	auto *background = Sprite::create("Scene/Background/Help_Background.png");
 	background->setPosition(Vec2(x, y));
 	this->addChild(background);
 
 	///////////////////////////////////
 	//a return button which click to back to HelloWorldScene
 	auto *return_button = MenuItemImage::create(
-		"backtoupper.png",
-		"backtoupper_select.png",
+		"Scene/Buttons/backtoupper.png",
+		"Scene/Buttons/backtoupper_select.png",
 		CC_CALLBACK_1(PlayerChose::menuStartScene, this));
 
 	auto *preturn = Menu::create(return_button, NULL);
@@ -78,7 +72,7 @@ void PlayerChose::ScenePrinter()
 
 	//////////////////////////////////////
 	//add two player sceneshot
-	auto pre_player1 = Sprite::create("pre_player.png");
+	auto pre_player1 = Sprite::create("Player/Figure/pre_player.png");
 	x = rect.origin.x + rect.size.width*(1.0f / 4.0f);
 	y = rect.origin.y + rect.size.height*(1.0f / 2.0f);
 	pre_player1->setPosition(Vec2(x, y));
@@ -87,7 +81,7 @@ void PlayerChose::ScenePrinter()
 	this->addChild(gridNodeTarget_1);
 	gridNodeTarget_1->addChild(pre_player1);
 
-	auto pre_player2 = Sprite::create("pre_player.png");
+	auto pre_player2 = Sprite::create("Player/Figure/pre_player.png");
 	x = rect.origin.x + rect.size.width*(3.0f / 4.0f);
 	pre_player2->setPosition(Vec2(x, y));
 
@@ -130,7 +124,6 @@ void PlayerChose::ScenePrinter()
 		target->setOpacity(255);
 		which_player = 1;
 		log("which_map %d", which_player);
-		_sioClient->emit("playerchose", "1");
 		_eventDispatcher->removeEventListener(listener1);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, pre_player1);
@@ -167,25 +160,12 @@ void PlayerChose::ScenePrinter()
 		target->setOpacity(255);
 		which_player = 2;
 		log("which_map %d", which_player);
-		_sioClient->emit("playerchose", "2");
 		_eventDispatcher->removeEventListener(listener2);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, pre_player2);
 	
 }
 
-void PlayerChose::onConnect(SIOClient * client)
-{
-}
-void PlayerChose::onMessage(SIOClient * client, const std::string & data)
-{
-}
-void PlayerChose::onError(SIOClient * client, const std::string & data)
-{
-}
-void PlayerChose::onClose(SIOClient * client)
-{
-}
 void PlayerChose::menuStartScene(Ref* pSender)
 {
 	auto sc = StartScene::createScene();        //按列分割界面的切换动画

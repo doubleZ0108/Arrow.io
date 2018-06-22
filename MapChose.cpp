@@ -31,22 +31,9 @@ bool MapChose::init()
 	{
 		return false;
 	}
-
-	NetworkPrinter();
 	ScenePrinter();
 
 	return true;
-}
-
-void MapChose::NetworkPrinter()
-{
-	_sioClient = SIOClient::getInstance();
-	_sioClient = SocketIO::connect("http://120.78.208.162:2333", *this);
-
-	if (!SIOClient::setconnect(_sioClient, 1))
-	{
-		_sioClient = nullptr;
-	}
 }
 
 void MapChose::ScenePrinter()
@@ -63,15 +50,15 @@ void MapChose::ScenePrinter()
 
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 2;
-	auto *background = Sprite::create("Help_Background.png");
+	auto *background = Sprite::create("Scene/Background/Help_Background.png");
 	background->setPosition(Vec2(x, y));
 	this->addChild(background);
 
 	///////////////////////////////////
 	//a return button which click to back to HelloWorldScene
 	auto *return_button = MenuItemImage::create(
-		"backtoupper.png",
-		"backtoupper_select.png",
+		"Scene/Buttons/backtoupper.png",
+		"Scene/Buttons/backtoupper_select.png",
 		CC_CALLBACK_1(MapChose::menuStartScene, this));
 
 	auto *preturn = Menu::create(return_button, NULL);
@@ -142,10 +129,6 @@ void MapChose::ScenePrinter()
 		which_map = 1;
 		log("which_map %d", which_map);
 
-		////////////////////////////
-		_sioClient->emit("mapchose", "1");
-		//////////////////////////
-
 		_eventDispatcher->removeEventListener(listener1);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, pre_map1);
@@ -182,7 +165,6 @@ void MapChose::ScenePrinter()
 		target->setOpacity(255);
 		which_map = 2;
 		log("which_map %d", which_map);
-		_sioClient->emit("mapchose", "2");
 		_eventDispatcher->removeEventListener(listener2);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, pre_map2);
@@ -219,32 +201,14 @@ void MapChose::ScenePrinter()
 		target->setOpacity(255);
 		which_map = 3;
 		log("which_map %d", which_map);
-		_sioClient->emit("mapchose", "3");
 		_eventDispatcher->removeEventListener(listener2);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener3, pre_map3);
 }
-
 
 void MapChose::menuStartScene(Ref* pSender)
 {
 	auto sc = StartScene::createScene();        //按列分割界面的切换动画
 	auto reScene = TransitionSlideInR::create(1.0f, sc);  //从右边推入的动画
 	Director::getInstance()->replaceScene(reScene);
-}
-void MapChose::onConnect(SIOClient * client)
-{
-}
-
-void MapChose::onMessage(SIOClient * client, const std::string & data)
-{
-}
-
-void MapChose::onError(SIOClient * client, const std::string & data)
-{
-}
-
-void MapChose::onClose(SIOClient * client)
-{
-	log("Mapchose network close");
 }

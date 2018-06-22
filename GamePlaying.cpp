@@ -22,13 +22,16 @@ bool smallmap_switch = true;       //小地图控制开关,true->打开小地图,false->关上
 								   //每次打开小地图的时候小人物的位置要随m_player做相应的调整
 bool music_switch = true;
 bool mode_switch = true;
+bool network_switch = false;
 
 int which_map = 3;
 int which_player = 1;
 
 int viewsize = 1;
 bool ifbreakwall = false;   //穿墙技能
-std::string ID = "guest";
+
+bool isowner = true;  //房主（产生血包的人判定
+
 //it is define in another .cpp file 
 //and it is used to change character
 
@@ -56,44 +59,20 @@ bool GamePlaying::init()
 	}
 	NetworkPrinter();
 
-	/*std::string mess = "owner";
-	if (_sioClient)
-	{
-		_sioClient->emit("owner", mess);
-	}*/
-
 	MusicPrinter();
 	MapPrinter();
 	ScenePrinter();
 	SmallmapPrinter();
 	ModePrinter();
-
-	//schedule(schedule_selector(GamePlaying::EXP_grow), 0.15f);
-	//schedule(schedule_selector(GamePlaying::HP_grow), 2.0f);
-
-	_sioClient->on("HP position", CC_CALLBACK_2(GamePlaying::HP_recieve, this));
-	_sioClient->on("EXP position", CC_CALLBACK_2(GamePlaying::EXP_recieve, this));
-
-	_sioClient->on("HP remove", CC_CALLBACK_2(GamePlaying::HP_remove, this));
-	_sioClient->on("EXP remove", CC_CALLBACK_2(GamePlaying::EXP_remove, this));
-	_sioClient->on("n_player keys", CC_CALLBACK_2(GamePlaying::runEvent_n, this));
-	//if (_sioClient)
-	//{
-	//	if (ID == "guest")
-	//	{
-	//		
-	//	}
-	//	//_sioClient->on("owner", CC_CALLBACK_2(GamePlaying::ID_judge, this));
-	//	
-	//	
-	//}
 	
+	if (isowner)
+	{
+		schedule(schedule_selector(GamePlaying::EXP_grow), 0.15f);
+		schedule(schedule_selector(GamePlaying::HP_grow), 2.0f);
+	}
 	return true;
 }
-void GamePlaying::ID_judge(SIOClient * client, const std::string & data)
-{
-	ID = "guest";
-}
+
 void GamePlaying::MapPrinter()
 {
 	size = Director::getInstance()->getVisibleSize();
@@ -127,22 +106,6 @@ void GamePlaying::ScenePrinter()
 	float x = rect.origin.x + rect.size.width / 2;
 	float y = rect.origin.y + rect.size.height / 2;
 
-	///////////////////////////////////
-	//a return button which click to back to HelloWorldScene
-	auto *return_button = MenuItemImage::create(
-		"Scene/Buttons/closetoupper.png",
-		"Scene/Buttons/closetoupper_select.png",
-		CC_CALLBACK_1(GamePlaying::menuStartScene, this));
-
-	auto *preturn = Menu::create(return_button, NULL);
-	x = rect.origin.x + rect.size.width*(49.0f / 50.0f);
-	y = rect.origin.y + rect.size.height*(48.0f / 50.0f);
-	preturn->setPosition(Vec2(x, y));
-
-	preturn->setScale(1.0f);
-	this->addChild(preturn, 100);   //把返回按钮置于100层，防止遮挡
-
-	///////////////////////////////////////////////
 	PlayerPrinter();
 	SettingPrinter();
 	//////////////////////////////////////////////
@@ -212,11 +175,57 @@ void GamePlaying::NetworkPrinter()//noneed
 	_sioClient = SIOClient::getInstance();
 	_sioClient = SocketIO::connect("http://120.78.208.162:2333", *this);
 	
-	/*if (!SIOClient::setconnect(_sioClient, 0))
+	if (!SIOClient::setconnect(_sioClient, 1))
 	{
 		_sioClient = nullptr;
-	}*/
+	}
 
+	if (_sioClient)
+	{
+		if (isowner)
+		{
+			//schedule(schedule_selector(GamePlaying::EXP_grow), 0.15f);
+			//schedule(schedule_selector(GamePlaying::HP_grow), 2.0f);
+		}
+		else
+		{
+			_sioClient->on("HP position", CC_CALLBACK_2(GamePlaying::HP_recieve, this));
+			_sioClient->on("EXP position", CC_CALLBACK_2(GamePlaying::EXP_recieve, this));
+		}
+
+		_sioClient->on("HP remove", CC_CALLBACK_2(GamePlaying::HP_remove, this));
+		_sioClient->on("EXP remove", CC_CALLBACK_2(GamePlaying::EXP_remove, this));
+		_sioClient->on("n_player keys", CC_CALLBACK_2(GamePlaying::runEvent_n, this));
+	}
+
+}
+void GamePlaying::Network_Switch(Ref * Spender)
+{
+	network_switch = (network_switch ? false : true);
+	if (_sioClient)
+	{
+		if (network_switch)
+		{
+			std::string mess;
+			std::stringstream mess_stream;
+			mess_stream << which_map;
+			mess_stream >> mess;
+			_sioClient->emit("mapchose", mess);
+			log("map %s", mess.c_str());
+			mess_stream.clear();
+			mess.clear();
+			mess_stream << which_player;
+			mess_stream >> mess;
+			log("player %s", mess.c_str());
+			_sioClient->emit("playerchose", mess);
+		}
+		else
+		{
+			_sioClient = nullptr;
+			this->unschedule(schedule_selector(GamePlaying::HP_grow));
+			this->unschedule(schedule_selector(GamePlaying::EXP_grow));
+		}
+	}
 }
 
 void GamePlaying::PlayerPrinter()
@@ -266,6 +275,37 @@ void GamePlaying::PlayerPrinter()
 void GamePlaying::SettingPrinter()
 {
 	float x, y;
+	///////////////////////////////////
+	//a return button which click to back to StartScene
+	auto *return_button = MenuItemImage::create(
+		"Scene/Buttons/closetoupper.png",
+		"Scene/Buttons/closetoupper_select.png",
+		CC_CALLBACK_1(GamePlaying::menuStartScene, this));
+
+	auto *preturn = Menu::create(return_button, NULL);
+	x = rect.origin.x + rect.size.width*(49.0f / 50.0f);
+	y = rect.origin.y + rect.size.height*(48.0f / 50.0f);
+	preturn->setPosition(Vec2(x, y));
+
+	preturn->setScale(1.0f);
+	this->addChild(preturn, 100);   //把返回按钮置于100层，防止遮挡
+
+	///////////////////////////////////////////////
+	//add network choice
+	auto networkMenuItem = MenuItemToggle::createWithCallback(
+		CC_CALLBACK_1(GamePlaying::Network_Switch, this),
+		MenuItemImage::create(
+			"Scene/Buttons/network_normal.png",
+			"Scene/Buttons/network_normal.png"),
+		MenuItemImage::create(
+			"Scene/Buttons/network_selected.png",
+			"Scene/Buttons/network_selected.png"),
+		NULL);
+	Menu* networkmn = Menu::create(networkMenuItem, NULL);
+	x = rect.origin.x + rect.size.width*(47.0f / 50.0f);
+	networkmn->setPosition(Vec2(x, y));
+	this->addChild(networkmn, 1);
+
 	////////////////////////////////////////////////
 	//add small map
 	Label *smallmapword;
@@ -382,7 +422,7 @@ void GamePlaying::MusicPrinter()
 		else
 		{
 			//init才会调到这,从头播放音乐
-			CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Escape.mp3");
+			CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Music/Escape.mp3");
 		}
 		
 		if (language_flag)
@@ -424,7 +464,6 @@ void GamePlaying::MusicPrinter()
 }
 void GamePlaying::Music_Switch(Ref * pSender)
 {
-	_sioClient->emit("mapchose", "1");
 	music_switch = (music_switch ? false : true);
 	MusicPrinter();
 }
@@ -441,9 +480,9 @@ void GamePlaying::SmallmapPrinter()
 		//m_smallmap = LayerColor::create(ccc4(0, 0, 0, 100), 250, 250);
 		switch (which_map)
 		{
-		case 1:m_smallmap = Sprite::create("smallmap1.png"); break;
-		case 2:m_smallmap = Sprite::create("smallmap2.png"); break;
-		case 3:m_smallmap = Sprite::create("smallmap3.png"); break;
+		case 1:m_smallmap = Sprite::create("Player/Tiled Map/smallmap1.png"); break;
+		case 2:m_smallmap = Sprite::create("Player/Tiled Map/smallmap2.png"); break;
+		case 3:m_smallmap = Sprite::create("Player/Tiled Map/smallmap3.png"); break;
 		default:m_smallmap = nullptr;
 		}
 		
@@ -456,13 +495,13 @@ void GamePlaying::SmallmapPrinter()
 		this->addChild(m_smallmap, 1);
 
 		m_smallplayer = Player::create();
-		m_smallplayer->bindSprite(Sprite::create("m_smallplayer.png"));
+		m_smallplayer->bindSprite(Sprite::create("Player/Tiled Map/m_smallplayer.png"));
 		m_smallplayer->setPosition(
 			Vec2(m_player->getPositionX()*RETE, m_player->getPositionY()*RETE));
 		m_smallmap->addChild(m_smallplayer);
 
 		n_smallplayer = Player::create();
-		n_smallplayer->bindSprite(Sprite::create("n_smallplayer.png"));
+		n_smallplayer->bindSprite(Sprite::create("Player/Tiled Map/n_smallplayer.png"));
 		n_smallplayer->setPosition(
 			Vec2(n_player->getPositionX()*RETE, n_player->getPositionY()*RETE));
 		m_smallmap->addChild(n_smallplayer);
@@ -516,7 +555,6 @@ void GamePlaying::Smallmap_Switch(Ref* pSender)
 	smallmap_switch = (smallmap_switch ? false : true);
 	//将开着的小地图关上，将关着的小地图打开
 	SmallmapPrinter();
-	
 }
 
 void GamePlaying::ModePrinter()
@@ -560,7 +598,6 @@ void GamePlaying::Mode_Switch(Ref * pSender)
 	onEnter();
 }
 
-
 void GamePlaying::Weapon_change(Ref * pSender)
 {
 	++m_player->weapon;
@@ -569,7 +606,6 @@ void GamePlaying::Weapon_change(Ref * pSender)
 		m_player->weapon = 1;
 	}
 }
-
 void GamePlaying::TLmap_change(Ref * pSender)
 {
 	static int counter = 0;
@@ -598,13 +634,12 @@ void GamePlaying::TLmap_change(Ref * pSender)
 	default:break;
 	}
 }
-
 void GamePlaying::Breakwall_change(Ref * pSender)
 {
 	ifbreakwall = (ifbreakwall ? false : true);
 	if (ifbreakwall)
 	{
-		auto flash = Sprite::create("flash.png");
+		auto flash = Sprite::create("Player/Figure/flash.png");
 		flash->setScale(0.4f);
 		flash->setName("player buff");
 		m_player->addChild(flash);
@@ -713,7 +748,7 @@ bool GamePlaying::left(bool flag, int ifxie)
 			runEvent();
 			tofindEat(x, y);
 		}
-		if ((x + tiledmap->getPositionX() < size.width / 2) 
+		if ((x + tiledmap->getPositionX() < size.width / 2 /TLMAP_SCALE) 
 			&& tiledmap->getPositionX() < 0)
 		{
 			tiledmap->setPositionX(tiledmap->getPositionX() 
@@ -784,6 +819,7 @@ bool GamePlaying::isCanReach(float x, float y)
 	double mapY = MAP_HEIGHT - y/32.0;   //49为Tiled里地图的坐标最大值
 	int tileGid = meta->tileGIDAt(Vec2(mapX, mapY)); //32是一格的大小
 	
+	//log("gid %d", tileGid);
 	if (tileGid != GAP_GID)
 	{
 		return true;
@@ -833,10 +869,9 @@ void GamePlaying::HPjudge(const Vec2 &pos)
 }
 void GamePlaying::HP_grow(float dt)
 {
-	if (ID == "guest")
+	if (!isowner)
 	{
-		//this->unschedule(schedule_selector(GamePlaying::HP_grow));
-		//this->unschedule(schedule_selector(GamePlaying::EXP_grow));
+		this->unschedule(schedule_selector(GamePlaying::HP_grow));
 	}
 	/*static int time_locker = 0;
 	++time_locker;
@@ -869,13 +904,13 @@ void GamePlaying::HP_grow(float dt)
 			Vec2(spritex, spritey));
 		tiledmap->addChild(hp_auto_arise[now_vec_maxindex].hp_potion);
 
-		/*if (ID != "guest")
+		if (_sioClient && isowner)
 		{
 			char mess[10];
 			sprintf(mess, "%d %d", metax, metay);
 			std::string HP_pos = mess;
 			_sioClient->emit("HP position", HP_pos);
-		}*/
+		}
 		
 	}
 }
@@ -917,11 +952,10 @@ void GamePlaying::EXPjudge(const Vec2 & pos)
 }
 void GamePlaying::EXP_grow(float dt)
 {
-	//if (ID == "guest")
-	//{
-	//	//this->unschedule(schedule_selector(GamePlaying::HP_grow));
-	//	//this->unschedule(schedule_selector(GamePlaying::EXP_grow));
-	//}
+	if (!isowner)
+	{
+		this->unschedule(schedule_selector(GamePlaying::EXP_grow));
+	}
 	/*static int time_locker = 0;
 	++time_locker;
 	if (time_locker > 20)
@@ -952,13 +986,13 @@ void GamePlaying::EXP_grow(float dt)
 			Vec2(spritex, spritey));
 		tiledmap->addChild(exp_auto_arise[now_vec_maxindex].exp_potion);
 
-		/*if (ID != "guest")
+		if (_sioClient && isowner)
 		{
 			char mess[10];
 			sprintf(mess, "%d %d", metax, metay);
 			std::string EXP_pos = mess;
 			_sioClient->emit("EXP position", EXP_pos);
-		}*/
+		}
 		
 	}
 }
@@ -1078,18 +1112,18 @@ void GamePlaying::tofindEat(const float x, const float y)
 			for (int j = -32; j <= 32; j += 32)
 			{
 				HPjudge(Vec2((x + i) / tileSize.width,
-					(mapSize.height*tileSize.height - y + j) / tileSize.height));
+					(mapSize.height*tileSize.height - y + j + 32) / tileSize.height));
 				EXPjudge(Vec2((x + i) / tileSize.width,
-					(mapSize.height*tileSize.height - y + j) / tileSize.height));
+					(mapSize.height*tileSize.height - y + j + 32) / tileSize.height));
 			}
 		}
 	}
 	else
 	{
 		HPjudge(Vec2(x / tileSize.width,
-			(mapSize.height*tileSize.height - y) / tileSize.height));
+			(mapSize.height*tileSize.height - y + 32) / tileSize.height));
 		EXPjudge(Vec2(x / tileSize.width,
-			(mapSize.height*tileSize.height - y) / tileSize.height));
+			(mapSize.height*tileSize.height - y + 32) / tileSize.height));
 	}
 }
 
@@ -1241,7 +1275,6 @@ void GamePlaying::update(float delta)
 
 	if (keys[k_w] || keys[k_a] || keys[k_s] || keys[k_d])//分别是wasd，参见#define
 	{
-		
 		//如果同时按了w和d，首先检测是否可以往上并且可以往右
 		//方法是先将分方向判断函数的参数传递为false
 		//这样只会检测是否可以走,不会实际调runEvent函数
@@ -1284,7 +1317,7 @@ void GamePlaying::update(float delta)
 				if (_sioClient)
 					_sioClient->emit("n_player keys", "wa");
 				if ((x + tiledmap->getPositionX() < size.width / 2)
-					&& tiledmap->getPositionX() != 0)
+					&& tiledmap->getPositionX() < 0)
 				{
 					up(true, 2);
 				}
@@ -1313,7 +1346,7 @@ void GamePlaying::update(float delta)
 				if (_sioClient)
 					_sioClient->emit("n_player keys", "as");
 				if ((x + tiledmap->getPositionX() < size.width / 2)
-					&& tiledmap->getPositionX() != 0)
+					&& tiledmap->getPositionX() < 0)
 				{
 					down(true, 2);
 				}
@@ -1421,7 +1454,7 @@ void GamePlaying::update(float delta)
 		{
 			if (bub->collidePlayer(pl))
 			{
-				Sprite* star = Sprite::create("attacked.png");
+				Sprite* star = Sprite::create("Player/Figure/attacked.png");
 				star->setScale(1.5f, 1.5f);
 				srand(time(NULL));
 				auto randx = rand() % 20 - 10, randy = rand() % 20 - 10;
@@ -1512,7 +1545,7 @@ void GamePlaying::attackweapon(float num)
 		if (m_player->weapon == 1)
 		{
 			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("arrow.png"));
+			Abullet->bindSprite(Sprite::create("Player/Weapon/arrow.png"));
 			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
 			tiledmap->addChild(Abullet);
 
@@ -1552,7 +1585,7 @@ void GamePlaying::attackweapon(float num)
 			for (int i = 1; i <= num && m_player->x_coord + i * xchange >= 0 && m_player->x_coord + i * xchange <= 1600 && m_player->y_coord + i * ychange >= 0 && m_player->y_coord + i * ychange <= 1600; i++)
 			{
 				auto Abullet = BulletBase::create();
-				Abullet->bindSprite(Sprite::create("ground.png"));
+				Abullet->bindSprite(Sprite::create("Player/Weapon/ground.png"));
 				Abullet->setPosition(Point(m_player->x_coord + i * xchange, m_player->y_coord + i * ychange));
 				tiledmap->addChild(Abullet);
 				Abullet->exist = true;
@@ -1563,7 +1596,7 @@ void GamePlaying::attackweapon(float num)
 		else if (m_player->weapon == 3)
 		{
 			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("knife.png"));
+			Abullet->bindSprite(Sprite::create("Player/Weapon/knife.png"));
 			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
 			tiledmap->addChild(Abullet);
 
@@ -1595,7 +1628,7 @@ void GamePlaying::attackweapon(float num)
 		else if (m_player->weapon == 4)
 		{
 			auto Abullet = BulletBase::create();
-			Abullet->bindSprite(Sprite::create("darts.png"));
+			Abullet->bindSprite(Sprite::create("Player/Weapon/darts.png"));
 			Abullet->setPosition(Point(m_player->x_coord, m_player->y_coord));
 			tiledmap->addChild(Abullet);
 
@@ -1630,25 +1663,6 @@ void GamePlaying::menuStartScene(Ref* pSender)
 void GamePlaying::levelup()
 {
 	log("level up");
-	
-
-	/*auto flash_sprite = Sprite::create("flash.png");
-	auto level_sprite = Sprite::create("level_sprite.png");
-	float x = rect.origin.x + rect.size.width / 2;
-	float y = rect.origin.y + rect.size.height / 2;
-	flash_sprite->setPosition(Vec2(x, y));
-	level_sprite->setPosition(Vec2(x, y));
-	flash_sprite->setName("flash");
-	level_sprite->setName("level up");
-	this->addChild(flash_sprite);
-	this->addChild(level_sprite);
-
-	if (this->getChildByName("flash"))
-	{
-		this->getChildByName("flash")->removeFromParentAndCleanup(true);
-		this->getChildByName("level up")->removeFromParentAndCleanup(true);
-	}*/
-	
 
 	expPro->LvChange(m_player->level);
 	expPro->player = m_player;

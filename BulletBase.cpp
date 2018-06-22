@@ -50,7 +50,8 @@ void BulletBase::arrow(Player *player, Point pos)
 {
 	range *= comefrom->atkrange;
 	float time = (range) / (flyspeed);//单位为秒
-	float length = sqrt((player->x_coord - pos.x)*(player->x_coord - pos.x) + (player->y_coord - pos.y)*(player->y_coord - pos.y));
+	float length = sqrt((player->x_coord - pos.x)*(player->x_coord - pos.x) 
+		+ (player->y_coord - pos.y)*(player->y_coord - pos.y));
 	float xchange = (pos.x - player->x_coord) / length * range;
 	float ychange = (pos.y - player->y_coord) / length * range;
 	//在cocos2dx中你甚至能学几何
@@ -140,7 +141,8 @@ void BulletBase::knife(Player *player, Point pos)
 {
 	range *= comefrom->atkrange;
 	float time = (range) / (flyspeed);//单位为秒
-	float length = sqrt((player->x_coord - pos.x)*(player->x_coord - pos.x) + (player->y_coord - pos.y)*(player->y_coord - pos.y));
+	float length = sqrt((player->x_coord - pos.x)*(player->x_coord - pos.x) 
+		+ (player->y_coord - pos.y)*(player->y_coord - pos.y));
 	float xchange = (pos.x - player->x_coord) / length * range;
 	float ychange = (pos.y - player->y_coord) / length * range;
 	//在cocos2dx中你甚至能学几何

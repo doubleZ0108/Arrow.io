@@ -129,7 +129,8 @@ void Player::animationcreate(int direct)
 	animating = 1;
 	/* 加载图片帧到缓存池 */
 	SpriteFrameCache* frameCache = SpriteFrameCache::getInstance();
-	frameCache->addSpriteFramesWithFile("player1run.plist", "player1run.png");
+	frameCache->addSpriteFramesWithFile("Player/Figure/player1run.plist",
+		"Player/Figure/player1run.png");
 
 	SpriteFrame* frame = NULL;
 	Vector<SpriteFrame*> frameVec;

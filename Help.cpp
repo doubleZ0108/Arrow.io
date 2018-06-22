@@ -17,7 +17,7 @@ Scene* HelpScene::createScene()
 static void problemLoading(const char* filename)
 {
 	printf("Error while loading: %s\n", filename);
-	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
+	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelpScene.cpp\n");
 }
 
 // on "init" you need to initialize your instance
@@ -57,8 +57,8 @@ void HelpScene::ScenePrinter()
 	///////////////////////////////////
 	//a return button which click to back to HelloWorldScene
 	auto *return_button = MenuItemImage::create(
-		"backtoupper.png",
-		"backtoupper_select.png",
+		"Scene/Buttons/backtoupper.png",
+		"Scene/Buttons/backtoupper_select.png",
 		CC_CALLBACK_1(HelpScene::menuHellowWorldScene, this));
 
 	auto *preturn = Menu::create(return_button, NULL);

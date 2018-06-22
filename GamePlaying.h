@@ -10,6 +10,7 @@
 #include <vector>
 #include "network\SocketIO.h"
 
+#pragma comment(lib,"libcurl_imp.lib")
 
 #define KEY_DOWN(vk_code) (GetAsyncKeyState(vk_code) & 0x8000 ? 1 : 0)  
 #define KEY_UP(vk_code) (GetAsyncKeyState(vk_code) & 0x8000 ? 0 : 1)  
@@ -19,7 +20,7 @@
 #define k_s (EventKeyboard::KeyCode)142
 #define k_d (EventKeyboard::KeyCode)127
 
-#define MAP_SIZE 1600
+#define MAP_SIZE 1598
 #define MAP_WIDTH 49
 #define MAP_HEIGHT 49
 
@@ -30,10 +31,10 @@
 #define HP1_GID 137
 #define EXP1_GID 142
 
-#define GAP2_GID 300
-#define NOR2_GID 293
-#define HP2_GID 294
-#define EXP2_GID 299
+#define GAP2_GID 129
+#define NOR2_GID 122
+#define HP2_GID 123
+#define EXP2_GID 128
 
 #define GAP3_GID 405
 #define NOR3_GID 398
@@ -48,7 +49,7 @@
 #define SM_MAP_SIZE 245
 #define RETE (260.0/1600)  //smallplayer和player移动距离的比
 #define XIE 0.707
-#define TLMAP_SCALE (viewsize==1? 1.0 :(viewsize==2? 1.7: 0.8))//地图缩放时的比例调整
+#define TLMAP_SCALE (viewsize==1? 1.0 :(viewsize==1.75? 2.0: 0.8))//地图缩放时的比例调整
 #define MOUCE_SCALE (viewsize==1? 1.0 :(viewsize==2? 1.35: 0.8))//地图缩放时鼠标的比例调整
 USING_NS_CC;
 using namespace cocos2d::network;
@@ -115,9 +116,6 @@ public:
 
 	virtual bool init();
 
-	// a selector callback
-	void menuStartScene(Ref* pSender);
-
 	//////////////////////////////////
 	//各种界面的绘制
 	void NetworkPrinter();
@@ -136,6 +134,8 @@ public:
 
 	///////////////////////////////////
 	//各种开关的回调函数
+	void menuStartScene(Ref* pSender);
+	void Network_Switch(Ref* Spender);
 	void Smallmap_Switch(Ref* pSender);
 	void Mode_Switch(Ref* pSender);
 	void Music_Switch(Ref* pSender);
@@ -158,8 +158,6 @@ public:
 	void EXP_grow(float dt);
 
 
-	void ID_judge(SIOClient* client, const std::string& data);
-
 	void DeCode_for_Map(const std::string &buf, int &metax, int &metay);
 	void HP_recieve(SIOClient* client, const std::string& data);
 	void EXP_recieve(SIOClient* client, const std::string& data);
@@ -172,9 +170,13 @@ public:
 	// implement the "static create()" method manually
 	CREATE_FUNC(GamePlaying);
 
+	//socket连接时调用
 	void onConnect(SIOClient* client);
+	//收到数据时调用
 	void onMessage(SIOClient* client, const std::string& data);
+	//连接错误或接收到错误信号时调用
 	void onError(SIOClient* client, const std::string& data);
+	//socket关闭时调用
 	void onClose(SIOClient* client);
 
 	virtual void update(float delta);

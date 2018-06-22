@@ -3,11 +3,11 @@
  <tileset firstgid="1" name="grey" tilewidth="32" tileheight="32" tilecount="4" columns="2">
   <image source="grey.png" width="64" height="64"/>
  </tileset>
- <tileset firstgid="5" name="wall" tilewidth="32" tileheight="32" tilecount="171" columns="9">
-  <image source="wall.png" width="288" height="608"/>
- </tileset>
- <tileset firstgid="176" name="meta" tilewidth="32" tileheight="32" tilecount="128" columns="8">
+ <tileset firstgid="5" name="meta" tilewidth="32" tileheight="32" tilecount="128" columns="8">
   <image source="meta.png" width="256" height="512"/>
+ </tileset>
+ <tileset firstgid="133" name="volcano" tilewidth="64" tileheight="64" tilecount="171" columns="9">
+  <image source="volcano.png" width="576" height="1216"/>
  </tileset>
  <layer name="background" width="50" height="50">
   <data encoding="base64" compression="zlib">
@@ -16,12 +16,12 @@
  </layer>
  <layer name="wall" width="50" height="50">
   <data encoding="base64" compression="zlib">
-   eJzt2TsOhDAMRdGsh2XSQMWaaShAytc25GG/K7kmRwqZQVlSSouT+Xt0YBXBsQ9OrUM5dGBEx5wQ9pXFHvfmkPbGvpKsyZtDehbT0V7Tl6Gcu9paju0a9OjAig6s6JC3KidXr6M0ERy150rSOEpFcPTsA0l0lOt9zy1NyI6R//gzHa010PFs9ndUREctOmxCc4zcIdzz5tDeh1je40R2WGX9ntOhi458Fg7JWTz7dzAXHVjR4WNOlBLdGQ==
+   eJztmcENhDAMBKEB+u/hmkS8OIHEncM6nsCOFOVnaTNJMDBNz+BzMY8ynsBx/UfFOVj8yrHMsfmKaK1I7bf4IGAfNRDOh+Ks3oHoo4WsHNnrf4Too2WP2gcL52DxT47ee70F+2BhHyyqfKjfDSM+evewEbJ9qLPe8RGtWUF2n2gfMXrcV0o3ZB9Krz2eH1QfKhT5CDkUEHLYxw4hB81HZf9I8pH9HS7j/5Eagg8FGTkq+0f7OGMfO9G18DnPpdXH6Hz7GH1srK77f+Q=
   </data>
  </layer>
  <layer name="meta" width="50" height="50">
   <data encoding="base64" compression="zlib">
-   eJzt1sENwDAIA8B0mP6y/3xZoFIVcIIBP/yrIKdA2/mMMYvkTR45uNLBgdyx0/vbwcEQOWLPGzlXN/Ynm+P0/J2uWc1hfRfLcfeOGXtGOLI45eCKHFyRw9/TGo/D+h9awYG+S4/Dc8bsDsTsyYGfK7SJ2bHTP9Lx97wcGAcqHR036kT3l+O7Dmr/szp2s+Ow9ujoQAXdVw6uvnL4akR/B+WQI4OjQhZ98YIk
+   eJzt1jECwCAIA0Df3c2f+4MqGiFIhowVT2lLb611hS5f0sjBlZkD2Zc3e76KgyFyxO43sq883p9sDkR9z55+3bFzt3Lc6xGmvvJOJUcGoxxckYMrUQ7rP2+2T4tjZ/Z7xeE1J5ycbQWH99wmx/ozSBOzw1I70rG6hygHuieyOFD3+reGHHKwOnbXes1hjbU2ok4FByI3asshB6vj9FvheYZy1HEoHBnuhrtx
   </data>
  </layer>
 </map>

@@ -28,7 +28,7 @@ Scene* StartScene::createScene()
 static void problemLoading(const char* filename)
 {
 	printf("Error while loading: %s\n", filename);
-	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
+	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in StartScene.cpp\n");
 }
 
 // on "init" you need to initialize your instance
@@ -43,18 +43,6 @@ bool StartScene::init()
 	ScenePrinter();
 
 	return true;
-}
-void StartScene::onConnect(SIOClient * client)
-{
-}
-void StartScene::onMessage(SIOClient * client, const std::string & data)
-{
-}
-void StartScene::onError(SIOClient * client, const std::string & data)
-{
-}
-void StartScene::onClose(SIOClient * client)
-{
 }
 
 void StartScene::ScenePrinter()

@@ -20,7 +20,7 @@ Scene* SettingScene::createScene()
 static void problemLoading(const char* filename)
 {
 	printf("Error while loading: %s\n", filename);
-	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
+	printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in SettingScene.cpp\n");
 }
 
 // on "init" you need to initialize your instance
@@ -54,15 +54,15 @@ void SettingScene::ScenePrinter()
 	
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 2;
-	auto *background = Sprite::create("Setting_Background.png");
+	auto *background = Sprite::create("Scene/Background/Setting_Background.png");
 	background->setPosition(Vec2(x, y));
 	this->addChild(background);
 
 	///////////////////////////////////
 	//a return button which click to back to HelloWorldScene
 	auto *return_button = MenuItemImage::create(
-		"backtoupper.png",
-		"backtoupper_select.png",
+		"Scene/Buttons/backtoupper.png",
+		"Scene/Buttons/backtoupper_select.png",
 		CC_CALLBACK_1(SettingScene::menuHellowWorldScene, this));
 
 	auto *preturn = Menu::create(return_button, NULL);
@@ -75,7 +75,7 @@ void SettingScene::ScenePrinter()
 
 	/////////////////////////////////////////
 	//add  
-	auto *musicbutton = Sprite::create("button.png");
+	auto *musicbutton = Sprite::create("Scene/Buttons/button.png");
 	x = rect.origin.x + rect.size.width*(1.0f / 3.0f);
 	y = rect.origin.y + rect.size.height*(2.0f / 3.0f);
 	musicbutton->setPosition(Vec2(x, y));
@@ -95,7 +95,7 @@ void SettingScene::ScenePrinter()
 	musicword->setPosition(Vec2(x, y));
 	this->addChild(musicword);
 
-	auto *languagebutton = Sprite::create("button.png");
+	auto *languagebutton = Sprite::create("Scene/Buttons/button.png");
 	y = rect.origin.y + rect.size.height*(1.0f / 2.0f);
 	languagebutton->setPosition(Vec2(x, y));
 	this->addChild(languagebutton);
@@ -113,7 +113,7 @@ void SettingScene::ScenePrinter()
 	languageword->setPosition(Vec2(x, y));
 	this->addChild(languageword);
 
-	auto *sizebutton = Sprite::create("button.png");
+	auto *sizebutton = Sprite::create("Scene/Buttons/button.png");
 	y = rect.origin.y + rect.size.height*(1.0f / 3.0f);
 	sizebutton->setPosition(Vec2(x, y));
 	this->addChild(sizebutton);
@@ -315,7 +315,7 @@ void SettingScene::play(cocos2d::Object* pSender)
 	{
 		//解决按了stop后马上按play却是接着播放的bug
 		CocosDenshion::SimpleAudioEngine::sharedEngine()->stopBackgroundMusic(); 
-		CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Funky_Stars.mp3");
+		CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Music/Funky_Stars.mp3");
 	}
 	else
 	{
@@ -333,7 +333,6 @@ void SettingScene::pause(cocos2d::Object* pSender)
 	CocosDenshion::SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
 }
 
-
 void SettingScene::language_change_tochinese(cocos2d::Object * pSender)
 {
 	language_flag = false;
@@ -346,7 +345,6 @@ void SettingScene::language_change_toenglish(cocos2d::Object * pSender)
 	is_paused = continue_music;
 	Director::getInstance()->replaceScene(SettingScene::create());
 }
-
 
 void SettingScene::size_change_tosmall(cocos2d::Object * pSender)
 {
