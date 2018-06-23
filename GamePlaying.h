@@ -134,7 +134,7 @@ public:
 
 	///////////////////////////////////
 	//各种开关的回调函数
-	void menuStartScene(Ref* pSender);
+	void menuHelloWorldScene(Ref* pSender);
 	void Network_Switch(Ref* Spender);
 	void Smallmap_Switch(Ref* pSender);
 	void Mode_Switch(Ref* pSender);
@@ -159,10 +159,17 @@ public:
 
 
 	void DeCode_for_Map(const std::string &buf, int &metax, int &metay);
+	void DeCode_for_Run(const std::string &buf);
+	void DeCode_for_Playrun(const std::string &buf);
+	void DeCode_for_Enemy(const std::string &buf, 
+		int &v_player, float &v_posx, float &v_posy,
+		float &v_hp, int &v_hplimit,int &v_weapon);
+	void ID_judge(SIOClient* client, const std::string& data);
 	void HP_recieve(SIOClient* client, const std::string& data);
 	void EXP_recieve(SIOClient* client, const std::string& data);
 	void HP_remove(SIOClient* client, const std::string& data);
 	void EXP_remove(SIOClient* client, const std::string& data);
+	void addEnemy(SIOClient* client, const std::string& data);
 
 	void tofindEat(const float x, const float y);
 	/////////////////////////////////////////
@@ -171,20 +178,21 @@ public:
 	CREATE_FUNC(GamePlaying);
 
 	//socket连接时调用
-	void onConnect(SIOClient* client);
+	void onConnect(SIOClient* client){}
 	//收到数据时调用
-	void onMessage(SIOClient* client, const std::string& data);
+	void onMessage(SIOClient* client, const std::string& data){}
 	//连接错误或接收到错误信号时调用
-	void onError(SIOClient* client, const std::string& data);
+	void onError(SIOClient* client, const std::string& data){}
 	//socket关闭时调用
-	void onClose(SIOClient* client);
+	void onClose(SIOClient* client){}
 
 	virtual void update(float delta);
 	void runEvent();
 	void runEvent_n(SIOClient* client, const std::string& data);
+	void playRun_n(SIOClient* client, const std::string& data);
 	void onEnter();
-	void attack();
-	void attackweapon(float num);
+	void attack(Player* player, Point point);//单击坐标
+	void attackweapon(Player* player, float num, Point point);
 	void levelup();
 	/////////////////////////
 private:
@@ -214,6 +222,8 @@ private:
 	/////////////////////////
 	ExpProgress *expPro;
 	Label *lv;
+
+	int live = 0;
 };
 
 #endif //_GAMEPLAYING_H_

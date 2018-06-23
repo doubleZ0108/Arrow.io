@@ -67,7 +67,7 @@ void Player::runway1(std::map<EventKeyboard::KeyCode, bool>keys, Player *smallpl
 
 }
 
-bool Player::hurt(int atk)
+bool Player::hurt(float atk)
 {
 	p_hp -= atk * defpower;
 	if (p_hp <= 0)
@@ -80,6 +80,8 @@ bool Player::hurt(int atk)
 
 void Player::die()
 {
+	lives--;
+
 	this->sprite->setAnchorPoint(Point(0.5, 0));
 	this->setPosition(x_coord, y_coord - 35);
 
@@ -99,6 +101,12 @@ void Player::die()
 
 void Player::restart()
 {
+	if (lives == 0)
+	{
+		life = 0;
+		return;
+	}
+
 	p_hp = 50;
 	unbeat = 1;
 
@@ -128,23 +136,18 @@ void Player::animationcreate(int direct)
 		return;
 	animating = 1;
 	/* 加载图片帧到缓存池 */
-	SpriteFrameCache* frameCache = SpriteFrameCache::getInstance();
-	frameCache->addSpriteFramesWithFile("Player/Figure/player1run.plist",
-		"Player/Figure/player1run.png");
-
-	SpriteFrame* frame = NULL;
-	Vector<SpriteFrame*> frameVec;
 
 	/* 用一个列表保存所有SpriteFrame对象 */
-	for (int i = 2 + direct * 5; i <= 5 + direct * 5; i++)
+	Animation* animation = Animation::create();
+
+	for (int i = 1 + direct * 5; i <= 5 + direct * 5; i++)
 	{
 		/* 从SpriteFrame缓存池中获取SpriteFrame对象 */
-		frame = frameCache->getSpriteFrameByName(StringUtils::format("A%d.png", i));
-		frameVec.pushBack(frame);
+		char nameSize[100] = { 0 };
+		sprintf(nameSize, "Player/Figure/player%d_%d.png", number, i);
+		animation->addSpriteFrameWithFile(nameSize);
 	}
 
-	/* 使用SpriteFrame列表创建动画对象 */
-	Animation* animation = Animation::createWithSpriteFrames(frameVec);
 	animation->setDelayPerUnit(0.15f);
 
 	/* 将动画包装成一个动作 */

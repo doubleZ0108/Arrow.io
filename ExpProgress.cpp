@@ -1,6 +1,6 @@
 #include "ExpProgress.h"
 
-#define choicesnum 19
+#define choicesnum 20
 
 //#define charactersize 20
 //#pragma execution_character_set("utf-8");
@@ -37,8 +37,8 @@ bool ExpProgress::init()
 		lv = Label::create(FontToUTF8("等级 1"),
 			"Arial", 40);
 	}
-	
-	
+
+
 	lv->setPosition(ccp(640, 690));
 	addChild(lv);
 
@@ -67,7 +67,7 @@ void ExpProgress::LvChange(int level)
 			lv = Label::create(FontToUTF8("满级"),
 				"Arial", 40);
 		}
-		
+
 	}
 	else
 	{
@@ -80,7 +80,7 @@ void ExpProgress::LvChange(int level)
 			lv = Label::create(StringUtils::format(FontToUTF8("等级 %d"), level),
 				"Arial", 40);
 		}
-		
+
 	}
 	lv->setPosition(ccp(640, 690));
 	addChild(lv);
@@ -94,16 +94,24 @@ void ExpProgress::ButtonAppear()
 {
 	srand(time(NULL));
 
+	choiceback1 = Sprite::create("Player/skill/choiceback.png");
+	choiceback2 = Sprite::create("Player/skill/choiceback.png");
+	choiceback3 = Sprite::create("Player/skill/choiceback.png");
+
 	c1 = rand() % choicesnum + 1;
 	while (unchoose[c1] == true)
 		c1 = rand() % choicesnum + 1;
 	choice1 = Button::create(StringUtils::format("Player/skill/choice%d.png", c1));
 	choice1->setPosition(ccp(420, 120));
+	choice1->setScale(0.8);
+	choiceback1->setPosition(ccp(420, 120));
+	choiceback1->setScale(0.78);
 	choice1->addTouchEventListener([&](Ref* sender, Widget::TouchEventType type)
 	{
 		Choices(c1);
 		ButtonRemove();
 	});
+	addChild(choiceback1);
 	addChild(choice1);
 
 	c2 = rand() % choicesnum + 1;
@@ -111,11 +119,15 @@ void ExpProgress::ButtonAppear()
 		c2 = rand() % choicesnum + 1;
 	choice2 = Button::create(StringUtils::format("Player/skill/choice%d.png", c2));
 	choice2->setPosition(ccp(640, 120));
+	choice2->setScale(0.8);
+	choiceback2->setPosition(ccp(640, 120));
+	choiceback2->setScale(0.78);
 	choice2->addTouchEventListener([&](Ref* sender, Widget::TouchEventType type)
 	{
 		Choices(c2);
 		ButtonRemove();
 	});
+	addChild(choiceback2);
 	addChild(choice2);
 
 	c3 = rand() % choicesnum + 1;
@@ -123,11 +135,15 @@ void ExpProgress::ButtonAppear()
 		c3 = rand() % choicesnum + 1;
 	choice3 = Button::create(StringUtils::format("Player/skill/choice%d.png", c3));
 	choice3->setPosition(ccp(860, 120));
+	choice3->setScale(0.8);
+	choiceback3->setPosition(ccp(860, 120));
+	choiceback3->setScale(0.78);
 	choice3->addTouchEventListener([&](Ref* sender, Widget::TouchEventType type)
 	{
 		Choices(c3);
 		ButtonRemove();
 	});
+	addChild(choiceback3);
 	addChild(choice3);
 }
 
@@ -136,6 +152,10 @@ void ExpProgress::ButtonRemove()
 	removeChild(choice1);
 	removeChild(choice2);
 	removeChild(choice3);
+	removeChild(choiceback1);
+	removeChild(choiceback2);
+	removeChild(choiceback3);
+
 	skillsave--;
 
 	if (skillsave > 0)
@@ -210,14 +230,22 @@ void ExpProgress::Choices(int i)
 	case 18://子弹穿墙
 		player->ifcan_breakwall = true;
 		break;
-	case 19:
+	case 19://磁铁
 		player->magnet = true;
+		unchoose[19] = true;
+		break;
+	case 20://穿墙
+		player->ifcan_breakwall = true;
+		unchoose[20] = true;
 		break;
 	}
 
 	for (int i = 1; i <= 3; i++)
 		unchoose[i] = false;
 	unchoose[player->weapon - 1] = true;
+
+	if (player->leftside == 1)
+		unchoose[9] = true;
 
 	if (player->speed <= 2)
 		unchoose[16] = true;
@@ -230,10 +258,13 @@ void ExpProgress::Choices(int i)
 		unchoose[18] = true;
 	else unchoose[18] = false;
 
-	if (player->magnet)
-		unchoose[19] = true;
-	else unchoose[19] = false;
-
 	//label->setPosition(ccp(640, 640));
 	//addChild(label);
+}
+
+void ExpProgress::youwin()
+{
+	auto win = Label::create("You Win!", "Arial", 120);
+	win->setPosition(ccp(640, 500));
+	addChild(win);
 }

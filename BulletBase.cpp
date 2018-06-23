@@ -19,27 +19,27 @@ void BulletBase::attacking(Player *player, Point pos)
 	comefrom = player;
 	if (comefrom->weapon == 1)
 	{
-		atkpower = 5;
+		atkpower = 8;
 		flyspeed = 500;
-		range = 400;
+		range = 500;
 		arrow(player, pos);
 	}
 	else if (comefrom->weapon == 2)
 	{
-		atkpower = 6;
+		atkpower = 0.1;
 		range = 300;
 		ground(player, pos);
 	}
 	else if (comefrom->weapon == 3)
 	{
-		atkpower = 10;
+		atkpower = 12;
 		flyspeed = 300;
 		range = 50;
 		knife(player, pos);
 	}
 	else if (comefrom->weapon == 4)
 	{
-		atkpower = 6;
+		atkpower = 10;
 		flyspeed = 700;
 		range = 400;
 		arrow(player, pos);

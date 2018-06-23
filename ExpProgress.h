@@ -19,6 +19,7 @@ public:
 	void ButtonAppear();
 	void ButtonRemove();
 	void Choices(int i);
+	void youwin();
 	Player *player;
 private:
 	ProgressView * expProgressView;
@@ -26,6 +27,9 @@ private:
 	ui::Button *choice1;
 	ui::Button *choice2;
 	ui::Button *choice3;
+	Sprite *choiceback1;
+	Sprite *choiceback2;
+	Sprite *choiceback3;
 	int c1, c2, c3;
 	int skillsave = 0;
 	std::vector<bool>unchoose;

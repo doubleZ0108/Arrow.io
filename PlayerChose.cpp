@@ -71,23 +71,43 @@ void PlayerChose::ScenePrinter()
 	this->addChild(preturn);
 
 	//////////////////////////////////////
-	//add two player sceneshot
-	auto pre_player1 = Sprite::create("Player/Figure/pre_player.png");
-	x = rect.origin.x + rect.size.width*(1.0f / 4.0f);
+	//add 4 player sceneshot
+	auto pre_player1 = Sprite::create("Player/Figure/player1.png");
+	x = rect.origin.x + rect.size.width*(1.0f / 5.0f);
 	y = rect.origin.y + rect.size.height*(1.0f / 2.0f);
 	pre_player1->setPosition(Vec2(x, y));
+	pre_player1->setScale(3.0f);
 
 	auto gridNodeTarget_1 = NodeGrid::create();
 	this->addChild(gridNodeTarget_1);
 	gridNodeTarget_1->addChild(pre_player1);
 
-	auto pre_player2 = Sprite::create("Player/Figure/pre_player.png");
-	x = rect.origin.x + rect.size.width*(3.0f / 4.0f);
+	auto pre_player2 = Sprite::create("Player/Figure/player2.png");
+	x = rect.origin.x + rect.size.width*(2.0f / 5.0f);
 	pre_player2->setPosition(Vec2(x, y));
+	pre_player2->setScale(3.0f);
 
 	auto gridNodeTarget_2 = NodeGrid::create();
 	this->addChild(gridNodeTarget_2);
 	gridNodeTarget_2->addChild(pre_player2);
+
+	auto pre_player3 = Sprite::create("Player/Figure/player3.png");
+	x = rect.origin.x + rect.size.width*(3.0f / 5.0f);
+	pre_player3->setPosition(Vec2(x, y));
+	pre_player3->setScale(3.0f);
+
+	auto gridNodeTarget_3 = NodeGrid::create();
+	this->addChild(gridNodeTarget_3);
+	gridNodeTarget_3->addChild(pre_player3);
+
+	auto pre_player4 = Sprite::create("Player/Figure/player4.png");
+	x = rect.origin.x + rect.size.width*(4.0f / 5.0f);
+	pre_player4->setPosition(Vec2(x, y));
+	pre_player4->setScale(3.0f);
+
+	auto gridNodeTarget_4 = NodeGrid::create();
+	this->addChild(gridNodeTarget_4);
+	gridNodeTarget_4->addChild(pre_player4);
 
 
 	/////////////////////////////////////////////
@@ -106,13 +126,15 @@ void PlayerChose::ScenePrinter()
 
 		if (rect.containsPoint(locationInNode))
 		{
-			CCActionInterval* fadeOutTRTiles = CCFadeOutTRTiles::create(5, CCSize(50, 50));
-			gridNodeTarget_2->runAction(fadeOutTRTiles);
+			auto* fadeOutTRTiles1 = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+			gridNodeTarget_2->runAction(fadeOutTRTiles1);
+			auto* fadeOutTRTiles2 = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+			gridNodeTarget_3->runAction(fadeOutTRTiles2);
+			auto* fadeOutTRTiles3 = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+			gridNodeTarget_4->runAction(fadeOutTRTiles3);
 
-			CCActionInterval* shaky3D = CCShaky3D::create(5, CCSize(10, 10), 15, false);
-			gridNodeTarget_1->runAction(shaky3D);
-
-			log("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
+			auto* jumpTiles = CCJumpTiles3D::create(3, CCSize(20, 20), 5, 20);
+			gridNodeTarget_1->runAction(jumpTiles); 
 			target->setOpacity(180);
 			return true;
 		}
@@ -123,7 +145,6 @@ void PlayerChose::ScenePrinter()
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
 		target->setOpacity(255);
 		which_player = 1;
-		log("which_map %d", which_player);
 		_eventDispatcher->removeEventListener(listener1);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, pre_player1);
@@ -133,6 +154,7 @@ void PlayerChose::ScenePrinter()
 	auto listener2 = EventListenerTouchOneByOne::create();//创建一个触摸监听  
 	listener2->setSwallowTouches(true); //设置是否想下传递触摸  
 
+										//通过 lambda 表达式 直接实现触摸事件的回掉方法  
 	listener2->onTouchBegan = [=](Touch* touch, Event* event)
 	{
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
@@ -143,12 +165,15 @@ void PlayerChose::ScenePrinter()
 
 		if (rect.containsPoint(locationInNode))
 		{
-			CCActionInterval* fadeOutUpTiles = CCFadeOutUpTiles::create(4, CCSize(10, 10));
-			gridNodeTarget_1->runAction(fadeOutUpTiles);
+			auto* fadeOutTRTiles1 = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+			gridNodeTarget_1->runAction(fadeOutTRTiles1);
+			auto* fadeOutTRTiles2 = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+			gridNodeTarget_3->runAction(fadeOutTRTiles2);
+			auto* fadeOutTRTiles3 = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+			gridNodeTarget_4->runAction(fadeOutTRTiles3);
 
-			CCActionInterval* liquid = CCLiquid::create(5, CCSize(10, 10), 4, 20);
-			gridNodeTarget_2->runAction(liquid);
-			log("sprite began... x = %f, y = %f", locationInNode.x, locationInNode.y);
+			auto* jumpTiles = CCJumpTiles3D::create(3, CCSize(20, 20), 5, 20);
+			gridNodeTarget_2->runAction(jumpTiles);
 			target->setOpacity(180);
 			return true;
 		}
@@ -159,11 +184,87 @@ void PlayerChose::ScenePrinter()
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
 		target->setOpacity(255);
 		which_player = 2;
-		log("which_map %d", which_player);
 		_eventDispatcher->removeEventListener(listener2);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, pre_player2);
 	
+	/////////////////////////////////////////////
+	// Make pre_map3 touchable  
+	auto listener3 = EventListenerTouchOneByOne::create();//创建一个触摸监听  
+	listener3->setSwallowTouches(true); //设置是否想下传递触摸  
+
+										//通过 lambda 表达式 直接实现触摸事件的回掉方法  
+	listener3->onTouchBegan = [=](Touch* touch, Event* event)
+	{
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+
+		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
+		Size s = target->getContentSize();
+		Rect rect = Rect(0, 0, s.width, s.height);
+
+		if (rect.containsPoint(locationInNode))
+		{
+			auto* fadeOutTRTiles1 = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+			gridNodeTarget_1->runAction(fadeOutTRTiles1);
+			auto* fadeOutTRTiles2 = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+			gridNodeTarget_2->runAction(fadeOutTRTiles2);
+			auto* fadeOutTRTiles3 = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+			gridNodeTarget_4->runAction(fadeOutTRTiles3);
+
+			auto* jumpTiles = CCJumpTiles3D::create(3, CCSize(20, 20), 5, 20);
+			gridNodeTarget_3->runAction(jumpTiles);
+			target->setOpacity(180);
+			return true;
+		}
+		return false;
+	};
+	listener3->onTouchEnded = [=](Touch* touch, Event* event)
+	{
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+		target->setOpacity(255);
+		which_player = 3;
+		_eventDispatcher->removeEventListener(listener3);
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener3, pre_player3);
+
+	/////////////////////////////////////////////
+	// Make pre_map1 touchable  
+	auto listener4 = EventListenerTouchOneByOne::create();//创建一个触摸监听  
+	listener4->setSwallowTouches(true); //设置是否想下传递触摸  
+
+										//通过 lambda 表达式 直接实现触摸事件的回掉方法  
+	listener4->onTouchBegan = [=](Touch* touch, Event* event)
+	{
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+
+		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
+		Size s = target->getContentSize();
+		Rect rect = Rect(0, 0, s.width, s.height);
+
+		if (rect.containsPoint(locationInNode))
+		{
+			auto* fadeOutTRTiles1 = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+			gridNodeTarget_1->runAction(fadeOutTRTiles1);
+			auto* fadeOutTRTiles2 = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+			gridNodeTarget_2->runAction(fadeOutTRTiles2);
+			auto* fadeOutTRTiles3 = CCFadeOutTRTiles::create(5, CCSize(50, 50));
+			gridNodeTarget_3->runAction(fadeOutTRTiles3);
+
+			auto* jumpTiles = CCJumpTiles3D::create(3, CCSize(20, 20), 5, 20);
+			gridNodeTarget_4->runAction(jumpTiles);
+			target->setOpacity(180);
+			return true;
+		}
+		return false;
+	};
+	listener4->onTouchEnded = [=](Touch* touch, Event* event)
+	{
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+		target->setOpacity(255);
+		which_player = 4;
+		_eventDispatcher->removeEventListener(listener4);
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener4, pre_player4);
 }
 
 void PlayerChose::menuStartScene(Ref* pSender)

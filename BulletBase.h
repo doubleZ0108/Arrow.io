@@ -27,7 +27,7 @@ private:
 	float xcs, ycs, rcs;//x y r单位时间改变量
 	float flyrange;//已飞行距离
 
-	int atkpower;
+	float atkpower;
 	int flyspeed;
 	float range;
 

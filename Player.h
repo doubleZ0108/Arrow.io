@@ -11,6 +11,10 @@ public:
 	CREATE_FUNC(Player);
 	virtual bool init();
 
+	int number;
+	bool life = 1;
+	int lives = 3;
+
 	//void run1(Player *player, std::map<EventKeyboard::KeyCode, bool>keys, Player *smallplayer);
 	void runway1(std::map<EventKeyboard::KeyCode, bool>keys, Player *smallplayer);
 
@@ -25,8 +29,8 @@ public:
 	bool expraise(int num);
 	int explimit();
 
-	bool hurt(int atk);
-	Sprite *sprite;
+	bool hurt(float atk);
+	Sprite *sprite = 0;
 	void animationcreate(int direct);
 	void runanimate(std::map<EventKeyboard::KeyCode, bool>keys);
 
