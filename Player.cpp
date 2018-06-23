@@ -72,13 +72,13 @@ bool Player::hurt(float atk)
 	p_hp -= atk * defpower;
 	if (p_hp <= 0)
 	{
-		die();
+		//die();
 		return true;
 	}
 	return false;
 }
 
-void Player::die()
+void Player::die(int rex, int rey)
 {
 	lives--;
 
@@ -90,7 +90,7 @@ void Player::die()
 
 	auto callbackFunc = [&]()
 	{
-		restart();
+		restart(rex,rey);
 	};
 	CallFunc* callFunc = CallFunc::create(callbackFunc);
 
@@ -99,7 +99,7 @@ void Player::die()
 	this->runAction(actions);
 }
 
-void Player::restart()
+void Player::restart(int rex, int rey)
 {
 	if (lives == 0)
 	{
@@ -111,8 +111,8 @@ void Player::restart()
 	unbeat = 1;
 
 	this->sprite->setAnchorPoint(Point(0.5, 0.5));
-	x_coord = rand() % 1400 + 100;
-	y_coord = rand() % 1400 + 100;
+	x_coord = rex;
+	y_coord = rey;
 
 	this->setPosition(x_coord, y_coord);
 
@@ -187,6 +187,8 @@ bool Player::expraise(int num)
 
 int Player::explimit()
 {
+	if (level == 1)
+		return 15;
 	return (5 * level*level + 15 * level);
 }
 

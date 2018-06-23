@@ -206,6 +206,7 @@ void GamePlaying::NetworkPrinter()//noneed
 		_sioClient->on("EXP remove", CC_CALLBACK_2(GamePlaying::EXP_remove, this));
 		_sioClient->on("n_player keys", CC_CALLBACK_2(GamePlaying::runEvent_n, this));
 		_sioClient->on("n_player run", CC_CALLBACK_2(GamePlaying::playRun_n, this));
+		_sioClient->on("attack", CC_CALLBACK_2(GamePlaying::attack_n, this));
 	}
 
 }
@@ -260,15 +261,25 @@ void GamePlaying::Network_Switch(Ref * Spender)
 void GamePlaying::PlayerPrinter()
 {
 	/*srand(time(NULL));
-	int randx, randy;
+	int randx, randy, flag_start;
 	while (1)
 	{
+		flag_start = true;
 		randx = rand() % MAP_SIZE;
 		randy = rand() % MAP_SIZE;
-		if(isCanReach(static_cast<float>(randx),static_cast<float>(randy)))
+		for (int xi = -32; xi <= 32; xi+=32)
 		{
-			break;
+			for (int yj = -32; yj <= 32; yj += 32)
+			{
+				if (!isCanReach(randx+xi, randy+yj))
+				{
+					flag_start = false;
+					break;
+				}
+			}
+			if (!flag_start) { break; }
 		}
+		if (flag_start) { break; }
 	}
 	m_player->x_coord = randx;
 	m_player->y_coord = randy;*/
@@ -285,6 +296,12 @@ void GamePlaying::PlayerPrinter()
 	m_player->setPosition(Point(m_player->x_coord, m_player->y_coord));
 	tiledmap->addChild(m_player, 10);
 
+	//////////////////////////////////
+	tiledmap->setPositionX(tiledmap->getPositionX() - m_player->x_coord/MAP_SIZE * 310);
+	x_move += m_player->x_coord / MAP_SIZE * 310;
+	tiledmap->setPositionY(tiledmap->getPositionY() - m_player->y_coord / MAP_SIZE * 825);
+	y_move += m_player->y_coord / MAP_SIZE * 825;
+	////////////////////////////////
 
 	n_player->sprite = Sprite::create();
 	n_player->bindSprite(n_player->sprite);
@@ -297,17 +314,6 @@ void GamePlaying::PlayerPrinter()
 
 	plsum.push_back(m_player);
 	plsum.push_back(n_player);
-
-	///////////////////////////////////////
-	//设置地图位置
-	/*log("tild %f", tiledmap->getPositionY());
-	log("player %f",m_player->getPositionY() / 32.0);
-	tiledmap->setPositionX(m_player->getPositionX()/32.0);
-	x_move -= m_player->x_coord;
-
-	tiledmap->setPositionY(-m_player->getPositionY()/32.0);
-	y_move += m_player->y_coord;*/
-	/////////////////////////////////
 
 	////////////////////////////////////
 	//血条初始化
@@ -328,7 +334,8 @@ void GamePlaying::PlayerPrinter()
 	expPro = ExpProgress::create();
 	expPro->player = m_player;
 	addChild(expPro);
-	expPro->LvChange(m_player->level);
+	expPro_n = ExpProgress::create();
+	expPro_n->player = n_player;
 }
 void GamePlaying::SettingPrinter()
 {
@@ -545,7 +552,8 @@ void GamePlaying::SmallmapPrinter()
 		case 3:m_smallmap = Sprite::create("Player/Tiled Map/smallmap3.png"); break;
 		default:m_smallmap = nullptr;
 		}
-		
+		m_smallmap->setName("smallmap");
+
 		m_smallmap->setOpacity(220);     //设置小地图的透明度
 										 //m_smallmap->setColor(Color3B(0, 0, 205));
 		m_smallmap->setAnchorPoint(Vec2(0.0f, 0.0f));
@@ -1075,6 +1083,30 @@ void GamePlaying::EXP_grow(float dt)
 		
 	}
 }
+void GamePlaying::tofindEat(const float x, const float y)
+{
+	if (m_player->magnet)
+	{
+		for (int i = -32; i <= 32; i += 32)
+		{
+			for (int j = -32; j <= 32; j += 32)
+			{
+				HPjudge(Vec2((x + i) / tileSize.width,
+					(mapSize.height*tileSize.height - y + j) / tileSize.height));
+				EXPjudge(Vec2((x + i) / tileSize.width,
+					(mapSize.height*tileSize.height - y + j) / tileSize.height));
+			}
+		}
+	}
+	else
+	{
+		HPjudge(Vec2(x / tileSize.width,
+			(mapSize.height*tileSize.height - y) / tileSize.height));
+		EXPjudge(Vec2(x / tileSize.width,
+			(mapSize.height*tileSize.height - y) / tileSize.height));
+	}
+}
+
 
 void GamePlaying::DeCode_for_Map(const std::string & buf, int & metax, int & metay)
 {
@@ -1124,7 +1156,6 @@ void GamePlaying::DeCode_for_Run(const std::string & buf)
 		}
 	}
 }
-
 void GamePlaying::DeCode_for_Playrun(const std::string & buf)
 {
 	std::string data(buf);
@@ -1141,7 +1172,6 @@ void GamePlaying::DeCode_for_Playrun(const std::string & buf)
 	default:break;
 	}
 }
-
 void GamePlaying::DeCode_for_Enemy(const std::string & buf, 
 	int & v_player, float & v_posx, float & v_posy, 
 	float & v_hp, int & v_hplimit, int & v_weapon)
@@ -1151,7 +1181,7 @@ void GamePlaying::DeCode_for_Enemy(const std::string & buf,
 	data.erase(data.begin(), data.begin() + 1);
 	data.erase(data.end() - 1, data.end());
 	//解码which n_player
-	v_player = data.c_str()[0] - '0';
+	v_player = data[0] - '0';
 	data.erase(data.begin(), data.begin() + 2);
 	//解码n_player的x坐标和y坐标
 	v_posx = v_posy = 0;
@@ -1184,6 +1214,56 @@ void GamePlaying::DeCode_for_Enemy(const std::string & buf,
 	//解码n_player 武器
 	v_weapon = data[0] - '0';
 }
+void GamePlaying::DeCode_for_attack(const std::string & buf, int & v_weapon,
+	float &v_posx, float &v_posy)
+{
+	std::string data(buf);
+	data.erase(data.begin(), data.begin() + 1);
+	data.erase(data.end() - 1, data.end());
+
+	v_weapon = data[0] - '0';
+	data.erase(data.begin(), data.begin() + 2);
+
+	int i;
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_posx *= 10;
+		v_posx += data[i] - '0';
+	}
+	data.erase(data.begin(), data.begin() + i + 1);
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_posy *= 10;
+		v_posy += data[i] - '0';
+	}
+}
+
+void GamePlaying::runEvent_n(SIOClient * client, const std::string & data)
+{
+	keys_n[k_w] = keys_n[k_a] = keys_n[k_s] = keys_n[k_d] = false;
+
+	DeCode_for_Run(data);
+
+	n_player->runway1(keys_n, n_smallplayer);
+}
+void GamePlaying::playRun_n(SIOClient * client, const std::string & data)
+{
+	keys1_n[k_w] = keys1_n[k_a] = keys1_n[k_s] = keys1_n[k_d] = false;
+
+	DeCode_for_Playrun(data);
+
+	n_player->runanimate(keys1_n);
+}
+void GamePlaying::attack_n(SIOClient * client, const std::string & data)
+{
+	Point point_n;
+
+	DeCode_for_attack(data, n_player->weapon, point_n.x, point_n.y);
+	
+
+	attack(n_player, point_n);
+}
+
 
 void GamePlaying::HP_recieve(SIOClient * client, const std::string & data)
 {
@@ -1280,31 +1360,9 @@ void GamePlaying::addEnemy(SIOClient * client, const std::string & data)
 	n_pProgressView->setCurrentProgress(n_player->p_hp / n_player->hpLimit);
 	tiledmap->addChild(n_pProgressView, 2);
 
+	this->getChildByName("smallmap")->removeFromParentAndCleanup(true);
 	SmallmapPrinter();
 	n_smallplayer->setVisible(true);
-}
-void GamePlaying::tofindEat(const float x, const float y)
-{
-	if (m_player->magnet)
-	{
-		for (int i = -32; i <= 32; i += 32)
-		{
-			for (int j = -32; j <= 32; j += 32)
-			{
-				HPjudge(Vec2((x + i) / tileSize.width,
-					(mapSize.height*tileSize.height - y + j) / tileSize.height));
-				EXPjudge(Vec2((x + i) / tileSize.width,
-					(mapSize.height*tileSize.height - y + j) / tileSize.height));
-			}
-		}
-	}
-	else
-	{
-		HPjudge(Vec2(x / tileSize.width,
-			(mapSize.height*tileSize.height - y) / tileSize.height));
-		EXPjudge(Vec2(x / tileSize.width,
-			(mapSize.height*tileSize.height - y) / tileSize.height));
-	}
 }
 
 
@@ -1622,24 +1680,37 @@ void GamePlaying::update(float delta)
 	m_player->runanimate(keys1);
 	if (keys1[k_w])
 	{
-		_sioClient->emit("n_player run", "w");
+		if(_sioClient)
+			_sioClient->emit("n_player run", "w");
 	}
 	else if (keys1[k_s])
 	{
-		_sioClient->emit("n_player run", "s");
+		if(_sioClient)
+			_sioClient->emit("n_player run", "s");
 	}
 	else if (keys1[k_d])
 	{
-		_sioClient->emit("n_player run", "d");
+		if(_sioClient)
+			_sioClient->emit("n_player run", "d");
 	}
 	else if (keys1[k_a])
 	{
-		_sioClient->emit("n_player run", "a");
+		if(_sioClient)
+			_sioClient->emit("n_player run", "a");
 	}
 
 	if (touchon && !m_player->attackcd)
 	{
 		attack(m_player, pos);
+
+		if (_sioClient)
+		{
+			char mess[20];
+			sprintf(mess, "%d %d %d ", m_player->weapon, static_cast<int>(pos.x),
+				static_cast<int>(pos.y));
+			_sioClient->emit("attack", mess);
+		}
+		
 		touchon = false;
 	}
 	else touchon = false;
@@ -1678,8 +1749,42 @@ void GamePlaying::update(float delta)
 					star->setPosition(pl->x_coord + randx, pl->y_coord + randy);
 					tiledmap->addChild(star);
 					MoveBy* moveBy = MoveBy::create(0.2f, Point(0, 0));
-					star->runAction(Sequence::create(moveBy, CallFunc::create(CC_CALLBACK_0(Sprite::removeFromParent, star)), NULL));
-					if (a == 2)
+					star->runAction(Sequence::create(moveBy,
+						CallFunc::create(CC_CALLBACK_0(Sprite::removeFromParent, star)), NULL));
+
+					if (a == 2 || a == 3)
+					{
+						srand(time(NULL));
+						int randx, randy, flag_start;
+						while (1)
+						{
+							flag_start = true;
+							randx = rand() % MAP_SIZE;
+							randy = rand() % MAP_SIZE;
+							for (int xi = -32; xi <= 32; xi += 32)
+							{
+								for (int yj = -32; yj <= 32; yj += 32)
+								{
+									if (!isCanReach(randx + xi, randy + yj))
+									{
+										flag_start = false;
+										break;
+									}
+								}
+								if (!flag_start) { break; }
+							}
+							if (flag_start) { break; }
+						}
+
+						pl->die(randx,randy);
+
+						tiledmap->setPositionX(tiledmap->getPositionX() - m_player->x_coord / MAP_SIZE * 310);
+						x_move += m_player->x_coord / MAP_SIZE * 310;
+						tiledmap->setPositionY(tiledmap->getPositionY() - m_player->y_coord / MAP_SIZE * 825);
+						y_move += m_player->y_coord / MAP_SIZE * 825;
+					}
+						
+					if (a == 3)
 						levelup();
 				}
 			}
@@ -1689,29 +1794,8 @@ void GamePlaying::update(float delta)
 }
 void GamePlaying::runEvent()
 {
-	
-	//if(waytorun)
-		m_player->runway1(keys, m_smallplayer);
-	//else m_player->runway2(pos, m_smallplayer);
+	m_player->runway1(keys, m_smallplayer);
 }
-void GamePlaying::runEvent_n(SIOClient * client, const std::string & data)
-{
-	keys_n[k_w] = keys_n[k_a] = keys_n[k_s] = keys_n[k_d] = false;
-
-	DeCode_for_Run(data);
-
-	n_player->runway1(keys_n, n_smallplayer);
-}
-
-void GamePlaying::playRun_n(SIOClient * client, const std::string & data)
-{
-	keys1_n[k_w] = keys1_n[k_a] = keys1_n[k_s] = keys1_n[k_d] = false;
-
-	DeCode_for_Playrun(data);
-
-	n_player->runanimate(keys1_n);
-}
-
 void GamePlaying::attack(Player* player, Point point) 
 {
 	Point p;
@@ -1785,7 +1869,8 @@ void GamePlaying::attackweapon(Player* player, float num, Point point)
 		else if (player->weapon == 2)
 		{
 			int num = 300 * player->atkrange / 32;
-			float length = sqrt((player->x_coord, player->y_coord - atkpoint.x)*(player->x_coord - atkpoint.x) + (player->y_coord - atkpoint.y)*(player->y_coord - atkpoint.y));
+			float length = sqrt((player->x_coord - atkpoint.x)*(player->x_coord - atkpoint.x)
+				+ (player->y_coord - atkpoint.y)*(player->y_coord - atkpoint.y));
 			float xchange = (atkpoint.x - player->x_coord) / length * 32;
 			float ychange = (atkpoint.y - player->y_coord) / length * 32;
 
@@ -1865,6 +1950,7 @@ void GamePlaying::menuHelloWorldScene(Ref* pSender)
 
 	if (_sioClient)
 	{
+		_sioClient->emit("quit", "quit");
 		_sioClient->disconnect();
 		//CC_SAFE_DELETE(_sioClient);
 		_sioClient = nullptr;

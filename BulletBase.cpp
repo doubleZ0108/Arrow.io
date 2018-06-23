@@ -113,7 +113,8 @@ int BulletBase::collidePlayer(Player *player)
 			if (player->hurt(atkpower*comefrom->atkpower))
 			{
 				if (comefrom->expraise(player->level * 5))//如果升级了
-					return 2;
+					return 3;
+				return 2;
 			}
 			return 1;
 		}

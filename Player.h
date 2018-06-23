@@ -41,19 +41,19 @@ public:
 
 	//技能区
 	//人物基本属性
-	float speed = 5;
+	float speed = 5;      //zz
 	float radius = 30;
-	float p_hp = 50.0;//当前血量
-	int hpLimit = 50;//上限血量
-	float atkpower = 1.0;
-	float atkrange = 1.0;
-	float defpower = 1.0;
+	float p_hp = 50.0;//当前血量zz
+	int hpLimit = 50;//上限血量zz
+	float atkpower = 1.0;//zz一位小数
+	float atkrange = 1.0;//zz
+	float defpower = 1.0;//zz
 	bool magnet = false;
 	//子弹数量
-	int front = 1;
-	int leftside = 0;
-	int rightside = 0;
-	int back = 0;
+	int front = 1;//zz
+	int leftside = 0;//zz
+	int rightside = 0;//zz
+	int back = 0;//zz
 	//武器种类1箭2地刺3刀4飞镖
 	int weapon = 1;
 	//回血、经验增加
@@ -62,12 +62,11 @@ public:
 	//CD时间
 	float atkCD = 0.8;
 	//子弹能否穿墙
-	bool ifcan_breakwall = false;
+	bool ifcan_breakwall = false;//zz
 
-private:
 	bool animating = 0;
-	void die();
-	void restart();//复活
+	void die(int rex, int rey);
+	void restart(int rex, int rey);//复活
 };
 
 #endif
