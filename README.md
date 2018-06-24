@@ -51,7 +51,7 @@
 5. 服务器的启动: 运行js脚本
 6. 客户端的连接采用 SocketIO::connect, 提供给用户的借口请详见游戏里的帮助界面
 
-###部分游戏截图
+### 部分游戏截图
 ![](http://a2.qpic.cn/psb?/V11JkC4u03NHtr/usMG3YXyVAzJUyKoc5mjieUDyRouNn7kRvXOh5Ci34Q!/m/dIkBAAAAAAAA&ek=1&kp=1&pt=0&bo=AQXSAgEF0gIDSWw!&tl=1&vuin=2871811733&tm=1529856000&sce=60-4-3&rf=0-0)
 
 ![](http://a4.qpic.cn/psb?/V11JkC4u03NHtr/kNlaTlpYyYSd39kSRsTVfOsDA4IreYPSPfVVJNTqG3U!/m/dNsAAAAAAAAA&ek=1&kp=1&pt=0&bo=AgXOAgIFzgIDGTw!&tl=1&vuin=2871811733&tm=1529856000&sce=60-4-3&rf=0-0)
