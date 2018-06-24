@@ -157,6 +157,7 @@ public:
 	void EXPjudge(const Vec2 &pos);
 	void EXP_grow(float dt);
 	void tofindEat(const float x, const float y);
+	void HPEXP_clear();
 	///////////////////////////////////////////
 
 
@@ -184,6 +185,7 @@ public:
 		float &v_atkpower, float &v_atkrange,float &v_defpower,
 		int &v_front, int &v_leftside, int &v_rightside,
 		int &v_back, bool &v_ifcanbreakwall);
+	void DeCode_for_hurt(const std::string &buf, int &v_bloodmin);
 
 	void ID_judge(SIOClient* client, const std::string& data);
 	void HP_recieve(SIOClient* client, const std::string& data);

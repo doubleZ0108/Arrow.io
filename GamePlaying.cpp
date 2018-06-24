@@ -253,8 +253,7 @@ void GamePlaying::Network_Switch(Ref * Spender)
 			//log("player %s", enemy_mess);
 			_sioClient->emit("playerchose", enemy_mess);
 
-			hp_auto_arise.clear();
-			exp_auto_arise.clear();
+			HPEXP_clear();
 		}
 		else
 		{
@@ -1115,6 +1114,21 @@ void GamePlaying::tofindEat(const float x, const float y)
 			(mapSize.height*tileSize.height - y) / tileSize.height));
 	}
 }
+void GamePlaying::HPEXP_clear()
+{
+	for (auto& hpnow : hp_auto_arise)
+	{
+		meta->setTileGID(NOR_GID, Vec2(hpnow.savex, hpnow.savey));
+		hpnow.hp_potion->removeFromParentAndCleanup(true);
+	}
+	for (auto& expnow : exp_auto_arise)
+	{
+		meta->setTileGID(NOR_GID, Vec2(expnow.savex, expnow.savey));
+		expnow.exp_potion->removeFromParentAndCleanup(true);
+	}
+	hp_auto_arise.clear();
+	exp_auto_arise.clear();
+}
 
 
 void GamePlaying::DeCode_for_Map(const std::string & buf, int & metax, int & metay)
@@ -1351,6 +1365,18 @@ void GamePlaying::DeCode_for_heronature(const std::string & buf,
 	if (v_ifcanbreakwall == 1) { v_ifcanbreakwall = true; }
 	else { v_ifcanbreakwall = false; }
 }
+void GamePlaying::DeCode_for_hurt(const std::string &buf, int &v_bloodmin)
+{
+	std::string data(buf);
+	data.erase(data.begin(), data.begin() + 1);
+	data.erase(data.end() - 1, data.end());
+
+	for (int i = 0; data[i] != ' '; ++i)
+	{
+		v_bloodmin *= 10;
+		v_bloodmin += data[i] - '0';
+	}
+}
 
 void GamePlaying::runEvent_n(SIOClient * client, const std::string & data)
 {
@@ -1385,8 +1411,17 @@ void GamePlaying::heronature_n(SIOClient * client, const std::string & data)
 }
 void GamePlaying::hurt_n(SIOClient * client, const std::string & data)
 {
-	int bloodmin = data[1] - '0';
-	m_player->hurt(bloodmin);
+	int bloodmin = 0;
+
+	DeCode_for_hurt(data, bloodmin);
+
+	if (m_player->hurt(bloodmin))
+	{
+		m_player->die(80.0f, 80.0f);
+		x_move += tiledmap->getPositionX();
+		y_move += tiledmap->getPositionY();
+		tiledmap->setPosition(Vec2(0.0f, 0.0f));
+	}
 }
 
 
@@ -1878,17 +1913,16 @@ void GamePlaying::update(float delta)
 			{
 				int a = bub->collidePlayer(pl);
 
-				if (_sioClient && isconnect)
-				{
-					std::string mess;
-					std::stringstream mess_stream;
-					mess_stream << a;
-					mess_stream >> mess;
-					_sioClient->emit("hurt",mess );
-				}
-
 				if (a)
 				{
+					///////////////////////
+					if (_sioClient && isconnect)
+					{
+						char hurtmess[5];
+						sprintf(hurtmess, "%d ", a);
+						_sioClient->emit("hurt", hurtmess);
+					}
+					////////////////////////
 					if (pl->hurt(a))
 					{
 						srand(time(NULL));
@@ -2245,7 +2279,6 @@ void GamePlaying::menuHelloWorldScene(Ref* pSender)
 
 	if (_sioClient)
 	{
-		_sioClient->emit("quit", "quit");
 		_sioClient->disconnect();
 		//CC_SAFE_DELETE(_sioClient);
 		_sioClient = nullptr;

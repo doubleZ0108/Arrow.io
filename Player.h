@@ -67,6 +67,8 @@ public:
 	bool animating = 0;
 	void die(int rex, int rey);
 	void restart(int rex, int rey);//¸´»î
+private:
+	Point restartp;
 };
 
 #endif

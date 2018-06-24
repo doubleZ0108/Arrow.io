@@ -50,7 +50,7 @@ void MapChose::ScenePrinter()
 
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 2;
-	auto *background = Sprite::create("Scene/Background/Help_Background.png");
+	auto *background = Sprite::create("Scene/Background/Chose_background.png");
 	background->setPosition(Vec2(x, y));
 	this->addChild(background);
 

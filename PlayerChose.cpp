@@ -52,7 +52,7 @@ void PlayerChose::ScenePrinter()
 
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 2;
-	auto *background = Sprite::create("Scene/Background/Help_Background.png");
+	auto *background = Sprite::create("Scene/Background/Chose_background.png");
 	background->setPosition(Vec2(x, y));
 	this->addChild(background);
 
@@ -76,7 +76,7 @@ void PlayerChose::ScenePrinter()
 	x = rect.origin.x + rect.size.width*(1.0f / 5.0f);
 	y = rect.origin.y + rect.size.height*(1.0f / 2.0f);
 	pre_player1->setPosition(Vec2(x, y));
-	pre_player1->setScale(3.0f);
+	pre_player1->setScale(4.0f);
 
 	auto gridNodeTarget_1 = NodeGrid::create();
 	this->addChild(gridNodeTarget_1);
@@ -85,7 +85,7 @@ void PlayerChose::ScenePrinter()
 	auto pre_player2 = Sprite::create("Player/Figure/player2.png");
 	x = rect.origin.x + rect.size.width*(2.0f / 5.0f);
 	pre_player2->setPosition(Vec2(x, y));
-	pre_player2->setScale(3.0f);
+	pre_player2->setScale(4.0f);
 
 	auto gridNodeTarget_2 = NodeGrid::create();
 	this->addChild(gridNodeTarget_2);
@@ -94,7 +94,7 @@ void PlayerChose::ScenePrinter()
 	auto pre_player3 = Sprite::create("Player/Figure/player3.png");
 	x = rect.origin.x + rect.size.width*(3.0f / 5.0f);
 	pre_player3->setPosition(Vec2(x, y));
-	pre_player3->setScale(3.0f);
+	pre_player3->setScale(4.0f);
 
 	auto gridNodeTarget_3 = NodeGrid::create();
 	this->addChild(gridNodeTarget_3);
@@ -103,7 +103,7 @@ void PlayerChose::ScenePrinter()
 	auto pre_player4 = Sprite::create("Player/Figure/player4.png");
 	x = rect.origin.x + rect.size.width*(4.0f / 5.0f);
 	pre_player4->setPosition(Vec2(x, y));
-	pre_player4->setScale(3.0f);
+	pre_player4->setScale(4.0f);
 
 	auto gridNodeTarget_4 = NodeGrid::create();
 	this->addChild(gridNodeTarget_4);

@@ -80,6 +80,9 @@ bool Player::hurt(float atk)
 
 void Player::die(int rex, int rey)
 {
+	restartp.x = rex;
+	restartp.y = rey;
+
 	lives--;
 
 	this->sprite->setAnchorPoint(Point(0.5, 0));
@@ -90,7 +93,7 @@ void Player::die(int rex, int rey)
 
 	auto callbackFunc = [&]()
 	{
-		restart(rex,rey);
+		restart(restartp.x, restartp.y);
 	};
 	CallFunc* callFunc = CallFunc::create(callbackFunc);
 
