@@ -186,6 +186,7 @@ public:
 		int &v_front, int &v_leftside, int &v_rightside,
 		int &v_back, bool &v_ifcanbreakwall);
 	void DeCode_for_hurt(const std::string &buf, int &v_bloodmin);
+	void DeCode_for_restart(const std::string &buf, float &v_posx, float &v_posy);
 
 	void ID_judge(SIOClient* client, const std::string& data);
 	void HP_recieve(SIOClient* client, const std::string& data);
@@ -199,6 +200,8 @@ public:
 	void attack_n(SIOClient* client, const std::string& data);
 	void heronature_n(SIOClient* client, const std::string& data);
 	void hurt_n(SIOClient* client, const std::string& data);
+	void restart_n(SIOClient* client, const std::string& data);
+	void redhp_n(SIOClient* client, const std::string& data);
 	/////////////////////////////////////////
 
 	// implement the "static create()" method manually

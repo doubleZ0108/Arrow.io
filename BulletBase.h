@@ -16,11 +16,13 @@ public:
 	Player *comefrom;//子弹来源
 
 	void attacking(Player *player, Point pos);
-	int collidePlayer(Player *player);//判断碰撞
+	float collidePlayer(Player *player);//判断碰撞
 
 	bool exist = false;//子弹存在
+	bool real = true;
 
 	void hide();	Point point;//子弹当前坐标
+
 private:
 
 	Point target;//预定攻击坐标

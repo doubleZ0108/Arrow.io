@@ -29,7 +29,6 @@ int which_map = 1;
 int which_player = 1;
 
 int viewsize = 1;
-bool ifbreakwall = false;   //穿墙技能
 
 std::vector<int> numbers(0);
 
@@ -126,23 +125,23 @@ void GamePlaying::ScenePrinter()
 	
 	////////////////////////////////////////////////////
 	//武器
-	auto weaponMenuItem = MenuItemToggle::createWithCallback(
-		CC_CALLBACK_1(GamePlaying::Weapon_change, this),
-		MenuItemFont::create("weapon 1"),
-		MenuItemFont::create("weapon 2"),
-		MenuItemFont::create("weapon 3"),
-		MenuItemFont::create("weapon 4"),
-		NULL);
+	//auto weaponMenuItem = MenuItemToggle::createWithCallback(
+	//	CC_CALLBACK_1(GamePlaying::Weapon_change, this),
+	//	MenuItemFont::create("weapon"),
+	//	MenuItemFont::create("weapon"),
+	//	MenuItemFont::create("weapon"),
+	//	MenuItemFont::create("weapon"),
+	//	NULL);
 
-	Menu* weaponmn = Menu::create(weaponMenuItem, NULL);
-	x = rect.origin.x + rect.size.width*(33.7f / 40.0f);
-	y = rect.origin.y + rect.size.height*(9.0f / 20.0f);
-	weaponmn->setPosition(Vec2(x, y));
-	this->addChild(weaponmn, 1);
+	//Menu* weaponmn = Menu::create(weaponMenuItem, NULL);
+	//x = rect.origin.x + rect.size.width*(33.7f / 40.0f);
+	//y = rect.origin.y + rect.size.height*(9.0f / 20.0f);
+	//weaponmn->setPosition(Vec2(x, y));
+	//this->addChild(weaponmn, 1);
 
-	////////////////////////////////////////////////////
-	//地图缩放
-	auto tlmapMenuItem = MenuItemToggle::createWithCallback(
+	//////////////////////////////////////////////////////
+	////地图缩放
+	/*auto tlmapMenuItem = MenuItemToggle::createWithCallback(
 		CC_CALLBACK_1(GamePlaying::TLmap_change, this),
 		MenuItemFont::create("normal"),
 		MenuItemFont::create("explore"),
@@ -153,21 +152,21 @@ void GamePlaying::ScenePrinter()
 	x = rect.origin.x + rect.size.width*(33.7f / 40.0f);
 	y = rect.origin.y + rect.size.height*(8.0f / 20.0f);
 	tlmapmn->setPosition(Vec2(x, y));
-	this->addChild(tlmapmn, 1);
+	this->addChild(tlmapmn, 1);*/
 
-	////////////////////////////////////////////////////
-	//穿墙
-	auto breakwallMenuItem = MenuItemToggle::createWithCallback(
-		CC_CALLBACK_1(GamePlaying::Breakwall_change, this),
-		MenuItemFont::create("normal"),
-		MenuItemFont::create("breakwall"),
-		NULL);
+	//////////////////////////////////////////////////////
+	////穿墙
+	//auto breakwallMenuItem = MenuItemToggle::createWithCallback(
+	//	CC_CALLBACK_1(GamePlaying::Breakwall_change, this),
+	//	MenuItemFont::create("normal"),
+	//	MenuItemFont::create("breakwall"),
+	//	NULL);
 
-	Menu* breakwallmn = Menu::create(breakwallMenuItem, NULL);
-	x = rect.origin.x + rect.size.width*(33.7f / 40.0f);
-	y = rect.origin.y + rect.size.height*(7.0f / 20.0f);
-	breakwallmn->setPosition(Vec2(x, y));
-	this->addChild(breakwallmn, 1);
+	//Menu* breakwallmn = Menu::create(breakwallMenuItem, NULL);
+	//x = rect.origin.x + rect.size.width*(33.7f / 40.0f);
+	//y = rect.origin.y + rect.size.height*(7.0f / 20.0f);
+	//breakwallmn->setPosition(Vec2(x, y));
+	//this->addChild(breakwallmn, 1);
 
 	/*
 	////////////////////////////////////////
@@ -212,6 +211,8 @@ void GamePlaying::NetworkPrinter()//noneed
 		_sioClient->on("attack", CC_CALLBACK_2(GamePlaying::attack_n, this));
 		_sioClient->on("hero nature", CC_CALLBACK_2(GamePlaying::heronature_n, this));
 		_sioClient->on("hurt", CC_CALLBACK_2(GamePlaying::hurt_n, this));
+		_sioClient->on("restart point", CC_CALLBACK_2(GamePlaying::restart_n, this));
+		_sioClient->on("red hp", CC_CALLBACK_2(GamePlaying::redhp_n, this));
 	}
 
 }
@@ -240,11 +241,9 @@ void GamePlaying::Network_Switch(Ref * Spender)
 		{
 			isconnect = true;
 
-			std::string mess;
-			std::stringstream mess_stream;
-			mess_stream << which_map;
-			mess_stream >> mess;
-			_sioClient->emit("mapchose", mess);
+			char mapmess[5];
+			sprintf(mapmess, "%d", which_map);
+			_sioClient->emit("mapchose", mapmess);
 			
 			char enemy_mess[100];
 			sprintf(enemy_mess, "%d %d %d %d %d %d", which_player,
@@ -272,8 +271,8 @@ void GamePlaying::PlayerPrinter()
 	while (1)
 	{
 		flag_start = true;
-		randx = rand() % MAP_SIZE;
-		randy = rand() % MAP_SIZE;
+		randx = (rand() % MAP_SIZE) / 2 + 80.0f;
+		randy = (rand() % MAP_SIZE) / 2 + 80.0f;
 		for (int xi = -32; xi <= 32; xi+=32)
 		{
 			for (int yj = -32; yj <= 32; yj += 32)
@@ -715,8 +714,8 @@ void GamePlaying::TLmap_change(Ref * pSender)
 }
 void GamePlaying::Breakwall_change(Ref * pSender)
 {
-	ifbreakwall = (ifbreakwall ? false : true);
-	if (ifbreakwall)
+	m_player->ifbreakwall = (m_player->ifbreakwall ? false : true);
+	if (m_player->ifbreakwall)
 	{
 		auto flash = Sprite::create("Player/Figure/flash.png");
 		flash->setScale(0.4f);
@@ -735,7 +734,7 @@ void GamePlaying::Breakwall_change(Ref * pSender)
 bool GamePlaying::up(bool flag,int ifxie)  //ifxie默认参数为false，默认是直着走
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (y + tileSize.height < MAP_SIZE && (ifbreakwall ||
+	if (y + tileSize.height < MAP_SIZE && (m_player->ifbreakwall ||
 		(isCanReach(x + DIFF, y)
 		&& isCanReach(x - DIFF, y)
 		&& isCanReach(x, y) ) ) )   //往上的判断多+1消除卡墙bug
@@ -795,7 +794,7 @@ bool GamePlaying::up(bool flag,int ifxie)  //ifxie默认参数为false，默认是直着走
 bool GamePlaying::right(bool flag, int ifxie)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (x + tileSize.width < MAP_SIZE  && (ifbreakwall ||
+	if (x + tileSize.width < MAP_SIZE  && (m_player->ifbreakwall ||
 		(isCanReach(x + 2*DIFF, y - DIFF)
 		&& isCanReach(x + 2*DIFF, y - 2*DIFF) ) ) )
 	{
@@ -818,7 +817,7 @@ bool GamePlaying::right(bool flag, int ifxie)
 bool GamePlaying::left(bool flag, int ifxie)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-	if (x>tileSize.width  && (ifbreakwall ||
+	if (x>tileSize.width  && (m_player->ifbreakwall ||
 		( isCanReach(x - 2*DIFF, y - DIFF)
 		&& isCanReach(x - 2*DIFF, y - 2*DIFF) ) ))
 	{
@@ -842,7 +841,7 @@ bool GamePlaying::down(bool flag, int ifxie)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
 	
-	if (y>tileSize.height && (ifbreakwall ||
+	if (y>tileSize.height && (m_player->ifbreakwall ||
 		(isCanReach(x, y - 4*DIFF)
 		&& isCanReach(x-DIFF, y-4*DIFF) ) ) )
 	{
@@ -915,6 +914,13 @@ void GamePlaying::HPjudge(const Vec2 &pos)
 	{
 		//CCLOG("hero is in HP_tiledmap");
 		m_player->hpraise(1);
+
+		if (_sioClient && isconnect)
+		{
+			//red hp
+			_sioClient->emit("red hp", "red hp");
+		}
+
 		if (m_player->magnet)   //如果开启磁铁技能，踩到道具播动画
 		{
 			auto mag = Sprite::create("Player/Figure/magnet_hp.png");
@@ -1377,6 +1383,26 @@ void GamePlaying::DeCode_for_hurt(const std::string &buf, int &v_bloodmin)
 		v_bloodmin += data[i] - '0';
 	}
 }
+void GamePlaying::DeCode_for_restart(const std::string & buf, float & v_posx, float & v_posy)
+{
+	std::string data(buf);
+	data.erase(data.begin(), data.begin() + 1);
+	data.erase(data.end() - 1, data.end());
+
+	v_posx = v_posy = 0.0f;
+	int i;
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_posx *= 10;
+		v_posx += data[i] - '0';
+	}
+	data.erase(data.begin(), data.begin() + i + 1);
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_posy *= 10;
+		v_posy += data[i] - '0';
+	}
+}
 
 void GamePlaying::runEvent_n(SIOClient * client, const std::string & data)
 {
@@ -1415,15 +1441,20 @@ void GamePlaying::hurt_n(SIOClient * client, const std::string & data)
 
 	DeCode_for_hurt(data, bloodmin);
 
-	if (m_player->hurt(bloodmin))
-	{
-		m_player->die(80.0f, 80.0f);
-		x_move += tiledmap->getPositionX();
-		y_move += tiledmap->getPositionY();
-		tiledmap->setPosition(Vec2(0.0f, 0.0f));
-	}
+	m_player->hurt(bloodmin);
 }
+void GamePlaying::restart_n(SIOClient * client, const std::string & data)
+{
+	float restartx, restarty;
 
+	DeCode_for_restart(data, restartx, restarty);
+
+	m_player->die(restartx, restarty);
+}
+void GamePlaying::redhp_n(SIOClient * client, const std::string & data)
+{
+	n_player->hpraise(1);
+}
 
 void GamePlaying::HP_recieve(SIOClient * client, const std::string & data)
 {
@@ -1623,36 +1654,6 @@ void GamePlaying::update(float delta)
 	else
 		expPro->ExpChange(m_player->exp, m_player->explimit());
 
-	//人物碰撞检测
-	int releft = 0;
-	for (auto pl : plsum)
-	{
-		if (pl->life)
-			releft++;
-		if (pl != m_player && pl->life)
-		{
-			float dx = m_player->x_coord - pl->x_coord;
-			float dy = m_player->y_coord - pl->y_coord;
-			if (dx < 0)dx = -dx;
-			if (dy < 0)dy = -dy;
-			if (dx > 65 || dy > 65)
-				continue;
-			if (m_player->x_coord < pl->x_coord)
-				keys[k_d] = false;
-			else
-				keys[k_a] = false;
-			if (m_player->y_coord < pl->y_coord)
-				keys[k_w] = false;
-			else
-				keys[k_s] = false;
-		}
-	}
-	if (live > 1 && releft == 1)
-	{
-		expPro->youwin();
-		live = 0;
-	}
-
 	if (!waytorun)
 	{
 		keys[k_w] = keys[k_a] = keys[k_s] = keys[k_d] = false;
@@ -1678,6 +1679,43 @@ void GamePlaying::update(float delta)
 			keys[k_s] = true;
 			keys1[k_s] = true;
 		}
+	}
+
+
+	//人物检测
+	int releft = 0;
+	Player* repl;
+	for (auto pl : plsum)
+	{
+		if (pl->life)
+		{
+			releft++;
+			repl = pl;
+		}
+		if (pl != m_player && pl->life)
+		{
+			float dx = m_player->x_coord - pl->x_coord;
+			float dy = m_player->y_coord - pl->y_coord;
+			if (dx < 0)dx = -dx;
+			if (dy < 0)dy = -dy;
+			if (dx > 65 || dy > 65)
+				continue;
+			if (m_player->x_coord < pl->x_coord)
+				keys[k_d] = false;
+			else
+				keys[k_a] = false;
+			if (m_player->y_coord < pl->y_coord)
+				keys[k_w] = false;
+			else
+				keys[k_s] = false;
+		}
+	}
+	if (live > 1 && releft == 1)
+	{
+		if (repl == m_player)
+			expPro->youwin();
+		else expPro->youlose();
+		live = 0;
 	}
 
 	if (keys[k_w] || keys[k_a] || keys[k_s] || keys[k_d])//分别是wasd，参见#define
@@ -1850,6 +1888,7 @@ void GamePlaying::update(float delta)
 	}
 
 	m_player->runanimate(keys1);
+
 	if (keys1[k_w])
 	{
 		if (_sioClient && isconnect)
@@ -1913,7 +1952,7 @@ void GamePlaying::update(float delta)
 			{
 				int a = bub->collidePlayer(pl);
 
-				if (a)
+				if (a && bub->real)
 				{
 					///////////////////////
 					if (_sioClient && isconnect)
@@ -1930,8 +1969,8 @@ void GamePlaying::update(float delta)
 						while (1)
 						{
 							flag_start = true;
-							randx = rand() % MAP_SIZE;
-							randy = rand() % MAP_SIZE;
+							randx = (rand() % MAP_SIZE) / 2 + 80.0f;
+							randy = (rand() % MAP_SIZE) / 2 + 80.0f;
 							for (int xi = -32; xi <= 32; xi += 32)
 							{
 								for (int yj = -32; yj <= 32; yj += 32)
@@ -2119,22 +2158,20 @@ void GamePlaying::attack_nn(Player* player, Point point)
 	p.x = player->x_coord;
 	p.y = player->y_coord;
 
-	attackweapon(player, player->front, point);
+	attackweapon_nn(player, player->front, point);
 
 	Point pos1;
 	pos1.y = player->y_coord + point.x - player->x_coord;
 	pos1.x = player->x_coord - point.y + player->y_coord;
-	attackweapon(player, player->leftside, pos1);
+	attackweapon_nn(player, player->leftside, pos1);
 
 	pos1.y = player->y_coord - point.x + player->x_coord;
 	pos1.x = player->x_coord + point.y - player->y_coord;
-	attackweapon(player, player->rightside, pos1);
+	attackweapon_nn(player, player->rightside, pos1);
 
 	pos1.y = player->y_coord - point.y + player->y_coord;
 	pos1.x = player->x_coord - point.x + player->x_coord;
-	attackweapon(player, player->back, pos1);
-
-	player->attackCD();
+	attackweapon_nn(player, player->back, pos1);
 }
 void GamePlaying::attackweapon_nn(Player* player, float num, Point point)
 {
@@ -2153,6 +2190,7 @@ void GamePlaying::attackweapon_nn(Player* player, float num, Point point)
 		if (player->weapon == 1)
 		{
 			auto Abullet = BulletBase::create();
+			Abullet->real = false;
 			Abullet->bindSprite(Sprite::create("Player/Weapon/arrow.png"));
 			Abullet->setPosition(Point(player->x_coord, player->y_coord));
 			tiledmap->addChild(Abullet);
@@ -2179,6 +2217,7 @@ void GamePlaying::attackweapon_nn(Player* player, float num, Point point)
 			Abullet->runAction(rotateto);
 
 			Abullet->exist = true;
+			bubsum.push_back(Abullet);
 
 			Abullet->attacking(player, atkpoint);
 		}
@@ -2194,16 +2233,19 @@ void GamePlaying::attackweapon_nn(Player* player, float num, Point point)
 				<= 1600 && player->y_coord + i * ychange >= 0 && player->y_coord + i * ychange <= 1600; i++)
 			{
 				auto Abullet = BulletBase::create();
+				Abullet->real = false;
 				Abullet->bindSprite(Sprite::create("Player/Weapon/ground.png"));
 				Abullet->setPosition(Point(player->x_coord + i * xchange, player->y_coord + i * ychange));
 				tiledmap->addChild(Abullet);
 				Abullet->exist = true;
+				bubsum.push_back(Abullet);
 				Abullet->attacking(player, Point(player->x_coord + i * xchange, player->y_coord + i * ychange));
 			}
 		}
 		else if (player->weapon == 3)
 		{
 			auto Abullet = BulletBase::create();
+			Abullet->real = false;
 			Abullet->bindSprite(Sprite::create("Player/Weapon/knife.png"));
 			Abullet->setPosition(Point(player->x_coord, player->y_coord));
 			tiledmap->addChild(Abullet);
@@ -2230,11 +2272,13 @@ void GamePlaying::attackweapon_nn(Player* player, float num, Point point)
 			Abullet->runAction(rotateto);
 
 			Abullet->exist = true;
+			bubsum.push_back(Abullet);
 			Abullet->attacking(player, atkpoint);
 		}
 		else if (player->weapon == 4)
 		{
 			auto Abullet = BulletBase::create();
+			Abullet->real = false;
 			Abullet->bindSprite(Sprite::create("Player/Weapon/darts.png"));
 			Abullet->setPosition(Point(player->x_coord, player->y_coord));
 			tiledmap->addChild(Abullet);
@@ -2244,6 +2288,7 @@ void GamePlaying::attackweapon_nn(Player* player, float num, Point point)
 			Abullet->runAction(Rotate);
 
 			Abullet->exist = true;
+			bubsum.push_back(Abullet);
 			Abullet->attacking(player, atkpoint);
 		}
 		atkpoint.x += xd;
@@ -2279,7 +2324,7 @@ void GamePlaying::menuHelloWorldScene(Ref* pSender)
 
 	if (_sioClient)
 	{
-		_sioClient->disconnect();
+		_sioClient->emit("quit", "quit");
 		//CC_SAFE_DELETE(_sioClient);
 		_sioClient = nullptr;
 	}

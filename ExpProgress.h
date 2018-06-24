@@ -9,6 +9,9 @@ USING_NS_CC;
 
 class ExpProgress :public cocos2d::CCLayer
 {
+private:
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	Rect rect = Director::getInstance()->getOpenGLView()->getVisibleRect();
 public:
 	ExpProgress();
 	~ExpProgress();
@@ -21,7 +24,9 @@ public:
 	void Choices(int i);
 	void youwin();
 	Player *player;
+	void youlose();
 	bool ifchose = 0;
+	void Breakwall_change(Player* player);
 private:
 	ProgressView * expProgressView;
 	Label *lv;

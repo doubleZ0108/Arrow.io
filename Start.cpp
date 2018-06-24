@@ -77,14 +77,32 @@ void StartScene::ScenePrinter()
 	background->setPosition(Vec2(x, y));
 	this->addChild(background);
 	/////////////////////////////////////
-	//add start background
+
+	Sprite *title;
+	if (language_flag)
+	{
+		title = Sprite::create("Scene/Background/titleeng_background.png");
+	}
+	else
+	{
+		title = Sprite::create("Scene/Background/titlech2_background.png");
+		title->setScale(4.0f);
+	}
+	x = rect.origin.x + rect.size.width / 2;
+	y = rect.origin.y + rect.size.height*0.718f;
+	title->setAnchorPoint(Vec2(0.5f, 0.5f));
+	title->setPosition(Vec2(x, y));
+	this->addChild(title);
+
+
+	//add start button
 	auto toplaybutton = MenuItemImage::create(
 		"ToPlay_normal.png",
 		"ToPlay_select.png",
 		CC_CALLBACK_1(StartScene::menuToPlayButton, this));
 	
 	auto *toplay = Menu::create(toplaybutton, NULL);
-	y = rect.origin.y + rect.size.height*(1.0f / 2.0f);
+	y = rect.origin.y + rect.size.height*(1.0f / 3.0f);
 	toplay->setPosition(Vec2(x, y));
 	toplay->setAnchorPoint(Vec2(0.0f, 0.0f));
 	toplay->setScale(2.0f);
@@ -99,7 +117,7 @@ void StartScene::ScenePrinter()
 	Label *mapchoseword;
 	if (language_flag)
 	{
-		mapchoseword = Label::create("Chose Map", "Arial", 40);
+		mapchoseword = Label::create("Map Choose", "Arial", 40);
 	}
 	else
 	{
@@ -123,7 +141,7 @@ void StartScene::ScenePrinter()
 	Label *playerchoseword;
 	if (language_flag)
 	{
-		playerchoseword = Label::create("Player Chose", "Arial", 40);
+		playerchoseword = Label::create("Player Choose", "Arial", 40);
 	}
 	else
 	{

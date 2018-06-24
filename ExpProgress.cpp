@@ -83,7 +83,7 @@ void ExpProgress::LvChange(int level)
 		}
 
 	}
-	lv->setPosition(ccp(640, 690));
+	lv->setPosition(Vec2(640, 690));
 	addChild(lv);
 
 	skillsave++;
@@ -236,8 +236,9 @@ void ExpProgress::Choices(int i)
 		player->magnet = true;
 		unchoose[19] = true;
 		break;
-	case 20://´©Ç½
-		player->ifcan_breakwall = true;
+	case 20://ÈËÎï´©Ç½
+		player->ifbreakwall = true;
+		Breakwall_change(player);
 		unchoose[20] = true;
 		break;
 	}
@@ -275,7 +276,38 @@ void ExpProgress::Choices(int i)
 
 void ExpProgress::youwin()
 {
-	auto win = Label::create("You Win!", "Arial", 120);
-	win->setPosition(ccp(640, 500));
-	addChild(win);
+	float x, y;
+	x = rect.origin.x + rect.size.width / 2;
+	y = rect.origin.y + rect.size.height / 2;
+	auto sprite = Sprite::create("Scene/Background/youwin.png");
+	sprite->setPosition(Vec2(x, y));
+	this->addChild(sprite);
+}
+
+void ExpProgress::youlose()
+{
+	float x, y;
+	x = rect.origin.x + rect.size.width / 2;
+	y = rect.origin.y + rect.size.height / 2;
+	auto sprite = Sprite::create("Scene/Background/youlose.png");
+	sprite->setPosition(Vec2(x, y));
+	this->addChild(sprite);
+}
+
+void ExpProgress::Breakwall_change(Player*player)
+{
+	if (player->ifbreakwall)
+	{
+		auto flash = Sprite::create("Player/Figure/flash.png");
+		flash->setScale(0.4f);
+		flash->setName("player buff");
+		player->addChild(flash);
+	}
+	else
+	{
+		if (player->getChildByName("player buff"))
+		{
+			player->getChildByName("player buff")->removeFromParentAndCleanup(true);
+		}
+	}
 }

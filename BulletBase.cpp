@@ -26,7 +26,7 @@ void BulletBase::attacking(Player *player, Point pos)
 	}
 	else if (comefrom->weapon == 2)
 	{
-		atkpower = 0.1;
+		atkpower = 3;
 		range = 300;
 		ground(player, pos);
 	}
@@ -75,9 +75,9 @@ void BulletBase::arrow(Player *player, Point pos)
 
 void BulletBase::hide()
 {
+	exist = false;
 	auto del = CallFunc::create(CC_CALLBACK_0(Sprite::removeFromParent, this));
 	this->runAction(del);
-	exist = false;
 }
 
 void BulletBase::pointChange(float dt)
@@ -98,7 +98,7 @@ void BulletBase::pointChange(float dt)
 	}
 }
 
-int BulletBase::collidePlayer(Player *player)
+float BulletBase::collidePlayer(Player *player)
 {
 	if (this->comefrom != player && player->p_hp > 0 && !player->unbeat)
 	{

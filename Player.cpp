@@ -191,7 +191,7 @@ bool Player::expraise(int num)
 int Player::explimit()
 {
 	if (level == 1)
-		return 15;
+		return 21;
 	return (5 * level*level + 15 * level);
 }
 

@@ -63,6 +63,7 @@ public:
 	float atkCD = 0.8;
 	//×Óµ¯ÄÜ·ñ´©Ç½
 	bool ifcan_breakwall = false;//zz
+	bool ifbreakwall = false;
 
 	bool animating = 0;
 	void die(int rex, int rey);
