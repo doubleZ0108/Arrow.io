@@ -21,6 +21,7 @@ public:
 	void Choices(int i);
 	void youwin();
 	Player *player;
+	bool ifchose = 0;
 private:
 	ProgressView * expProgressView;
 	Label *lv;

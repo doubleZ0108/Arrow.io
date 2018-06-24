@@ -179,6 +179,11 @@ public:
 		float &v_hp, int &v_hplimit,int &v_weapon);
 	void DeCode_for_attack(const std::string &buf,
 		int &v_weapon, float &v_posx, float &v_posy);
+	void DeCode_for_heronature(const std::string &buf,
+		float &v_speed, float &v_p_hp, int &v_hpLimit,
+		float &v_atkpower, float &v_atkrange,float &v_defpower,
+		int &v_front, int &v_leftside, int &v_rightside,
+		int &v_back, bool &v_ifcanbreakwall);
 
 	void ID_judge(SIOClient* client, const std::string& data);
 	void HP_recieve(SIOClient* client, const std::string& data);
@@ -190,6 +195,8 @@ public:
 	void runEvent_n(SIOClient* client, const std::string& data);
 	void playRun_n(SIOClient* client, const std::string& data);
 	void attack_n(SIOClient* client, const std::string& data);
+	void heronature_n(SIOClient* client, const std::string& data);
+	void hurt_n(SIOClient* client, const std::string& data);
 	/////////////////////////////////////////
 
 	// implement the "static create()" method manually
@@ -200,6 +207,8 @@ public:
 	void onEnter();
 	void attack(Player* player, Point point);//µ¥»÷×ø±ê
 	void attackweapon(Player* player, float num, Point point);
+	void attack_nn(Player* player, Point point);
+	void attackweapon_nn(Player* player, float num, Point point);
 	void levelup();
 	/////////////////////////
 private:

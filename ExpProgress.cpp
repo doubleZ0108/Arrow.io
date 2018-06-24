@@ -7,6 +7,7 @@
 
 using namespace cocos2d::ui;
 extern bool language_flag;
+extern std::string hero_nature;
 
 extern char *FontToUTF8(const char* font);
 ExpProgress::ExpProgress()
@@ -169,6 +170,7 @@ void ExpProgress::Choices(int i)
 	//str = ((String*)strings->objectForKey(StringUtils::format("choice%d",i)))->getCString();
 	//Label *label = Label::createWithSystemFont(str, "", charactersize);
 
+	ifchose = 1;
 	switch (i)
 	{
 	case 1://ตุดฬ
@@ -239,6 +241,15 @@ void ExpProgress::Choices(int i)
 		unchoose[20] = true;
 		break;
 	}
+
+	char hero_mess[40];
+	sprintf(hero_mess, "%d %d %d %d %d %d %d %d %d %d %d ", 
+		static_cast<int>(player->speed*10), static_cast<int>(player->p_hp*10), player->hpLimit,
+		static_cast<int>(player->atkpower*10), static_cast<int>(player->atkrange*10),
+		static_cast<int>(player->defpower*10),
+		player->front, player->leftside, player->rightside,player->back, 
+		(player->ifcan_breakwall? 1: 0)  );
+	hero_nature = hero_mess;
 
 	for (int i = 1; i <= 3; i++)
 		unchoose[i] = false;

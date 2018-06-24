@@ -35,6 +35,9 @@ std::vector<int> numbers(0);
 
 bool isowner = true;  //房主（产生血包的人判定
 bool isconnect = false;
+
+std::string hero_nature;
+
 //it is define in another .cpp file 
 //and it is used to change character
 
@@ -207,6 +210,8 @@ void GamePlaying::NetworkPrinter()//noneed
 		_sioClient->on("n_player keys", CC_CALLBACK_2(GamePlaying::runEvent_n, this));
 		_sioClient->on("n_player run", CC_CALLBACK_2(GamePlaying::playRun_n, this));
 		_sioClient->on("attack", CC_CALLBACK_2(GamePlaying::attack_n, this));
+		_sioClient->on("hero nature", CC_CALLBACK_2(GamePlaying::heronature_n, this));
+		_sioClient->on("hurt", CC_CALLBACK_2(GamePlaying::hurt_n, this));
 	}
 
 }
@@ -220,11 +225,11 @@ void GamePlaying::ID_judge(SIOClient * client, const std::string & data)
 	else if(num == 1)
 	{
 		isowner = false;
-		hp_auto_arise.clear();
-		exp_auto_arise.clear();
 		this->unschedule(schedule_selector(GamePlaying::HP_grow));
 		this->unschedule(schedule_selector(GamePlaying::EXP_grow));
 	}
+	hp_auto_arise.clear();
+	exp_auto_arise.clear();
 }
 void GamePlaying::Network_Switch(Ref * Spender)
 {
@@ -247,6 +252,9 @@ void GamePlaying::Network_Switch(Ref * Spender)
 				static_cast<int>(m_player->p_hp), m_player->hpLimit, m_player->weapon);
 			//log("player %s", enemy_mess);
 			_sioClient->emit("playerchose", enemy_mess);
+
+			hp_auto_arise.clear();
+			exp_auto_arise.clear();
 		}
 		else
 		{
@@ -260,7 +268,7 @@ void GamePlaying::Network_Switch(Ref * Spender)
 
 void GamePlaying::PlayerPrinter()
 {
-	/*srand(time(NULL));
+	srand(time(NULL));
 	int randx, randy, flag_start;
 	while (1)
 	{
@@ -282,7 +290,7 @@ void GamePlaying::PlayerPrinter()
 		if (flag_start) { break; }
 	}
 	m_player->x_coord = randx;
-	m_player->y_coord = randy;*/
+	m_player->y_coord = randy;
 
 	m_player->number = which_player;
 	char figure_choose[30];
@@ -299,8 +307,8 @@ void GamePlaying::PlayerPrinter()
 	//////////////////////////////////
 	tiledmap->setPositionX(tiledmap->getPositionX() - m_player->x_coord/MAP_SIZE * 310);
 	x_move += m_player->x_coord / MAP_SIZE * 310;
-	tiledmap->setPositionY(tiledmap->getPositionY() - m_player->y_coord / MAP_SIZE * 825);
-	y_move += m_player->y_coord / MAP_SIZE * 825;
+	tiledmap->setPositionY(tiledmap->getPositionY() - m_player->y_coord / MAP_SIZE * 800);
+	y_move += m_player->y_coord / MAP_SIZE * 800;
 	////////////////////////////////
 
 	n_player->sprite = Sprite::create();
@@ -923,6 +931,7 @@ void GamePlaying::HPjudge(const Vec2 &pos)
 			Action* actions = Sequence::create(moveBy, callFunc, NULL);
 			mag->runAction(actions);
 		}
+
 		meta->setTileGID(NOR_GID, Vec2(static_cast<int>(pos.x), static_cast<int>(pos.y)));
 		int judgex = static_cast<int>(pos.x), judgey = static_cast<int>(pos.y);
 		//范围for的使用，用于找到当前接触的回血道具
@@ -931,7 +940,7 @@ void GamePlaying::HPjudge(const Vec2 &pos)
 		{
 			if (judgex == hp_now.savex && judgey == hp_now.savey)
 			{
-				if (_sioClient)
+				if (_sioClient && isconnect)
 				{
 					char mess[10];
 					sprintf(mess, "%d %d ", judgex, judgey);
@@ -976,14 +985,14 @@ void GamePlaying::HP_grow(float dt)
 
 		int now_vec_maxindex = hp_auto_arise.size() - 1;
 		float spritex = metax * tileSize.width, spritey = (mapSize.height - metay)*tileSize.height;
-		hp_auto_arise[now_vec_maxindex].hp_potion->ignoreAnchorPointForPosition(false);
+
 		hp_auto_arise[now_vec_maxindex].hp_potion->setAnchorPoint(Vec2(0.0f, 1.0f));
 
 		hp_auto_arise[now_vec_maxindex].hp_potion->setPosition(
 			Vec2(spritex, spritey));
 		tiledmap->addChild(hp_auto_arise[now_vec_maxindex].hp_potion);
 
-		if (_sioClient && isowner)
+		if (_sioClient && isowner && isconnect)
 		{
 			char mess[10];
 			sprintf(mess, "%d %d ", metax, metay);
@@ -1023,7 +1032,7 @@ void GamePlaying::EXPjudge(const Vec2 & pos)
 		{
 			if (judgex == exp_now.savex && judgey == exp_now.savey)
 			{
-				if (_sioClient)
+				if (_sioClient && isconnect)
 				{
 					char mess[10];
 					sprintf(mess, "%d %d ", judgex, judgey);
@@ -1066,14 +1075,14 @@ void GamePlaying::EXP_grow(float dt)
 
 		int now_vec_maxindex = exp_auto_arise.size() - 1;
 		float spritex = metax * tileSize.width, spritey = (mapSize.height - metay)*tileSize.height;
-		exp_auto_arise[now_vec_maxindex].exp_potion->ignoreAnchorPointForPosition(false);
+		//exp_auto_arise[now_vec_maxindex].exp_potion->ignoreAnchorPointForPosition(false);
 		exp_auto_arise[now_vec_maxindex].exp_potion->setAnchorPoint(Vec2(0.0f, 1.0f));
 
 		exp_auto_arise[now_vec_maxindex].exp_potion->setPosition(
 			Vec2(spritex, spritey));
 		tiledmap->addChild(exp_auto_arise[now_vec_maxindex].exp_potion);
 
-		if (_sioClient && isowner)
+		if (_sioClient && isowner && isconnect)
 		{
 			char mess[10];
 			sprintf(mess, "%d %d ", metax, metay);
@@ -1238,6 +1247,111 @@ void GamePlaying::DeCode_for_attack(const std::string & buf, int & v_weapon,
 	}
 }
 
+void GamePlaying::DeCode_for_heronature(const std::string & buf, 
+	float & v_speed, float & v_p_hp, int & v_hpLimit, 
+	float & v_atkpower, float & v_atkrange, float & v_defpower, 
+	int & v_front, int & v_leftside, int & v_rightside, int & v_back, bool & v_ifcanbreakwall)
+{
+	std::string data(buf);
+	data.erase(data.begin(), data.begin() + 1);
+	data.erase(data.end() - 1, data.end());
+	int i;
+	//速度f
+	v_speed = 0.0;
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_speed *= 10;
+		v_speed += data[i] - '0';
+	}
+	v_speed /= 10.0;
+	data.erase(data.begin(), data.begin() + i + 1);
+	//当前血量f
+	v_p_hp = 0.0;
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_p_hp *= 10;
+		v_p_hp += data[i] - '0';
+	}
+	v_p_hp /= 10.0;
+	data.erase(data.begin(), data.begin() + i + 1);
+	//血量上限
+	v_hpLimit = 0;
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_hpLimit *= 10;
+		v_hpLimit += data[i] - '0';
+	}
+	data.erase(data.begin(), data.begin() + i + 1);
+	//攻击力f
+	v_atkpower = 0.0;
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_atkpower *= 10;
+		v_atkpower += data[i] - '0';
+	}
+	v_atkpower /= 10.0;
+	data.erase(data.begin(), data.begin() + i + 1);
+	//攻击范围f
+	v_atkrange = 0.0;
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_atkrange *= 10;
+		v_atkrange += data[i] - '0';
+	}
+	v_atkrange /= 10.0;
+	data.erase(data.begin(), data.begin() + i + 1);
+	//防御力f
+	v_defpower = 0.0;
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_defpower *= 10;
+		v_defpower += data[i] - '0';
+	}
+	v_defpower /= 10.0;
+	data.erase(data.begin(), data.begin() + i + 1);
+	//前
+	v_front = 0;
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_front *= 10;
+		v_front += data[i] - '0';
+	}
+	data.erase(data.begin(), data.begin() + i + 1);
+	//左
+	v_leftside = 0;
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_leftside *= 10;
+		v_leftside += data[i] - '0';
+	}
+	data.erase(data.begin(), data.begin() + i + 1);
+	//右
+	v_rightside = 0;
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_rightside *= 10;
+		v_rightside += data[i] - '0';
+	}
+	data.erase(data.begin(), data.begin() + i + 1);
+	//后
+	v_back = 0;
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_back *= 10;
+		v_back += data[i] - '0';
+	}
+	data.erase(data.begin(), data.begin() + i + 1);
+	//穿墙判定bool
+	v_ifcanbreakwall = false;
+	for (i = 0; data[i] != ' '; ++i)
+	{
+		v_ifcanbreakwall *= 10;
+		v_ifcanbreakwall += data[i] - '0';
+	}
+	if (v_ifcanbreakwall == 1) { v_ifcanbreakwall = true; }
+	else { v_ifcanbreakwall = false; }
+}
+
 void GamePlaying::runEvent_n(SIOClient * client, const std::string & data)
 {
 	keys_n[k_w] = keys_n[k_a] = keys_n[k_s] = keys_n[k_d] = false;
@@ -1260,8 +1374,19 @@ void GamePlaying::attack_n(SIOClient * client, const std::string & data)
 
 	DeCode_for_attack(data, n_player->weapon, point_n.x, point_n.y);
 	
-
-	attack(n_player, point_n);
+	attack_nn(n_player, point_n);
+}
+void GamePlaying::heronature_n(SIOClient * client, const std::string & data)
+{
+	DeCode_for_heronature(data, n_player->speed, n_player->p_hp, n_player->hpLimit,
+		n_player->atkpower, n_player->atkrange, n_player->defpower,
+		n_player->front, n_player->leftside, n_player->rightside, n_player->back,
+		n_player->ifcan_breakwall);
+}
+void GamePlaying::hurt_n(SIOClient * client, const std::string & data)
+{
+	int bloodmin = data[1] - '0';
+	m_player->hurt(bloodmin);
 }
 
 
@@ -1360,7 +1485,9 @@ void GamePlaying::addEnemy(SIOClient * client, const std::string & data)
 	n_pProgressView->setCurrentProgress(n_player->p_hp / n_player->hpLimit);
 	tiledmap->addChild(n_pProgressView, 2);
 
-	this->getChildByName("smallmap")->removeFromParentAndCleanup(true);
+	if(this->getChildByName("smallmap"))
+		this->getChildByName("smallmap")->removeFromParentAndCleanup(true);
+
 	SmallmapPrinter();
 	n_smallplayer->setVisible(true);
 }
@@ -1435,6 +1562,15 @@ void GamePlaying::onEnter()
 }
 void GamePlaying::update(float delta)
 {
+	if (expPro->ifchose)
+	{
+		if (_sioClient && isconnect)
+		{
+			_sioClient->emit("hero nature", hero_nature);
+		}
+		expPro->ifchose = 0;
+	}
+
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
 	m_player->x_coord = x; m_player->y_coord = y;
 	//CCLOG("x=%f , y=%f", x, y);
@@ -1445,6 +1581,7 @@ void GamePlaying::update(float delta)
 	n_pProgressView->setCurrentProgress(n_player->p_hp / n_player->hpLimit);
 	n_pProgressView->setPosition(Vec2(n_player->x_coord, n_player->y_coord + 50));
 	m_pProgressView->setScale((float)m_player->hpLimit / 50 * 2, 2);
+	n_pProgressView->setScale((float)n_player->hpLimit / 50 * 2, 2);
 
 	if (m_player->level == 11)
 		expPro->ExpChange(1, 1);
@@ -1518,7 +1655,7 @@ void GamePlaying::update(float delta)
 			bool flagup = up(false), flagright = right(false);
 			if (flagup && flagright)			//如果往上和往右都可以走
 			{
-				if(_sioClient)
+				if(_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "wd");
 				if ((x + tiledmap->getPositionX() > size.width / 2)
 					&& ((MAP_SIZE - x) > size.width / 2))
@@ -1531,14 +1668,14 @@ void GamePlaying::update(float delta)
 			else if (flagup && !flagright)  //如果只是往上可以走，那表现的效果就是沿着墙往上跑
 			{
 				keys[k_d] = false;         //把右方向的键盘监听关掉，表现为相当于只按了w
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "w");
 				up(true);
 			}
 			else if (!flagup && flagright)
 			{
 				keys[k_w] = false;
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "d");
 				right(true);
 			}
@@ -1549,7 +1686,7 @@ void GamePlaying::update(float delta)
 			bool flagup = up(false), flagleft = left(false);
 			if (flagup && flagleft)
 			{
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "wa");
 				if ((x + tiledmap->getPositionX() < size.width / 2)
 					&& tiledmap->getPositionX() < 0)
@@ -1561,14 +1698,14 @@ void GamePlaying::update(float delta)
 			else if (flagup && !flagleft)
 			{
 				keys[k_a] = false;
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "w");
 				up(true);
 			}
 			else if (!flagup && flagleft)
 			{
 				keys[k_w] = false;
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "a");
 				left(true);
 			}
@@ -1578,7 +1715,7 @@ void GamePlaying::update(float delta)
 			bool flagleft = left(false), flagdown = down(false);
 			if (flagleft && flagdown)
 			{
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "as");
 				if ((x + tiledmap->getPositionX() < size.width / 2)
 					&& tiledmap->getPositionX() < 0)
@@ -1590,14 +1727,14 @@ void GamePlaying::update(float delta)
 			else if (flagleft && !flagdown)
 			{
 				keys[k_s] = false;
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "a");
 				left(true);
 			}
 			else if (!flagleft && flagdown)
 			{
 				keys[k_a] = false;
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "s");
 				down(true);
 			}
@@ -1607,7 +1744,7 @@ void GamePlaying::update(float delta)
 			bool flagdown = down(false), flagright = right(false);
 			if (flagdown && flagright)
 			{
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "sd");
 				if ((x + tiledmap->getPositionX() > size.width / 2)
 					&& ((MAP_SIZE - x) > size.width / 2))
@@ -1619,14 +1756,14 @@ void GamePlaying::update(float delta)
 			else if (flagdown && !flagright)
 			{
 				keys[k_d] = false;
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "s");
 				down(true);
 			}
 			else if (!flagdown && flagright)
 			{
 				keys[k_s] = false;
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "d");
 				right(true);
 			}
@@ -1636,7 +1773,7 @@ void GamePlaying::update(float delta)
 			bool flagup = up(false);
 			if (flagup)
 			{
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "w");
 				up(true);
 			}
@@ -1647,7 +1784,7 @@ void GamePlaying::update(float delta)
 			bool flagleft = left(false);
 			if (flagleft)
 			{
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "a");
 				left(true);
 			}
@@ -1658,7 +1795,7 @@ void GamePlaying::update(float delta)
 			bool flagdown = down(false);
 			if (flagdown)
 			{
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "s");
 				down(true);
 			}
@@ -1669,7 +1806,7 @@ void GamePlaying::update(float delta)
 			bool flagright = right(false);
 			if (flagright)
 			{
-				if (_sioClient)
+				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "d");
 				right(true);
 			}
@@ -1680,22 +1817,22 @@ void GamePlaying::update(float delta)
 	m_player->runanimate(keys1);
 	if (keys1[k_w])
 	{
-		if(_sioClient)
+		if (_sioClient && isconnect)
 			_sioClient->emit("n_player run", "w");
 	}
 	else if (keys1[k_s])
 	{
-		if(_sioClient)
+		if (_sioClient && isconnect)
 			_sioClient->emit("n_player run", "s");
 	}
 	else if (keys1[k_d])
 	{
-		if(_sioClient)
+		if (_sioClient && isconnect)
 			_sioClient->emit("n_player run", "d");
 	}
 	else if (keys1[k_a])
 	{
-		if(_sioClient)
+		if (_sioClient && isconnect)
 			_sioClient->emit("n_player run", "a");
 	}
 
@@ -1703,7 +1840,7 @@ void GamePlaying::update(float delta)
 	{
 		attack(m_player, pos);
 
-		if (_sioClient)
+		if (_sioClient && isconnect)
 		{
 			char mess[20];
 			sprintf(mess, "%d %d %d ", m_player->weapon, static_cast<int>(pos.x),
@@ -1740,19 +1877,19 @@ void GamePlaying::update(float delta)
 			for (auto pl : plsum)
 			{
 				int a = bub->collidePlayer(pl);
+
+				if (_sioClient && isconnect)
+				{
+					std::string mess;
+					std::stringstream mess_stream;
+					mess_stream << a;
+					mess_stream >> mess;
+					_sioClient->emit("hurt",mess );
+				}
+
 				if (a)
 				{
-					Sprite* star = Sprite::create("Player/Figure/attacked.png");
-					star->setScale(1.5f, 1.5f);
-					srand(time(NULL));
-					auto randx = rand() % 20 - 10, randy = rand() % 20 - 10;
-					star->setPosition(pl->x_coord + randx, pl->y_coord + randy);
-					tiledmap->addChild(star);
-					MoveBy* moveBy = MoveBy::create(0.2f, Point(0, 0));
-					star->runAction(Sequence::create(moveBy,
-						CallFunc::create(CC_CALLBACK_0(Sprite::removeFromParent, star)), NULL));
-
-					if (a == 2 || a == 3)
+					if (pl->hurt(a))
 					{
 						srand(time(NULL));
 						int randx, randy, flag_start;
@@ -1775,17 +1912,22 @@ void GamePlaying::update(float delta)
 							}
 							if (flag_start) { break; }
 						}
-
-						pl->die(randx,randy);
+						pl->die(randx, randy);
 
 						tiledmap->setPositionX(tiledmap->getPositionX() - m_player->x_coord / MAP_SIZE * 310);
 						x_move += m_player->x_coord / MAP_SIZE * 310;
-						tiledmap->setPositionY(tiledmap->getPositionY() - m_player->y_coord / MAP_SIZE * 825);
-						y_move += m_player->y_coord / MAP_SIZE * 825;
+						tiledmap->setPositionY(tiledmap->getPositionY() - m_player->y_coord / MAP_SIZE * 800);
+						y_move += m_player->y_coord / MAP_SIZE * 800;
+
+						if (this->getChildByName("smallmap"))
+						{
+							this->getChildByName("smallmap")->removeFromParentAndCleanup(true);
+						}
+						SmallmapPrinter();
+
+						if (bub->comefrom->expraise(pl->level * 5))
+							levelup();
 					}
-						
-					if (a == 3)
-						levelup();
 				}
 			}
 		}
@@ -1937,11 +2079,164 @@ void GamePlaying::attackweapon(Player* player, float num, Point point)
 		atkpoint.y -= yd;
 	}
 }
+void GamePlaying::attack_nn(Player* player, Point point)
+{
+	Point p;
+	p.x = player->x_coord;
+	p.y = player->y_coord;
+
+	attackweapon(player, player->front, point);
+
+	Point pos1;
+	pos1.y = player->y_coord + point.x - player->x_coord;
+	pos1.x = player->x_coord - point.y + player->y_coord;
+	attackweapon(player, player->leftside, pos1);
+
+	pos1.y = player->y_coord - point.x + player->x_coord;
+	pos1.x = player->x_coord + point.y - player->y_coord;
+	attackweapon(player, player->rightside, pos1);
+
+	pos1.y = player->y_coord - point.y + player->y_coord;
+	pos1.x = player->x_coord - point.x + player->x_coord;
+	attackweapon(player, player->back, pos1);
+
+	player->attackCD();
+}
+void GamePlaying::attackweapon_nn(Player* player, float num, Point point)
+{
+	if (num == 0)
+		return;
+
+	Point atkpoint = point;//发射子弹的坐标
+
+	float xd = (point.y - player->y_coord) / 20;
+	float yd = (point.x - player->x_coord) / 20;
+
+	atkpoint.x -= (num / 2 - 0.5) * xd;
+	atkpoint.y += (num / 2 - 0.5) * yd;
+	for (int i = 0; i < num; i++)
+	{
+		if (player->weapon == 1)
+		{
+			auto Abullet = BulletBase::create();
+			Abullet->bindSprite(Sprite::create("Player/Weapon/arrow.png"));
+			Abullet->setPosition(Point(player->x_coord, player->y_coord));
+			tiledmap->addChild(Abullet);
+
+			float angle;
+			float dx, dy;
+			dx = atkpoint.x - player->x_coord;
+			dy = atkpoint.y - player->y_coord;
+
+			if (dy == 0)
+			{
+				if (dx >= 0)
+					angle = 90;
+				else angle = 270;
+			}
+			else
+			{
+				angle = atan(dx / dy) / 3.1416 * 180;
+				if (dy < 0)
+					angle += 180;
+			}
+
+			auto * rotateto = RotateTo::create(0, 45 + angle);
+			Abullet->runAction(rotateto);
+
+			Abullet->exist = true;
+
+			Abullet->attacking(player, atkpoint);
+		}
+		else if (player->weapon == 2)
+		{
+			int num = 300 * player->atkrange / 32;
+			float length = sqrt((player->x_coord - atkpoint.x)*(player->x_coord - atkpoint.x)
+				+ (player->y_coord - atkpoint.y)*(player->y_coord - atkpoint.y));
+			float xchange = (atkpoint.x - player->x_coord) / length * 32;
+			float ychange = (atkpoint.y - player->y_coord) / length * 32;
+
+			for (int i = 1; i <= num && player->x_coord + i * xchange >= 0 && player->x_coord + i * xchange
+				<= 1600 && player->y_coord + i * ychange >= 0 && player->y_coord + i * ychange <= 1600; i++)
+			{
+				auto Abullet = BulletBase::create();
+				Abullet->bindSprite(Sprite::create("Player/Weapon/ground.png"));
+				Abullet->setPosition(Point(player->x_coord + i * xchange, player->y_coord + i * ychange));
+				tiledmap->addChild(Abullet);
+				Abullet->exist = true;
+				Abullet->attacking(player, Point(player->x_coord + i * xchange, player->y_coord + i * ychange));
+			}
+		}
+		else if (player->weapon == 3)
+		{
+			auto Abullet = BulletBase::create();
+			Abullet->bindSprite(Sprite::create("Player/Weapon/knife.png"));
+			Abullet->setPosition(Point(player->x_coord, player->y_coord));
+			tiledmap->addChild(Abullet);
+
+			float angle;
+			float dx, dy;
+			dx = atkpoint.x - player->x_coord;
+			dy = atkpoint.y - player->y_coord;
+
+			if (dy == 0)
+			{
+				if (dx >= 0)
+					angle = 90;
+				else angle = 270;
+			}
+			else
+			{
+				angle = atan(dx / dy) / 3.1416 * 180;
+				if (dy < 0)
+					angle += 180;
+			}
+
+			auto * rotateto = RotateTo::create(0, angle);
+			Abullet->runAction(rotateto);
+
+			Abullet->exist = true;
+			Abullet->attacking(player, atkpoint);
+		}
+		else if (player->weapon == 4)
+		{
+			auto Abullet = BulletBase::create();
+			Abullet->bindSprite(Sprite::create("Player/Weapon/darts.png"));
+			Abullet->setPosition(Point(player->x_coord, player->y_coord));
+			tiledmap->addChild(Abullet);
+
+			auto * rotateto = RotateTo::create(0.5f, 180);
+			RepeatForever* Rotate = RepeatForever::create(rotateto);
+			Abullet->runAction(Rotate);
+
+			Abullet->exist = true;
+			Abullet->attacking(player, atkpoint);
+		}
+		atkpoint.x += xd;
+		atkpoint.y -= yd;
+	}
+}
+
 void GamePlaying::levelup()
 {
-	m_player->speed -= 0.15;
+	m_player->speed -= 0.1;
+
+	if (_sioClient && isconnect)
+	{
+		char hero_mess[40];
+		sprintf(hero_mess, "%d %d %d %d %d %d %d %d %d %d %d ",
+			static_cast<int>(m_player->speed * 10), static_cast<int>(m_player->p_hp * 10), m_player->hpLimit,
+			static_cast<int>(m_player->atkpower * 10), static_cast<int>(m_player->atkrange * 10),
+			static_cast<int>(m_player->defpower * 10),
+			m_player->front, m_player->leftside, m_player->rightside, m_player->back,
+			(m_player->ifcan_breakwall ? 1 : 0));
+
+		hero_nature = hero_mess;
+		_sioClient->emit("hero nature", hero_nature);
+	}
+	
+
 	expPro->LvChange(m_player->level);
-	expPro->player = m_player;
 }
 
 void GamePlaying::menuHelloWorldScene(Ref* pSender)

@@ -50,7 +50,7 @@ void BulletBase::arrow(Player *player, Point pos)
 {
 	range *= comefrom->atkrange;
 	float time = (range) / (flyspeed);//单位为秒
-	float length = sqrt((player->x_coord - pos.x)*(player->x_coord - pos.x) 
+	float length = sqrt((player->x_coord - pos.x)*(player->x_coord - pos.x)
 		+ (player->y_coord - pos.y)*(player->y_coord - pos.y));
 	float xchange = (pos.x - player->x_coord) / length * range;
 	float ychange = (pos.y - player->y_coord) / length * range;
@@ -110,13 +110,7 @@ int BulletBase::collidePlayer(Player *player)
 		if (dx < player->radius && dy < player->radius)
 		{
 			this->hide();
-			if (player->hurt(atkpower*comefrom->atkpower))
-			{
-				if (comefrom->expraise(player->level * 5))//如果升级了
-					return 3;
-				return 2;
-			}
-			return 1;
+			return atkpower * comefrom->atkpower;
 		}
 	}
 	return 0;
@@ -142,7 +136,7 @@ void BulletBase::knife(Player *player, Point pos)
 {
 	range *= comefrom->atkrange;
 	float time = (range) / (flyspeed);//单位为秒
-	float length = sqrt((player->x_coord - pos.x)*(player->x_coord - pos.x) 
+	float length = sqrt((player->x_coord - pos.x)*(player->x_coord - pos.x)
 		+ (player->y_coord - pos.y)*(player->y_coord - pos.y));
 	float xchange = (pos.x - player->x_coord) / length * range;
 	float ychange = (pos.y - player->y_coord) / length * range;
