@@ -100,11 +100,11 @@ void MapChose::ScenePrinter()
 	auto listener1 = EventListenerTouchOneByOne::create();//创建一个触摸监听  
 	listener1->setSwallowTouches(true); //设置是否想下传递触摸  
 
-	//通过 lambda 表达式 直接实现触摸事件的回掉方法  
-	listener1->onTouchBegan = [=](Touch* touch, Event* event) 
+										//通过 lambda 表达式 直接实现触摸事件的回掉方法  
+	listener1->onTouchBegan = [=](Touch* touch, Event* event)
 	{
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
-	
+
 		Point locationInNode = target->convertToNodeSpace(touch->getLocation());
 		Size s = target->getContentSize();
 		Rect rect = Rect(0, 0, s.width, s.height);
@@ -112,7 +112,7 @@ void MapChose::ScenePrinter()
 		if (rect.containsPoint(locationInNode))
 		{
 			CCActionInterval* shuffle1 = CCShuffleTiles::create(5, CCSize(50, 50), 50);
-			gridNodeTarget_2->runAction(shuffle1); 
+			gridNodeTarget_2->runAction(shuffle1);
 			CCActionInterval* shuffle2 = CCShuffleTiles::create(5, CCSize(50, 50), 50);
 			gridNodeTarget_3->runAction(shuffle2);
 
@@ -122,7 +122,7 @@ void MapChose::ScenePrinter()
 		}
 		return false;
 	};
-	listener1->onTouchEnded = [=](Touch* touch, Event* event) 
+	listener1->onTouchEnded = [=](Touch* touch, Event* event)
 	{
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
 		target->setOpacity(255);
@@ -137,7 +137,7 @@ void MapChose::ScenePrinter()
 	// Make pre_map2 touchable  
 	auto listener2 = EventListenerTouchOneByOne::create();//创建一个触摸监听  
 	listener2->setSwallowTouches(true); //设置是否想下传递触摸  
-	
+
 	listener2->onTouchBegan = [=](Touch* touch, Event* event)
 	{
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
@@ -149,7 +149,7 @@ void MapChose::ScenePrinter()
 		if (rect.containsPoint(locationInNode))
 		{
 			CCActionInterval* turnOffFiels1 = CCTurnOffTiles::create(3, CCSize(50, 50));
-			gridNodeTarget_1->runAction(turnOffFiels1); 
+			gridNodeTarget_1->runAction(turnOffFiels1);
 			CCActionInterval* turnOffFiels2 = CCTurnOffTiles::create(3, CCSize(50, 50));
 			gridNodeTarget_3->runAction(turnOffFiels2);
 

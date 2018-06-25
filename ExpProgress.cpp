@@ -244,12 +244,12 @@ void ExpProgress::Choices(int i)
 	}
 
 	char hero_mess[40];
-	sprintf(hero_mess, "%d %d %d %d %d %d %d %d %d %d %d ", 
-		static_cast<int>(player->speed*10), static_cast<int>(player->p_hp*10), player->hpLimit,
-		static_cast<int>(player->atkpower*10), static_cast<int>(player->atkrange*10),
-		static_cast<int>(player->defpower*10),
-		player->front, player->leftside, player->rightside,player->back, 
-		(player->ifcan_breakwall? 1: 0)  );
+	sprintf(hero_mess, "%d %d %d %d %d %d %d %d %d %d %d ",
+		static_cast<int>(player->speed * 10), static_cast<int>(player->p_hp * 10), player->hpLimit,
+		static_cast<int>(player->atkpower * 10), static_cast<int>(player->atkrange * 10),
+		static_cast<int>(player->defpower * 10),
+		player->front, player->leftside, player->rightside, player->back,
+		(player->ifcan_breakwall ? 1 : 0));
 	hero_nature = hero_mess;
 
 	for (int i = 1; i <= 3; i++)

@@ -63,7 +63,7 @@ struct HP_MESS
 	//std::find()的内部实现应该是借用了==运算符
 	bool operator==(const HP_MESS &thv)
 	{
-		if(this->savex==thv.savex && this->savey==thv.savey)
+		if (this->savex == thv.savex && this->savey == thv.savey)
 		{
 			return true;
 		}
@@ -143,10 +143,10 @@ public:
 
 	////////////////////////////////////
 	//各个方向的判断和墙壁检测
-	bool up(bool flag, int ifxie=0); //true代表我需要调用runEvent函数实实在在的移动
-	bool right(bool flag, int ifxie=0);//false代表我只是想判断这个方向能不能走，其实不想移动
-	bool left(bool flag, int ifxie=0);
-	bool down(bool flag, int ifxie=0);
+	bool up(bool flag, int ifxie = 0); //true代表我需要调用runEvent函数实实在在的移动
+	bool right(bool flag, int ifxie = 0);//false代表我只是想判断这个方向能不能走，其实不想移动
+	bool left(bool flag, int ifxie = 0);
+	bool down(bool flag, int ifxie = 0);
 	bool isCanReach(float x, float y);
 	//////////////////////////////////
 
@@ -171,18 +171,18 @@ public:
 	void onError(SIOClient* client, const std::string& data) {}
 	//socket关闭时调用
 	void onClose(SIOClient* client) {}
-	
+
 	void DeCode_for_Map(const std::string &buf, int &metax, int &metay);
 	void DeCode_for_Run(const std::string &buf);
 	void DeCode_for_Playrun(const std::string &buf);
-	void DeCode_for_Enemy(const std::string &buf, 
+	void DeCode_for_Enemy(const std::string &buf,
 		int &v_player, float &v_posx, float &v_posy,
-		float &v_hp, int &v_hplimit,int &v_weapon);
+		float &v_hp, int &v_hplimit, int &v_weapon);
 	void DeCode_for_attack(const std::string &buf,
 		int &v_weapon, float &v_posx, float &v_posy);
 	void DeCode_for_heronature(const std::string &buf,
 		float &v_speed, float &v_p_hp, int &v_hpLimit,
-		float &v_atkpower, float &v_atkrange,float &v_defpower,
+		float &v_atkpower, float &v_atkrange, float &v_defpower,
 		int &v_front, int &v_leftside, int &v_rightside,
 		int &v_back, bool &v_ifcanbreakwall);
 	void DeCode_for_hurt(const std::string &buf, int &v_bloodmin);

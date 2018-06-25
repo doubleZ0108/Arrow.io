@@ -32,7 +32,7 @@ bool SettingScene::init()
 	{
 		return false;
 	}
-	
+
 	ScenePrinter();
 	MusicPrinter();
 	LanguagePrinter();
@@ -51,7 +51,7 @@ void SettingScene::ScenePrinter()
 
 	///////////////////////////////////////////
 	//add Setting_Background
-	
+
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 2;
 	auto *background = Sprite::create("Scene/Background/Setting_Background.png");
@@ -69,7 +69,7 @@ void SettingScene::ScenePrinter()
 	x = rect.origin.x + rect.size.width*(10.0f / 11.0f);
 	y = rect.origin.y + rect.size.height*(1.0f / 10.0f);
 	preturn->setPosition(Vec2(x, y));
-	
+
 	preturn->setScale(1.0f);
 	this->addChild(preturn);
 
@@ -128,7 +128,7 @@ void SettingScene::ScenePrinter()
 		sizeword = Label::create(FontToUTF8("屏幕尺寸"),
 			"Arial", 40);
 	}
-	
+
 	sizeword->setPosition(Vec2(x, y));
 	this->addChild(sizeword);
 }
@@ -246,7 +246,7 @@ void SettingScene::SizePrinter()
 	}
 	else
 	{
-		sizeword_small = Label::create(FontToUTF8("小窗口"), 
+		sizeword_small = Label::create(FontToUTF8("小窗口"),
 			"Arial", 40);
 	}
 	auto *psizeword_small = MenuItemLabel::create(sizeword_small, this,
@@ -314,7 +314,7 @@ void SettingScene::play(cocos2d::Object* pSender)
 	if (stop_music == is_paused)
 	{
 		//解决按了stop后马上按play却是接着播放的bug
-		CocosDenshion::SimpleAudioEngine::sharedEngine()->stopBackgroundMusic(); 
+		CocosDenshion::SimpleAudioEngine::sharedEngine()->stopBackgroundMusic();
 		CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Music/Funky_Stars.mp3");
 	}
 	else

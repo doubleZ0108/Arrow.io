@@ -134,7 +134,7 @@ void PlayerChose::ScenePrinter()
 			gridNodeTarget_4->runAction(fadeOutTRTiles3);
 
 			auto* jumpTiles = CCJumpTiles3D::create(3, CCSize(20, 20), 5, 20);
-			gridNodeTarget_1->runAction(jumpTiles); 
+			gridNodeTarget_1->runAction(jumpTiles);
 			target->setOpacity(180);
 			return true;
 		}
@@ -187,7 +187,7 @@ void PlayerChose::ScenePrinter()
 		_eventDispatcher->removeEventListener(listener2);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener2, pre_player2);
-	
+
 	/////////////////////////////////////////////
 	// Make pre_map3 touchable  
 	auto listener3 = EventListenerTouchOneByOne::create();//创建一个触摸监听  

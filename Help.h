@@ -1,4 +1,4 @@
-#ifndef _HELP_H_
+ï»¿#ifndef _HELP_H_
 #define _HELP_H_
 #include "cocos2d.h"
 #include "GUI/CCControlExtension/CCControlSwitch.h" 
@@ -51,7 +51,7 @@ public:
 	void initS();*/
 private:
 	PageView * pageView;
-	Vec2                    ClickBeganPos;  //µã»÷µÄ×ø±ê  
+	Vec2                    ClickBeganPos;  //ÂµÃ£Â»Ã·ÂµÃ„Ã—Ã¸Â±Ãª  
 };
 
 #endif //HELP

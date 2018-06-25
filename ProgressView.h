@@ -1,4 +1,4 @@
-#ifndef __PROGRESSVIEW_H__  
+ï»¿#ifndef __PROGRESSVIEW_H__  
 #define __PROGRESSVIEW_H__  
 
 #include "cocos2d.h"  
@@ -10,11 +10,11 @@ public:
 	ProgressView();
 
 public:
-	void setBackgroundTexture(const char *pName);//ÉèÖÃÑªÌõ
-	void setForegroundTexture(const char *pName);//ÉèÖÃÑªÁ¿
-	void setTotalProgress(float total);//×ÜÑªÁ¿
-	void setCurrentProgress(float progress);//µ±Ç°ÑªÁ¿
-	void setpoint(Point point);//ÉèÖÃ×ø±ê
+	void setBackgroundTexture(const char *pName);//Ã‰Ã¨Ã–ÃƒÃ‘ÂªÃŒÃµ
+	void setForegroundTexture(const char *pName);//Ã‰Ã¨Ã–ÃƒÃ‘ÂªÃÂ¿
+	void setTotalProgress(float total);//Ã—ÃœÃ‘ÂªÃÂ¿
+	void setCurrentProgress(float progress);//ÂµÂ±Ã‡Â°Ã‘ÂªÃÂ¿
+	void setpoint(Point point);//Ã‰Ã¨Ã–ÃƒÃ—Ã¸Â±Ãª
 
 private:
 	void setForegroundTextureRect(const CCRect &rect);

@@ -3,7 +3,7 @@
 
 #include "cocos2d.h"
 
-class PlayerChose: public cocos2d::Layer
+class PlayerChose : public cocos2d::Layer
 {
 public:
 	static cocos2d::Scene* createScene();

@@ -56,9 +56,9 @@ void HelpScene::ScenePrinter()
 	y = rect.origin.y + rect.size.height*(1.0f / 10.0f);
 	preturn->setPosition(Vec2(x, y));
 	preturn->setScale(1.0f);
-	this->addChild(preturn,10);
+	this->addChild(preturn, 10);
 
-	
+
 }
 
 void HelpScene::PagePrinter()
@@ -114,7 +114,7 @@ void HelpScene::PagePrinter()
 
 	}
 
-	auto JumpSceneCallback_lambda= [&](Ref * pSender, PageView::EventType type)
+	auto JumpSceneCallback_lambda = [&](Ref * pSender, PageView::EventType type)
 	{};
 	pageView->addEventListener(JumpSceneCallback_lambda);
 	pageView->setName("pageView");
@@ -156,7 +156,7 @@ void HelpScene::Page0(Layout * v_layout)
 	}
 	else
 	{
-		word1= Label::create(FontToUTF8("         随着等级的升高\n     你会获得更多的技能\n\
+		word1 = Label::create(FontToUTF8("         随着等级的升高\n     你会获得更多的技能\n\
 			           好好利用它们\n   去给你的对手一击痛击\n欢迎来到——弓箭手大作战!"), "Arial", 40);
 		word2 = Label::create(FontToUTF8("<- 左滑查看更多"), "Arial", 40);
 	}
@@ -214,7 +214,7 @@ void HelpScene::Page1(Layout *v_layout)
 	setting->setPosition(Vec2(x, y));
 	v_layout->addChild(setting);
 
-	y= rect.origin.y + rect.size.height*(15.0f / 20.0f);
+	y = rect.origin.y + rect.size.height*(15.0f / 20.0f);
 	lv->setAnchorPoint(Vec2(0.0f, 0.5f));
 	lv->setPosition(Vec2(x, y));
 	v_layout->addChild(lv);
@@ -246,7 +246,7 @@ void HelpScene::Page2(Layout * v_layout)
 	}
 	else
 	{
-		title = Label::create(FontToUTF8("技能一览表"),"Arial", 40);
+		title = Label::create(FontToUTF8("技能一览表"), "Arial", 40);
 	}
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height *(18.5 / 20.0f);
@@ -255,18 +255,18 @@ void HelpScene::Page2(Layout * v_layout)
 
 	int i;
 	Sprite *skill[6];
-	for(i=0;i<6;++i)
-	{ 
+	for (i = 0; i<6; ++i)
+	{
 		skill[i] = Sprite::create(StringUtils::format("Player/skill/choice%d.png", i + 4));
 	}
 	float xx[6], yy[6];
 	xx[0] = xx[1] = xx[2] = rect.origin.x + rect.size.width*(1.0f / 8.0f);
-	xx[3]=xx[4]=xx[5]= rect.origin.x + rect.size.width*(5.0f / 8.0f);
+	xx[3] = xx[4] = xx[5] = rect.origin.x + rect.size.width*(5.0f / 8.0f);
 	yy[0] = yy[3] = rect.origin.y + rect.size.height*(15.0f / 20.0f);
 	yy[1] = yy[4] = rect.origin.y + rect.size.height*(9.0f / 20.0f);
 	yy[2] = yy[5] = rect.origin.y + rect.size.height*(3.0f / 20.0f);
 	for (i = 0; i < 6; ++i)
-	{ 
+	{
 		skill[i]->setScale(0.9f);
 		skill[i]->setPosition(Vec2(xx[i], yy[i]));
 		v_layout->addChild(skill[i]);
@@ -420,21 +420,21 @@ void HelpScene::Page5(Layout *v_layout)
 	Label *word;
 	if (language_flag)
 	{
-		word = Label::create("1.Please select your favorite maps and characters before entering the game. If you want to play with your friends，please make sure you are in the same map(Do you know the distance between Mars and the moon?\n\
-\n2.You can play alone after entering the room，but if you want to play with friends, please read Tip 3 carefully\n\
-\n3.Online game settings：Do not rush to move after entering the map，make sure that you and your friends click the WIFI button in the upper right corner. You will see\n\
-your friend on the map in the upper left corner，after this, you can enjoy playing online. You must follow the rules of the game，bugbug will never occur\n\
+		word = Label::create("1.Please select your favorite maps and characters before entering the game. If you want to play with your friends, please make sure you are in the same map(Do you know the distance between Mars and the moon?\n\
+\n2.You can play alone after entering the room, but if you want to play with friends, please read Tip 3 carefully\n\
+\n3.Online game settings: Do not rush to move after entering the map, make sure that you and your friends click the WIFI button in the upper right corner. You will see\n\
+your friend on the map in the upper left corner, after this, you can enjoy playing online. You must follow the rules of the game, bugbug will never occur\n\
 \n4.Each person has 3 resurrection opportunities to cherish life and stay away from bugs\n\
-\n5.If you open a buff(Started the characters through the wall skills，please do not go outside the map，The reason is the same as 1 (Do you know the distance from Mars to the moon?", "Arial", 30);
+\n5.If you open a buff(Started the characters through the wall skills, please do not go outside the map, The reason is the same as 1 (Do you know the distance from Mars to the moon?", "Arial", 30);
 	}
 	else
 	{
-		word = Label::create(FontToUTF8("1.进入游戏之前请选择你喜欢的地图和人物，如果你想和你的朋友一起玩耍，请确保你们在同一张地图中(你知道火星到月球之间的距离么\n\
+		word = Label::create(FontToUTF8("1.进入游戏之前请选择你喜欢的地图和人物，如果你想和你的朋友一起玩耍，请确保你们在同一张地图中(你知道火星到月球之间的距离么?\n\
 \n2.进到房间之后你可以进行单机玩耍，但是如果想和朋友一起玩耍请认真阅读提示3\n\
 \n3.联机游戏设置：进入地图后不要着急移动，确保自己和朋友都点击了右上角的WIFI按钮后，你会在\n\
 左上角的地图上看到你的朋友，这之后你们可以尽情的联机玩耍哦，请千万按照规则游戏，bugbug永不出现\n\
 \n4.每人有3次复活机会，珍惜生命，远离bug\n\
-\n5.如果你开了buff(启动了人物穿墙技能，请不要往地图外面走，原因同1(你知道火星到月球的距离么"), "Arial", 30);
+\n5.如果你开了buff(启动了人物穿墙技能，请不要往地图外面走，原因同1(你知道火星到月球的距离么?"), "Arial", 30);
 	}
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 3;
@@ -493,11 +493,11 @@ void HelpScene::Page8(Layout * v_layout)
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 2;
 	word->setPosition(Vec2(x, y));
-	v_layout->addChild(word,1);
+	v_layout->addChild(word, 1);
 
 	auto miqi = Sprite::create("Scene/Background/miqi.png");
 	miqi->setPosition(Vec2(x, y));
-	v_layout->addChild(miqi,0);
+	v_layout->addChild(miqi, 0);
 }
 
 void HelpScene::Page9(Layout * v_layout)
@@ -553,11 +553,9 @@ void HelpScene::Page11(Layout * v_layout)
 
 void HelpScene::menuHellowWorldScene(Ref* pSender)
 {
-	
+
 	auto sc = HelloWorld::createScene();        //按列分割界面的切换动画
 	auto reScene = TransitionFadeBL::create(1.0f, sc);
 	Director::getInstance()->replaceScene(reScene);
 	this->getChildByName("pageView")->removeFromParentAndCleanup(true);
 }
-
-

@@ -2,7 +2,7 @@
 #define _FONTTOUTF8_CPP_
 #include "cocos2d.h"
 
-char *FontToUTF8(const char* font)   //转化为中文的函数
+char *FontToUTF8(const char* font)   //转化为中文函数
 {
 	int len = MultiByteToWideChar(CP_ACP, 0, font, -1, NULL, 0);
 	wchar_t *wstr = new wchar_t[len + 1];

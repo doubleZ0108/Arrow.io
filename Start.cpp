@@ -15,9 +15,9 @@ extern char *FontToUTF8(const char* font);
 Scene* StartScene::createScene()
 {
 	is_paused = reply_music;   //进入正式游戏后吧初始音乐设为reply_music
-	//正式进入游戏后会切换到新的游戏音乐，并把欢迎界面的音乐设为stop
-	//再次返回到欢迎界面的时候回从头播放音乐
-	//////////////////////////////////
+							   //正式进入游戏后会切换到新的游戏音乐，并把欢迎界面的音乐设为stop
+							   //再次返回到欢迎界面的时候回从头播放音乐
+							   //////////////////////////////////
 	auto scene = Scene::create();
 	auto layer = StartScene::create();
 	scene->addChild(layer);
@@ -53,7 +53,7 @@ void StartScene::ScenePrinter()
 	auto rect = Director::getInstance()->getOpenGLView()->getVisibleRect();
 	float x = rect.origin.x + rect.size.width / 2;
 	float y = rect.origin.y + rect.size.height / 2;
-	
+
 	///////////////////////////////////
 	//a return button which click to back to HelloWorldScene
 	auto *return_button = MenuItemImage::create(
@@ -67,9 +67,9 @@ void StartScene::ScenePrinter()
 	preturn->setPosition(Vec2(x, y));
 
 	preturn->setScale(1.0f);
-	this->addChild(preturn,100);   //把返回按钮置于100层，防止遮挡
-	///////////////////////////////////////////////
-	//add blue_background
+	this->addChild(preturn, 100);   //把返回按钮置于100层，防止遮挡
+									///////////////////////////////////////////////
+									//add blue_background
 
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 2;
@@ -100,7 +100,7 @@ void StartScene::ScenePrinter()
 		"ToPlay_normal.png",
 		"ToPlay_select.png",
 		CC_CALLBACK_1(StartScene::menuToPlayButton, this));
-	
+
 	auto *toplay = Menu::create(toplaybutton, NULL);
 	y = rect.origin.y + rect.size.height*(1.0f / 3.0f);
 	toplay->setPosition(Vec2(x, y));

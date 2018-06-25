@@ -54,7 +54,7 @@ public:
 	int leftside = 0;//zz
 	int rightside = 0;//zz
 	int back = 0;//zz
-	//武器种类1箭2地刺3刀4飞镖
+				 //武器种类1箭2地刺3刀4飞镖
 	int weapon = 1;
 	//回血、经验增加
 	float hpincrease = 1;
