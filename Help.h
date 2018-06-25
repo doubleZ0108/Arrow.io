@@ -1,4 +1,4 @@
-﻿#ifndef _HELP_H_
+#ifndef _HELP_H_
 #define _HELP_H_
 #include "cocos2d.h"
 #include "GUI/CCControlExtension/CCControlSwitch.h" 

@@ -131,7 +131,7 @@ void HelpScene::Page0(Layout * v_layout)
 	Label *title;
 	if (language_flag)
 	{
-		title = Label::create("Basic introduction", "Arial", 40);
+		title = Label::create("Basic Introduction", "Arial", 40);
 	}
 	else
 	{
@@ -150,8 +150,8 @@ void HelpScene::Page0(Layout * v_layout)
 	Label *word1, *word2;
 	if (language_flag)
 	{
-		word1 = Label::create("         As the level increases\n        you will gain more skills\n\
-			               use them well\nand give your opponents a knock\n Enjoy yourself at Archer-Battle!", "Arial", 40);
+		word1 = Label::create("         As the level increases\n       you will gain more skills\n\
+			       Make good use of them\nand give your opponent a knock\n Enjoy yourself in Archer-Battle!", "Arial", 40);
 		word2 = Label::create("<- Slide left to see more", "Arial", 40);
 	}
 	else
@@ -183,10 +183,10 @@ void HelpScene::Page1(Layout *v_layout)
 	Label *wifi, *setting, *lv, *skill, *potion, *word2;
 	if (language_flag)
 	{
-		wifi = Label::create("Click to connect the network.Enjoy the game with\nyour friendsPlease keep reading for precautions", "Arial", 20);
-		setting = Label::create("Global map switch\nBackground music switch\nGame mode switch. Please keep reading for details", "Arial", 20);
+		wifi = Label::create("Click the WIFI button to connect the network. Enjoy the game with\nyour friends. Please continue reading for attentions", "Arial", 20);
+		setting = Label::create("Global map switch\nBackground music switch\nGame mode switch. Please continue reading for details", "Arial", 20);
 		lv = Label::create("Current rank & experience level", "Arial", 20);
-		skill = Label::create("Choose a prop upgraded\nPlease keep reading", "Arial", 20);
+		skill = Label::create("Choose a prop upgraded\nPlease continue reading", "Arial", 20);
 		potion = Label::create("EXP props & HP props", "Arial", 20);
 
 		word2 = Label::create("<- Slide left to see more", "Arial", 40);
@@ -275,9 +275,9 @@ void HelpScene::Page2(Layout * v_layout)
 	Label *label[6];
 	if (language_flag)
 	{
-		label[0] = Label::create("Increase your attack power", "Arial", 40);
-		label[1] = Label::create("Increase your attack range", "Arial", 40);
-		label[2] = Label::create("Increase your defense power", "Arial", 40);
+		label[0] = Label::create("DMG(Damage) Up", "Arial", 40);
+		label[1] = Label::create("Range Up", "Arial", 40);
+		label[2] = Label::create("DEF(Defense) Up", "Arial", 40);
 		label[3] = Label::create("Launch an arrow forward more", "Arial", 40);
 		label[4] = Label::create("Launch an arrow backward more", "Arial", 40);
 		label[5] = Label::create("Launch two arrows toward left and right more", "Arial", 40);
@@ -325,12 +325,12 @@ void HelpScene::Page3(Layout * v_layout)
 	Label *label[6];
 	if (language_flag)
 	{
-		label[0] = Label::create("Each time recover more blood", "Arial", 40);
-		label[1] = Label::create("1.5 times of experience", "Arial", 40);
-		label[2] = Label::create("Increase your speed", "Arial", 40);
-		label[3] = Label::create("Increase your HP limit", "Arial", 40);
-		label[4] = Label::create("Attack means defense", "Arial", 40);
-		label[5] = Label::create("Reduce attack CD", "Arial", 40);
+		label[0] = Label::create("Recover More Blood Each Time", "Arial", 40);
+		label[1] = Label::create("1.5 Times of Experience", "Arial", 40);
+		label[2] = Label::create("Speed Up", "Arial", 40);
+		label[3] = Label::create("HP Ceiling Up", "Arial", 40);
+		label[4] = Label::create("Attack Means Defense", "Arial", 40);
+		label[5] = Label::create("Reduce Attack CD", "Arial", 40);
 	}
 	else
 	{
@@ -375,12 +375,12 @@ void HelpScene::Page4(Layout * v_layout)
 	Label *label[6];
 	if (language_flag)
 	{
-		label[0] = Label::create("Defense means attack", "Arial", 40);
-		label[1] = Label::create("Full attribute small increase", "Arial", 40);
-		label[2] = Label::create("Bullets can pass through the wall", "Arial", 40);
+		label[0] = Label::create("Defense Means Attack", "Arial", 40);
+		label[1] = Label::create("All Stats Up (a little)", "Arial", 40);
+		label[2] = Label::create("Bullets Passing Through Wall", "Arial", 40);
 		label[3] = Label::create("Magnet", "Arial", 40);
-		label[4] = Label::create("Hero can pass through the wall", "Arial", 40);
-		label[5] = Label::create("Stand farther and look farther", "Arial", 40);
+		label[4] = Label::create("Hero Walking Through Wall", "Arial", 40);
+		label[5] = Label::create("Stand Higher To Look Farther", "Arial", 40);
 	}
 	else
 	{
@@ -406,7 +406,7 @@ void HelpScene::Page5(Layout *v_layout)
 	Label *title;
 	if (language_flag)
 	{
-		title = Label::create("Precautions", "Arial", 40);
+		title = Label::create("Attention", "Arial", 40);
 	}
 	else
 	{
@@ -420,12 +420,13 @@ void HelpScene::Page5(Layout *v_layout)
 	Label *word;
 	if (language_flag)
 	{
-		word = Label::create("1.Please select your favorite maps and characters before entering the game. If you want to play with your friends, please make sure you are in the same map(Do you know the distance between Mars and the moon?\n\
-\n2.You can play alone after entering the room, but if you want to play with friends, please read Tip 3 carefully\n\
-\n3.Online game settings: Do not rush to move after entering the map, make sure that you and your friends click the WIFI button in the upper right corner. You will see\n\
-your friend on the map in the upper left corner, after this, you can enjoy playing online. You must follow the rules of the game, bugbug will never occur\n\
-\n4.Each person has 3 resurrection opportunities to cherish life and stay away from bugs\n\
-\n5.If you open a buff(Started the characters through the wall skills, please do not go outside the map, The reason is the same as 1 (Do you know the distance from Mars to the moon?", "Arial", 30);
+		word = Label::create("1.Please select your favorite map and character before entering the game. If you want to play with your friends, please make sure you are in the same map(Do you know the distance between Mars and the moon?\n\
+\n2.You can play alone after entering the map, but if you want to play with friends, please read Tip 3 carefully\n\
+\n3.How to play online: Do not rush to move after entering the map, make sure that you and your friend click the WIFI button in the upper right corner. You will see\n\
+your friend on the map in the upper left corner, after this, you can enjoy playing online. You must follow the rules of the game, and bugbug will never occur\n\
+\n4.Each person has 3 opportunities to come back to life. Cherish life and stay away from bugs！\n\
+\n5.When you open a buff(After you get Hero Walking Through Wall, please do not go outside the map. The reason is the same as 1 (Do you know the distance between Mars and the moon?\n\
+6.To ensure that you and your friend are in the same room and that others will not be affected when they want to create a room, please exit the game interface after game over.", "Arial", 30);
 	}
 	else
 	{
@@ -434,12 +435,13 @@ your friend on the map in the upper left corner, after this, you can enjoy playi
 \n3.联机游戏设置：进入地图后不要着急移动，确保自己和朋友都点击了右上角的WIFI按钮后，你会在\n\
 左上角的地图上看到你的朋友，这之后你们可以尽情的联机玩耍哦，请千万按照规则游戏，bugbug永不出现\n\
 \n4.每人有3次复活机会，珍惜生命，远离bug\n\
-\n5.如果你开了buff(启动了人物穿墙技能，请不要往地图外面走，原因同1(你知道火星到月球的距离么?"), "Arial", 30);
+\n5.如果你开了buff(启动了人物穿墙技能，请不要往地图外面走，原因同1(你知道火星到月球的距离么?\n\
+\n6.为保证你和你的朋友在同一房间，并且不影响他人创建房间，请于游戏结束后退出游戏界面"), "Arial", 30);
 	}
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 3;
 	word->setPosition(Vec2(x, y));
-	word->setDimensions(1200.0f, 700.0f);
+	word->setDimensions(1250.0f, 700.0f);
 	v_layout->addChild(word);
 
 }
@@ -484,7 +486,7 @@ void HelpScene::Page8(Layout * v_layout)
 	Label *word;
 	if (language_flag)
 	{
-		word = Label::create("Also turned, also turned", "Arial", 40);
+		word = Label::create("Turn over again? Again?", "Arial", 40);
 	}
 	else
 	{
@@ -522,7 +524,7 @@ void HelpScene::Page10(Layout * v_layout)
 	Label *word;
 	if (language_flag)
 	{
-		word = Label::create("You see this, you must want to give me an excellent", "Arial", 40);
+		word = Label::create("Oh! You have been here, you must want to give me an A", "Arial", 40);
 	}
 	else
 	{

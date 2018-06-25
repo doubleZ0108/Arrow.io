@@ -105,7 +105,7 @@ void ExpProgress::ButtonAppear()
 	choice1 = Button::create(StringUtils::format("Player/skill/choice%d.png", c1));
 	choice1->setPosition(ccp(420, 120));
 	choice1->setScale(0.8);
-	choiceback1->setPosition(ccp(420, 120));
+	choiceback1->setPosition(ccp(420.6, 107));
 	choiceback1->setScale(0.78);
 	choice1->addTouchEventListener([&](Ref* sender, Widget::TouchEventType type)
 	{
@@ -121,7 +121,7 @@ void ExpProgress::ButtonAppear()
 	choice2 = Button::create(StringUtils::format("Player/skill/choice%d.png", c2));
 	choice2->setPosition(ccp(640, 120));
 	choice2->setScale(0.8);
-	choiceback2->setPosition(ccp(640, 120));
+	choiceback2->setPosition(ccp(640.6, 107));
 	choiceback2->setScale(0.78);
 	choice2->addTouchEventListener([&](Ref* sender, Widget::TouchEventType type)
 	{
@@ -137,7 +137,7 @@ void ExpProgress::ButtonAppear()
 	choice3 = Button::create(StringUtils::format("Player/skill/choice%d.png", c3));
 	choice3->setPosition(ccp(860, 120));
 	choice3->setScale(0.8);
-	choiceback3->setPosition(ccp(860, 120));
+	choiceback3->setPosition(ccp(860.6, 107));
 	choiceback3->setScale(0.78);
 	choice3->addTouchEventListener([&](Ref* sender, Widget::TouchEventType type)
 	{

@@ -247,6 +247,12 @@ private:
 	Label *lv;
 
 	int live = 0;
+
+	///////////////////////////////
+	EventListenerKeyboard *keylistener;
+	EventListenerMouse *mouselistener;
+	EventDispatcher *eventDispatcher1;
+	EventDispatcher *eventDispatcher2;
 };
 
 #endif //_GAMEPLAYING_H_

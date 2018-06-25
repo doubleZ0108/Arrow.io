@@ -12,15 +12,15 @@
 
 USING_NS_CC;
 
-std::vector<HP_MESS> GamePlaying::hp_auto_arise;   //ç”¨äºå‚¨å­˜éšæœºå®‰ç½®çš„å›è¡€é“å…·çš„ç›¸å…³ä¿¡æ¯
-std::vector<EXP_MESS> GamePlaying::exp_auto_arise;   //ç”¨äºå‚¨å­˜éšæœºå®‰ç½®çš„ç»éªŒé“å…·çš„ç›¸å…³ä¿¡æ¯
+std::vector<HP_MESS> GamePlaying::hp_auto_arise;   //ÓÃÓÚ´¢´æËæ»ú°²ÖÃµÄ»ØÑªµÀ¾ßµÄÏà¹ØĞÅÏ¢
+std::vector<EXP_MESS> GamePlaying::exp_auto_arise;   //ÓÃÓÚ´¢´æËæ»ú°²ÖÃµÄ¾­ÑéµÀ¾ßµÄÏà¹ØĞÅÏ¢
 
 extern bool language_flag;  //true->English   false->Chinese
-extern int is_paused;       //å…³äºis_pausedçš„å…·ä½“è§£é‡Šè¯·è§ "HelloWorldScene.h"
+extern int is_paused;       //¹ØÓÚis_pausedµÄ¾ßÌå½âÊÍÇë¼û "HelloWorldScene.h"
 extern char *FontToUTF8(const char* font);
 
-bool smallmap_switch = true;       //å°åœ°å›¾æ§åˆ¶å¼€å…³,true->æ‰“å¼€å°åœ°å›¾,false->å…³ä¸Šå°åœ°å›¾
-								   //æ¯æ¬¡æ‰“å¼€å°åœ°å›¾çš„æ—¶å€™å°äººç‰©çš„ä½ç½®è¦éšm_playeråšç›¸åº”çš„è°ƒæ•´
+bool smallmap_switch = true;       //Ğ¡µØÍ¼¿ØÖÆ¿ª¹Ø,true->´ò¿ªĞ¡µØÍ¼,false->¹ØÉÏĞ¡µØÍ¼
+								   //Ã¿´Î´ò¿ªĞ¡µØÍ¼µÄÊ±ºòĞ¡ÈËÎïµÄÎ»ÖÃÒªËæm_player×öÏàÓ¦µÄµ÷Õû
 bool music_switch = true;
 bool mode_switch = true;
 bool network_switch = false;
@@ -32,7 +32,7 @@ int viewsize = 1;
 
 std::vector<int> numbers(0);
 
-bool isowner = true;  //æˆ¿ä¸»ï¼ˆäº§ç”Ÿè¡€åŒ…çš„äººåˆ¤å®š
+bool isowner = true;  //·¿Ö÷£¨²úÉúÑª°üµÄÈËÅĞ¶¨
 bool isconnect = false;
 
 std::string hero_nature;
@@ -90,7 +90,7 @@ void GamePlaying::MapPrinter()
 {
 	size = Director::getInstance()->getVisibleSize();
 
-	//æ‰“å¼€ç¬¬ä¸€å¼ ç“¦ç‰‡åœ°å›¾
+	//´ò¿ªµÚÒ»ÕÅÍßÆ¬µØÍ¼
 	if (1 == which_map)
 	{
 		tiledmap = TMXTiledMap::create("Player/Tiled Map/ArcherBattle_TiledMap_1.tmx");
@@ -106,11 +106,11 @@ void GamePlaying::MapPrinter()
 
 	this->addChild(tiledmap);
 	//////////////////////////////////////////
-	mapSize = tiledmap->getMapSize();      // è·å–ä»¥tilesæ•°é‡ä¸ºå•ä½çš„åœ°å›¾å°ºå¯¸
-	tileSize = tiledmap->getTileSize();    // è·å–ä»¥åƒç´ ç‚¹ä¸ºå•ä½çš„tileå°ºå¯¸å±æ€§
+	mapSize = tiledmap->getMapSize();      // »ñÈ¡ÒÔtilesÊıÁ¿Îªµ¥Î»µÄµØÍ¼³ß´ç
+	tileSize = tiledmap->getTileSize();    // »ñÈ¡ÒÔÏñËØµãÎªµ¥Î»µÄtile³ß´çÊôĞÔ
 										   //log("tileSize %f %f", tileSize.width, tileSize.height);
 										   /////////////////////////////////////////
-										   //å°†metaè®¾ç½®ä¸ºå±æ€§å±‚
+										   //½«metaÉèÖÃÎªÊôĞÔ²ã
 	meta = tiledmap->layerNamed("meta");
 	meta->setVisible(false);
 }
@@ -124,7 +124,7 @@ void GamePlaying::ScenePrinter()
 	//////////////////////////////////////////////
 
 	////////////////////////////////////////////////////
-	//æ­¦å™¨
+	//ÎäÆ÷
 	//auto weaponMenuItem = MenuItemToggle::createWithCallback(
 	//	CC_CALLBACK_1(GamePlaying::Weapon_change, this),
 	//	MenuItemFont::create("weapon"),
@@ -140,7 +140,7 @@ void GamePlaying::ScenePrinter()
 	//this->addChild(weaponmn, 1);
 
 	//////////////////////////////////////////////////////
-	////åœ°å›¾ç¼©æ”¾
+	////µØÍ¼Ëõ·Å
 	/*auto tlmapMenuItem = MenuItemToggle::createWithCallback(
 	CC_CALLBACK_1(GamePlaying::TLmap_change, this),
 	MenuItemFont::create("normal"),
@@ -154,7 +154,7 @@ void GamePlaying::ScenePrinter()
 	this->addChild(tlmapmn, 1);*/
 
 	//////////////////////////////////////////////////////
-	////ç©¿å¢™
+	////´©Ç½
 	//auto breakwallMenuItem = MenuItemToggle::createWithCallback(
 	//	CC_CALLBACK_1(GamePlaying::Breakwall_change, this),
 	//	MenuItemFont::create("normal"),
@@ -169,11 +169,11 @@ void GamePlaying::ScenePrinter()
 
 	/*
 	////////////////////////////////////////
-	//starting cortoonæ·¡å…¥æ·¡å‡º
+	//starting cortoonµ­Èëµ­³ö
 	auto *actionFade = CCFadeOut::create(3.0f);
 	auto *actionFadeBack = actionFade->reverse();
 	auto *sequence1 = CCSequence::create(actionFade, actionFadeBack, NULL);
-	//starting cortoon é¢œè‰²å˜åŒ–
+	//starting cortoon ÑÕÉ«±ä»¯
 	auto *actionTint = CCTintBy::create(2, -255, -127, -50);
 	auto *actionTinback = actionTint->reverse();
 	auto *sequence2 = CCSequence::create(actionTint, actionTint, NULL);
@@ -187,7 +187,7 @@ void GamePlaying::NetworkPrinter()//noneed
 	_sioClient = SIOClient::getInstance();
 	_sioClient = SocketIO::connect("http://120.78.208.162:2333", *this);
 
-	//å¢åŠ ç©å®¶æ•°é‡
+	//Ôö¼ÓÍæ¼ÒÊıÁ¿
 	++this->live;
 
 	if (!SIOClient::setconnect(_sioClient, 1))
@@ -289,6 +289,7 @@ void GamePlaying::PlayerPrinter()
 	m_player->x_coord = randx;
 	m_player->y_coord = randy;
 
+	++this->live;
 	m_player->number = which_player;
 	char figure_choose[30];
 	sprintf(figure_choose, "Player/Figure/player%d.png", m_player->number);
@@ -321,7 +322,7 @@ void GamePlaying::PlayerPrinter()
 	plsum.push_back(n_player);
 
 	////////////////////////////////////
-	//è¡€æ¡åˆå§‹åŒ–
+	//ÑªÌõ³õÊ¼»¯
 	m_pProgressView = new ProgressView;
 	m_pProgressView->setPosition(Vec2(m_player->x_coord, m_player->y_coord + 50));
 	m_pProgressView->setScale(2);
@@ -358,7 +359,7 @@ void GamePlaying::SettingPrinter()
 	preturn->setPosition(Vec2(x, y));
 
 	preturn->setScale(1.0f);
-	this->addChild(preturn, 100);   //æŠŠè¿”å›æŒ‰é’®ç½®äº100å±‚ï¼Œé˜²æ­¢é®æŒ¡
+	this->addChild(preturn, 100);   //°Ñ·µ»Ø°´Å¥ÖÃÓÚ100²ã£¬·ÀÖ¹ÕÚµ²
 
 									///////////////////////////////////////////////
 									//add network choice
@@ -388,7 +389,7 @@ void GamePlaying::SettingPrinter()
 	}
 	else
 	{
-		smallmapword = Label::create(FontToUTF8("å…¨å±€åœ°å›¾"),
+		smallmapword = Label::create(FontToUTF8("È«¾ÖµØÍ¼"),
 			"Arial", 40);
 	}
 	x = rect.origin.x + rect.size.width*(33.7f / 40.0f);
@@ -412,7 +413,7 @@ void GamePlaying::SettingPrinter()
 	this->addChild(smallmn, 1);
 
 	/////////////////////////////////////////////////
-	//æ’­æ”¾å’Œæš‚åœæ¸¸æˆéŸ³ä¹
+	//²¥·ÅºÍÔİÍ£ÓÎÏ·ÒôÀÖ
 	Label *musicword;
 	if (language_flag)
 	{
@@ -421,7 +422,7 @@ void GamePlaying::SettingPrinter()
 	}
 	else
 	{
-		musicword = Label::create(FontToUTF8("æ¸¸æˆéŸ³ä¹"),
+		musicword = Label::create(FontToUTF8("ÓÎÏ·ÒôÀÖ"),
 			"Arial", 40);
 	}
 	x = rect.origin.x + rect.size.width*(33.9f / 40.0f);
@@ -445,7 +446,7 @@ void GamePlaying::SettingPrinter()
 	this->addChild(musicmn, 1);
 
 	////////////////////////////////////////////////
-	//åˆ‡æ¢ä¸åŒçš„æ¸¸æˆæ¨¡å¼
+	//ÇĞ»»²»Í¬µÄÓÎÏ·Ä£Ê½
 	Label *modeword;
 	if (language_flag)
 	{
@@ -454,7 +455,7 @@ void GamePlaying::SettingPrinter()
 	}
 	else
 	{
-		modeword = Label::create(FontToUTF8("æ¸¸æˆæ¨¡å¼"),
+		modeword = Label::create(FontToUTF8("ÓÎÏ·Ä£Ê½"),
 			"Arial", 40);
 	}
 	x = rect.origin.x + rect.size.width*(33.9f / 40.0f);
@@ -485,15 +486,15 @@ void GamePlaying::MusicPrinter()
 	if (music_switch)
 	{
 		if (this->getChildByName("MUSIC_OFF"))
-		{//é€»è¾‘é“¾æ˜¯è¿™æ ·çš„,å¦‚æœæœ‰ä¸€ä¸ªåå­—å«åšMUSIC_OFFçš„ç²¾çµäº†
-		 //å°±è¯æ˜å·²ç»ä¸æ˜¯initè°ƒçš„è¿™ä¸ªå‡½æ•°äº†
-		 //é‚£å°±ç»§ç»­æ’­æ”¾åˆšåˆšæš‚åœçš„éŸ³ä¹
+		{//Âß¼­Á´ÊÇÕâÑùµÄ,Èç¹ûÓĞÒ»¸öÃû×Ö½Ğ×öMUSIC_OFFµÄ¾«ÁéÁË
+		 //¾ÍÖ¤Ã÷ÒÑ¾­²»ÊÇinitµ÷µÄÕâ¸öº¯ÊıÁË
+		 //ÄÇ¾Í¼ÌĞø²¥·Å¸Õ¸ÕÔİÍ£µÄÒôÀÖ
 			this->getChildByName("MUSIC_OFF")->removeFromParentAndCleanup(true);
 			CocosDenshion::SimpleAudioEngine::sharedEngine()->resumeBackgroundMusic();
 		}
 		else
 		{
-			//initæ‰ä¼šè°ƒåˆ°è¿™,ä»å¤´æ’­æ”¾éŸ³ä¹
+			//init²Å»áµ÷µ½Õâ,´ÓÍ·²¥·ÅÒôÀÖ
 			CocosDenshion::SimpleAudioEngine::sharedEngine()->playBackgroundMusic("Music/Escape.mp3");
 		}
 
@@ -504,7 +505,7 @@ void GamePlaying::MusicPrinter()
 		}
 		else
 		{
-			OnorOff = Label::create(FontToUTF8("æ’­æ”¾"),
+			OnorOff = Label::create(FontToUTF8("²¥·Å"),
 				"Arial", 30);
 		}
 		OnorOff->setName("MUSIC_ON");
@@ -524,7 +525,7 @@ void GamePlaying::MusicPrinter()
 		}
 		else
 		{
-			OnorOff = Label::create(FontToUTF8("æš‚åœ"),
+			OnorOff = Label::create(FontToUTF8("ÔİÍ£"),
 				"Arial", 30);
 		}
 		OnorOff->setName("MUSIC_OFF");
@@ -544,11 +545,11 @@ void GamePlaying::SmallmapPrinter()
 {
 	Label *OnorOff;
 	float x, y;
-	if (smallmap_switch)        //å¦‚æœè¦æ‰“å¼€å°åœ°å›¾ï¼Œåˆ™é‡æ–°æ„å»ºï¼Œå› ä¸ºæ¯æ¬¡çš„å°äººç‰©ä½ç½®ä¸åŒ
+	if (smallmap_switch)        //Èç¹ûÒª´ò¿ªĞ¡µØÍ¼£¬ÔòÖØĞÂ¹¹½¨£¬ÒòÎªÃ¿´ÎµÄĞ¡ÈËÎïÎ»ÖÃ²»Í¬
 	{
 		////////////////////////////////////////
 		//add a smallmap to draw something and besides the smallmap is also a cover
-		//cccvçš„ç¬¬å››ä¸ªå‚æ•°å–å€¼0~225ï¼Œè¶Šå¤§è¶Šä¸é€æ˜
+		//cccvµÄµÚËÄ¸ö²ÎÊıÈ¡Öµ0~225£¬Ô½´óÔ½²»Í¸Ã÷
 		//m_smallmap = LayerColor::create(ccc4(0, 0, 0, 100), 250, 250);
 		switch (which_map)
 		{
@@ -559,18 +560,18 @@ void GamePlaying::SmallmapPrinter()
 		}
 		m_smallmap->setName("smallmap");
 
-		m_smallmap->setOpacity(220);     //è®¾ç½®å°åœ°å›¾çš„é€æ˜åº¦
+		m_smallmap->setOpacity(220);     //ÉèÖÃĞ¡µØÍ¼µÄÍ¸Ã÷¶È
 										 //m_smallmap->setColor(Color3B(0, 0, 205));
 		m_smallmap->setAnchorPoint(Vec2(0.0f, 0.0f));
 		x = rect.origin.x + rect.size.width*0.0f;
-		y = rect.origin.y + rect.size.height*(2.0f / 3.0f - 0.02f);  //å‡0.02æ˜¯ä¸ºäº†æ¶ˆå»ä¸€ä¸ªæå…¶å°çš„ä½ç½®åå·®
+		y = rect.origin.y + rect.size.height*(2.0f / 3.0f - 0.02f);  //¼õ0.02ÊÇÎªÁËÏûÈ¥Ò»¸ö¼«ÆäĞ¡µÄÎ»ÖÃÆ«²î
 		m_smallmap->setPosition(Vec2(x, y));
 		this->addChild(m_smallmap, 1);
 
 		m_smallplayer = Player::create();
 		m_smallplayer->bindSprite(Sprite::create("Player/Tiled Map/m_smallplayer.png"));
 		m_smallplayer->setPosition(
-			Vec2(m_player->getPositionX()*RETE, m_player->getPositionY()*RETE));
+			Vec2(m_player->x_coord*RETE, m_player->y_coord*RETE));
 		m_smallmap->addChild(m_smallplayer);
 
 		if (n_player->sprite)
@@ -578,7 +579,7 @@ void GamePlaying::SmallmapPrinter()
 			n_smallplayer = Player::create();
 			n_smallplayer->bindSprite(Sprite::create("Player/Tiled Map/n_smallplayer.png"));
 			n_smallplayer->setPosition(
-				Vec2(n_player->getPositionX()*RETE, n_player->getPositionY()*RETE));
+				Vec2(n_player->x_coord*RETE, n_player->y_coord*RETE));
 			m_smallmap->addChild(n_smallplayer);
 		}
 
@@ -594,12 +595,12 @@ void GamePlaying::SmallmapPrinter()
 		}
 		else
 		{
-			OnorOff = Label::create(FontToUTF8("å¼€å¯"),
+			OnorOff = Label::create(FontToUTF8("¿ªÆô"),
 				"Arial", 30);
 		}
 		OnorOff->setName("SMALLMAP_ON");
 	}
-	else      //å¦‚æœè¦å…³ä¸Šå°±ç›´æ¥é”€æ¯ç²¾çµ
+	else      //Èç¹ûÒª¹ØÉÏ¾ÍÖ±½ÓÏú»Ù¾«Áé
 	{
 		if (m_smallmap)
 		{
@@ -617,7 +618,7 @@ void GamePlaying::SmallmapPrinter()
 		}
 		else
 		{
-			OnorOff = Label::create(FontToUTF8("å…³é—­"),
+			OnorOff = Label::create(FontToUTF8("¹Ø±Õ"),
 				"Arial", 30);
 		}
 		OnorOff->setName("SMALLMAP_OFF");
@@ -630,7 +631,7 @@ void GamePlaying::SmallmapPrinter()
 void GamePlaying::Smallmap_Switch(Ref* pSender)
 {
 	smallmap_switch = (smallmap_switch ? false : true);
-	//å°†å¼€ç€çš„å°åœ°å›¾å…³ä¸Šï¼Œå°†å…³ç€çš„å°åœ°å›¾æ‰“å¼€
+	//½«¿ª×ÅµÄĞ¡µØÍ¼¹ØÉÏ£¬½«¹Ø×ÅµÄĞ¡µØÍ¼´ò¿ª
 	SmallmapPrinter();
 }
 
@@ -672,7 +673,6 @@ void GamePlaying::Mode_Switch(Ref * pSender)
 	keys[k_w] = keys[k_a] = keys[k_s] = keys[k_d] = false;
 	touchon = false;
 	ModePrinter();
-	onEnter();
 }
 
 void GamePlaying::Weapon_change(Ref * pSender)
@@ -730,15 +730,15 @@ void GamePlaying::Breakwall_change(Ref * pSender)
 	}
 }
 
-bool GamePlaying::up(bool flag, int ifxie)  //ifxieé»˜è®¤å‚æ•°ä¸ºfalseï¼Œé»˜è®¤æ˜¯ç›´ç€èµ°
+bool GamePlaying::up(bool flag, int ifxie)  //ifxieÄ¬ÈÏ²ÎÊıÎªfalse£¬Ä¬ÈÏÊÇÖ±×Å×ß
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
 	if (y + tileSize.height < MAP_SIZE && (m_player->ifbreakwall ||
 		(isCanReach(x + DIFF, y)
 			&& isCanReach(x - DIFF, y)
-			&& isCanReach(x, y))))   //å¾€ä¸Šçš„åˆ¤æ–­å¤š+1æ¶ˆé™¤å¡å¢™bug
-	{	//å¦‚æœç²¾çµä¸Šé¢é‚£æ ¼ä¸æ˜¯åœ°å›¾çš„ä¸Šè¾¹ç•Œ
-		//ä¹‹æ‰€ä»¥æ˜¯ä¸€æ ¼å¤§å°çš„ä¸€åŠ,æ˜¯å› ä¸ºç²¾çµçš„é”šç‚¹åœ¨ä¸­å¿ƒ,ä¸Šé¢ä¸€ä¸ªçš„ä¸‹è¾¹ç•Œåªéœ€è¦å†åŠ 16
+			&& isCanReach(x, y))))   //ÍùÉÏµÄÅĞ¶Ï¶à+1Ïû³ı¿¨Ç½bug
+	{	//Èç¹û¾«ÁéÉÏÃæÄÇ¸ñ²»ÊÇµØÍ¼µÄÉÏ±ß½ç
+		//Ö®ËùÒÔÊÇÒ»¸ñ´óĞ¡µÄÒ»°ë,ÊÇÒòÎª¾«ÁéµÄÃªµãÔÚÖĞĞÄ,ÉÏÃæÒ»¸öµÄÏÂ±ß½çÖ»ĞèÒªÔÙ¼Ó16
 
 		if (flag)
 		{
@@ -751,8 +751,8 @@ bool GamePlaying::up(bool flag, int ifxie)  //ifxieé»˜è®¤å‚æ•°ä¸ºfalseï¼Œé»˜è®¤
 					&& ((MAP_SIZE*TLMAP_SCALE - y) > size.height / 2))
 				{
 					tiledmap->setPositionY(tiledmap->getPositionY()
-						- m_player->speed);//è°ƒæ•´åœ°å›¾,ä½¿äººç‰©å°½é‡å±…ä¸­
-										   //åœ°å›¾ç§»åŠ¨é€Ÿåº¦ä¸äººç‰©ç§»åŠ¨é€Ÿåº¦ä¿æŒä¸€ç›´ï¼Œè·å¾—æœ€ä½³æ¸¸æˆä½“éªŒï¼Œå°½äº«ä¸æ»‘
+						- m_player->speed);//µ÷ÕûµØÍ¼,Ê¹ÈËÎï¾¡Á¿¾ÓÖĞ
+										   //µØÍ¼ÒÆ¶¯ËÙ¶ÈÓëÈËÎïÒÆ¶¯ËÙ¶È±£³ÖÒ»Ö±£¬»ñµÃ×î¼ÑÓÎÏ·ÌåÑé£¬¾¡ÏíË¿»¬
 					y_move += m_player->speed;
 				}
 			}
@@ -892,9 +892,9 @@ bool GamePlaying::down(bool flag, int ifxie)
 }
 bool GamePlaying::isCanReach(float x, float y)
 {
-	double mapX = x / 32.0;        //å‡å»16æ˜¯ç”±äºäººç‰©çš„é”šç‚¹åœ¨ä¸­å¿ƒ
-	double mapY = MAP_HEIGHT - y / 32.0;   //49ä¸ºTiledé‡Œåœ°å›¾çš„åæ ‡æœ€å¤§å€¼
-	int tileGid = meta->tileGIDAt(Vec2(mapX, mapY)); //32æ˜¯ä¸€æ ¼çš„å¤§å°
+	double mapX = x / 32.0;        //¼õÈ¥16ÊÇÓÉÓÚÈËÎïµÄÃªµãÔÚÖĞĞÄ
+	double mapY = MAP_HEIGHT - y / 32.0;   //49ÎªTiledÀïµØÍ¼µÄ×ø±ê×î´óÖµ
+	int tileGid = meta->tileGIDAt(Vec2(mapX, mapY)); //32ÊÇÒ»¸ñµÄ´óĞ¡
 
 													 //log("gid %d", tileGid);
 	if (tileGid != GAP_GID)
@@ -920,7 +920,7 @@ void GamePlaying::HPjudge(const Vec2 &pos)
 			_sioClient->emit("red hp", "red hp");
 		}
 
-		if (m_player->magnet)   //å¦‚æœå¼€å¯ç£é“æŠ€èƒ½ï¼Œè¸©åˆ°é“å…·æ’­åŠ¨ç”»
+		if (m_player->magnet)   //Èç¹û¿ªÆô´ÅÌú¼¼ÄÜ£¬²Èµ½µÀ¾ß²¥¶¯»­
 		{
 			auto mag = Sprite::create("Player/Figure/magnet_hp.png");
 			mag->setScale(0.5f);
@@ -938,8 +938,8 @@ void GamePlaying::HPjudge(const Vec2 &pos)
 
 		meta->setTileGID(NOR_GID, Vec2(static_cast<int>(pos.x), static_cast<int>(pos.y)));
 		int judgex = static_cast<int>(pos.x), judgey = static_cast<int>(pos.y);
-		//èŒƒå›´forçš„ä½¿ç”¨ï¼Œç”¨äºæ‰¾åˆ°å½“å‰æ¥è§¦çš„å›è¡€é“å…·
-		//å°†å¯¹åº”çš„ç²¾çµåˆ é™¤ï¼Œå¹¶åˆ é™¤vectoré‡Œç›¸åº”çš„å…ƒç´ 
+		//·¶Î§forµÄÊ¹ÓÃ£¬ÓÃÓÚÕÒµ½µ±Ç°½Ó´¥µÄ»ØÑªµÀ¾ß
+		//½«¶ÔÓ¦µÄ¾«ÁéÉ¾³ı£¬²¢É¾³ıvectorÀïÏàÓ¦µÄÔªËØ
 		for (auto &hp_now : hp_auto_arise)
 		{
 			if (judgex == hp_now.savex && judgey == hp_now.savey)
@@ -971,11 +971,11 @@ void GamePlaying::HP_grow(float dt)
 	{
 	this->unschedule(schedule_selector(StartScene::HP_grow));
 	}*/
-	//é™å®šåœºä¸Šå›è¡€é“å…·çš„æ•°é‡ï¼Œè¶…è¿‡25ä¸ªçš„æ—¶å€™å°±å…ˆåœæ­¢äº§ç”Ÿ
+	//ÏŞ¶¨³¡ÉÏ»ØÑªµÀ¾ßµÄÊıÁ¿£¬³¬¹ı25¸öµÄÊ±ºò¾ÍÏÈÍ£Ö¹²úÉú
 	if (hp_auto_arise.size() > 25) { return; }
 	int metax, metay;
 	srand(time(NULL));
-	//ä¸ºäº†è®©å›è¡€é“å…·äº§ç”Ÿçš„æ›´ç¨€ç–ï¼ˆå…¶å®å¹¶æ²¡æœ‰ä»€ä¹ˆå·®2333333                 
+	//ÎªÁËÈÃ»ØÑªµÀ¾ß²úÉúµÄ¸üÏ¡Êè£¨ÆäÊµ²¢Ã»ÓĞÊ²Ã´²î2333333                 
 	metax = ((rand() % MAP_WIDTH)*(rand() % MAP_WIDTH)) % MAP_WIDTH;
 	metay = ((rand() % MAP_HEIGHT)*(rand() % MAP_HEIGHT)) % MAP_HEIGHT;
 
@@ -984,7 +984,7 @@ void GamePlaying::HP_grow(float dt)
 	{
 		meta->setTileGID(HP_GID, Vec2(1.0*metax, 1.0*metay));
 
-		//ç±»çš„æ„é€ å‡½æ•°ï¼Œæ·»åŠ ä¸€ä¸ªå›è¡€é“å…·
+		//ÀàµÄ¹¹Ôìº¯Êı£¬Ìí¼ÓÒ»¸ö»ØÑªµÀ¾ß
 		hp_auto_arise.push_back(HP_MESS(Sprite::create("Player/Tiled Map/HP_tiledmap.png"), metax, metay));
 
 		int now_vec_maxindex = hp_auto_arise.size() - 1;
@@ -1013,7 +1013,7 @@ void GamePlaying::EXPjudge(const Vec2 & pos)
 		//CCLOG("hero is in EXP_tiledmap");
 		if (m_player->expraise(2)) { levelup(); }
 
-		if (m_player->magnet)   //å¦‚æœå¼€å¯ç£é“æŠ€èƒ½ï¼Œè¸©åˆ°é“å…·æ’­åŠ¨ç”»
+		if (m_player->magnet)   //Èç¹û¿ªÆô´ÅÌú¼¼ÄÜ£¬²Èµ½µÀ¾ß²¥¶¯»­
 		{
 			auto mag2 = Sprite::create("Player/Figure/magnet_exp.png");
 			mag2->setScale(0.5f);
@@ -1062,7 +1062,7 @@ void GamePlaying::EXP_grow(float dt)
 	{
 	this->unschedule(schedule_selector(StartScene::HP_grow));
 	}*/
-	//é™å®šåœºä¸Šå›è¡€é“å…·çš„æ•°é‡ï¼Œè¶…è¿‡100ä¸ªçš„æ—¶å€™å°±å…ˆåœæ­¢äº§ç”Ÿ
+	//ÏŞ¶¨³¡ÉÏ»ØÑªµÀ¾ßµÄÊıÁ¿£¬³¬¹ı100¸öµÄÊ±ºò¾ÍÏÈÍ£Ö¹²úÉú
 	if (exp_auto_arise.size() > 100) { return; }
 	int metax, metay;
 	srand(time(NULL));
@@ -1074,7 +1074,7 @@ void GamePlaying::EXP_grow(float dt)
 	{
 		meta->setTileGID(EXP_GID, Vec2(1.0*metax, 1.0*metay));
 
-		//ç±»çš„æ„é€ å‡½æ•°ï¼Œæ·»åŠ ä¸€ä¸ªå›è¡€é“å…·
+		//ÀàµÄ¹¹Ôìº¯Êı£¬Ìí¼ÓÒ»¸ö»ØÑªµÀ¾ß
 		exp_auto_arise.push_back(EXP_MESS(Sprite::create("Player/Tiled Map/EXP_tiledmap.png"), metax, metay));
 
 		int now_vec_maxindex = exp_auto_arise.size() - 1;
@@ -1208,10 +1208,10 @@ void GamePlaying::DeCode_for_Enemy(const std::string & buf,
 	std::string data(buf);
 	data.erase(data.begin(), data.begin() + 1);
 	data.erase(data.end() - 1, data.end());
-	//è§£ç which n_player
+	//½âÂëwhich n_player
 	v_player = data[0] - '0';
 	data.erase(data.begin(), data.begin() + 2);
-	//è§£ç n_playerçš„xåæ ‡å’Œyåæ ‡
+	//½âÂën_playerµÄx×ø±êºÍy×ø±ê
 	v_posx = v_posy = 0;
 	for (i = 0; data[i] != ' '; ++i)
 	{
@@ -1225,7 +1225,7 @@ void GamePlaying::DeCode_for_Enemy(const std::string & buf,
 		v_posy += data[i] - '0';
 	}
 	data.erase(data.begin(), data.begin() + i + 1);
-	//è§£ç n_playerçš„å½“å‰hpå’Œhpä¸Šé™
+	//½âÂën_playerµÄµ±Ç°hpºÍhpÉÏÏŞ
 	v_hp = v_hplimit = 0;
 	for (i = 0; data[i] != ' '; ++i)
 	{
@@ -1239,7 +1239,7 @@ void GamePlaying::DeCode_for_Enemy(const std::string & buf,
 		v_hplimit += data[i] - '0';
 	}
 	data.erase(data.begin(), data.begin() + i + 1);
-	//è§£ç n_player æ­¦å™¨
+	//½âÂën_player ÎäÆ÷
 	v_weapon = data[0] - '0';
 }
 void GamePlaying::DeCode_for_attack(const std::string & buf, int & v_weapon,
@@ -1275,7 +1275,7 @@ void GamePlaying::DeCode_for_heronature(const std::string & buf,
 	data.erase(data.begin(), data.begin() + 1);
 	data.erase(data.end() - 1, data.end());
 	int i;
-	//é€Ÿåº¦f
+	//ËÙ¶Èf
 	v_speed = 0.0;
 	for (i = 0; data[i] != ' '; ++i)
 	{
@@ -1284,7 +1284,7 @@ void GamePlaying::DeCode_for_heronature(const std::string & buf,
 	}
 	v_speed /= 10.0;
 	data.erase(data.begin(), data.begin() + i + 1);
-	//å½“å‰è¡€é‡f
+	//µ±Ç°ÑªÁ¿f
 	v_p_hp = 0.0;
 	for (i = 0; data[i] != ' '; ++i)
 	{
@@ -1293,7 +1293,7 @@ void GamePlaying::DeCode_for_heronature(const std::string & buf,
 	}
 	v_p_hp /= 10.0;
 	data.erase(data.begin(), data.begin() + i + 1);
-	//è¡€é‡ä¸Šé™
+	//ÑªÁ¿ÉÏÏŞ
 	v_hpLimit = 0;
 	for (i = 0; data[i] != ' '; ++i)
 	{
@@ -1301,7 +1301,7 @@ void GamePlaying::DeCode_for_heronature(const std::string & buf,
 		v_hpLimit += data[i] - '0';
 	}
 	data.erase(data.begin(), data.begin() + i + 1);
-	//æ”»å‡»åŠ›f
+	//¹¥»÷Á¦f
 	v_atkpower = 0.0;
 	for (i = 0; data[i] != ' '; ++i)
 	{
@@ -1310,7 +1310,7 @@ void GamePlaying::DeCode_for_heronature(const std::string & buf,
 	}
 	v_atkpower /= 10.0;
 	data.erase(data.begin(), data.begin() + i + 1);
-	//æ”»å‡»èŒƒå›´f
+	//¹¥»÷·¶Î§f
 	v_atkrange = 0.0;
 	for (i = 0; data[i] != ' '; ++i)
 	{
@@ -1319,7 +1319,7 @@ void GamePlaying::DeCode_for_heronature(const std::string & buf,
 	}
 	v_atkrange /= 10.0;
 	data.erase(data.begin(), data.begin() + i + 1);
-	//é˜²å¾¡åŠ›f
+	//·ÀÓùÁ¦f
 	v_defpower = 0.0;
 	for (i = 0; data[i] != ' '; ++i)
 	{
@@ -1328,7 +1328,7 @@ void GamePlaying::DeCode_for_heronature(const std::string & buf,
 	}
 	v_defpower /= 10.0;
 	data.erase(data.begin(), data.begin() + i + 1);
-	//å‰
+	//Ç°
 	v_front = 0;
 	for (i = 0; data[i] != ' '; ++i)
 	{
@@ -1336,7 +1336,7 @@ void GamePlaying::DeCode_for_heronature(const std::string & buf,
 		v_front += data[i] - '0';
 	}
 	data.erase(data.begin(), data.begin() + i + 1);
-	//å·¦
+	//×ó
 	v_leftside = 0;
 	for (i = 0; data[i] != ' '; ++i)
 	{
@@ -1344,7 +1344,7 @@ void GamePlaying::DeCode_for_heronature(const std::string & buf,
 		v_leftside += data[i] - '0';
 	}
 	data.erase(data.begin(), data.begin() + i + 1);
-	//å³
+	//ÓÒ
 	v_rightside = 0;
 	for (i = 0; data[i] != ' '; ++i)
 	{
@@ -1352,7 +1352,7 @@ void GamePlaying::DeCode_for_heronature(const std::string & buf,
 		v_rightside += data[i] - '0';
 	}
 	data.erase(data.begin(), data.begin() + i + 1);
-	//å
+	//ºó
 	v_back = 0;
 	for (i = 0; data[i] != ' '; ++i)
 	{
@@ -1360,7 +1360,7 @@ void GamePlaying::DeCode_for_heronature(const std::string & buf,
 		v_back += data[i] - '0';
 	}
 	data.erase(data.begin(), data.begin() + i + 1);
-	//ç©¿å¢™åˆ¤å®šbool
+	//´©Ç½ÅĞ¶¨bool
 	v_ifcanbreakwall = false;
 	for (i = 0; data[i] != ' '; ++i)
 	{
@@ -1449,6 +1449,12 @@ void GamePlaying::restart_n(SIOClient * client, const std::string & data)
 	DeCode_for_restart(data, restartx, restarty);
 
 	m_player->die(restartx, restarty);
+
+	if (this->getChildByName("smallmap"))
+	{
+		this->getChildByName("smallmap")->removeFromParentAndCleanup(true);
+		SmallmapPrinter();
+	}
 }
 void GamePlaying::redhp_n(SIOClient * client, const std::string & data)
 {
@@ -1463,7 +1469,7 @@ void GamePlaying::HP_recieve(SIOClient * client, const std::string & data)
 	int gid = meta->getTileGIDAt(Vec2(1.0*metax, 1.0*metay));
 	meta->setTileGID(HP_GID, Vec2(1.0*metax, 1.0*metay));
 
-	//ç±»çš„æ„é€ å‡½æ•°ï¼Œæ·»åŠ ä¸€ä¸ªå›è¡€é“å…·
+	//ÀàµÄ¹¹Ôìº¯Êı£¬Ìí¼ÓÒ»¸ö»ØÑªµÀ¾ß
 	hp_auto_arise.push_back(HP_MESS(Sprite::create("Player/Tiled Map/HP_tiledmap.png"), metax, metay));
 
 	int now_vec_maxindex = hp_auto_arise.size() - 1;
@@ -1483,7 +1489,7 @@ void GamePlaying::EXP_recieve(SIOClient * client, const std::string & data)
 	int gid = meta->getTileGIDAt(Vec2(1.0*metax, 1.0*metay));
 	meta->setTileGID(EXP_GID, Vec2(1.0*metax, 1.0*metay));
 
-	//ç±»çš„æ„é€ å‡½æ•°ï¼Œæ·»åŠ ä¸€ä¸ªå›è¡€é“å…·
+	//ÀàµÄ¹¹Ôìº¯Êı£¬Ìí¼ÓÒ»¸ö»ØÑªµÀ¾ß
 	exp_auto_arise.push_back(EXP_MESS(Sprite::create("Player/Tiled Map/EXP_tiledmap.png"), metax, metay));
 
 	int now_vec_maxindex = exp_auto_arise.size() - 1;
@@ -1562,10 +1568,10 @@ void GamePlaying::onEnter()
 {
 	Layer::onEnter();
 
-	auto keylistener = EventListenerKeyboard::create();
-	auto mouselistener = EventListenerMouse::create();
+	keylistener = EventListenerKeyboard::create();
+	mouselistener = EventListenerMouse::create();
 
-	//é”®ç›˜ç›‘å¬å™¨ï¼Œç”¨äºäººç‰©ç§»åŠ¨
+	//¼üÅÌ¼àÌıÆ÷£¬ÓÃÓÚÈËÎïÒÆ¶¯
 	keylistener->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event *event)
 	{
 		if (waytorun)
@@ -1618,10 +1624,10 @@ void GamePlaying::onEnter()
 		}
 	};
 
-	EventDispatcher *eventDispatcher1 = Director::getInstance()->getEventDispatcher();
+	eventDispatcher1 = Director::getInstance()->getEventDispatcher();
 	eventDispatcher1->addEventListenerWithSceneGraphPriority(keylistener, this);
 
-	EventDispatcher *eventDispatcher2 = Director::getInstance()->getEventDispatcher();
+	eventDispatcher2 = Director::getInstance()->getEventDispatcher();
 	eventDispatcher2->addEventListenerWithSceneGraphPriority(mouselistener, this);
 
 }
@@ -1640,7 +1646,7 @@ void GamePlaying::update(float delta)
 	m_player->x_coord = x; m_player->y_coord = y;
 	//CCLOG("x=%f , y=%f", x, y);
 	/////////////////////////////////////////
-	//è¡€æ¡ä½ç½®&é•¿åº¦è®¾å®š
+	//ÑªÌõÎ»ÖÃ&³¤¶ÈÉè¶¨
 	m_pProgressView->setCurrentProgress(m_player->p_hp / m_player->hpLimit);
 	m_pProgressView->setPosition(Vec2(m_player->x_coord, m_player->y_coord + 50));
 	n_pProgressView->setCurrentProgress(n_player->p_hp / n_player->hpLimit);
@@ -1681,7 +1687,7 @@ void GamePlaying::update(float delta)
 	}
 
 
-	//äººç‰©æ£€æµ‹
+	//ÈËÎï¼ì²â
 	int releft = 0;
 	Player* repl;
 	for (auto pl : plsum)
@@ -1715,17 +1721,18 @@ void GamePlaying::update(float delta)
 			expPro->youwin();
 		else expPro->youlose();
 		live = 0;
+		eventDispatcher1->removeEventListener(keylistener);
+		eventDispatcher2->removeEventListener(mouselistener);
 	}
-
-	if (keys[k_w] || keys[k_a] || keys[k_s] || keys[k_d])//åˆ†åˆ«æ˜¯wasdï¼Œå‚è§#define
+	if (keys[k_w] || keys[k_a] || keys[k_s] || keys[k_d])//·Ö±ğÊÇwasd£¬²Î¼û#define
 	{
-		//å¦‚æœåŒæ—¶æŒ‰äº†wå’Œdï¼Œé¦–å…ˆæ£€æµ‹æ˜¯å¦å¯ä»¥å¾€ä¸Šå¹¶ä¸”å¯ä»¥å¾€å³
-		//æ–¹æ³•æ˜¯å…ˆå°†åˆ†æ–¹å‘åˆ¤æ–­å‡½æ•°çš„å‚æ•°ä¼ é€’ä¸ºfalse
-		//è¿™æ ·åªä¼šæ£€æµ‹æ˜¯å¦å¯ä»¥èµ°,ä¸ä¼šå®é™…è°ƒrunEventå‡½æ•°
-		if (keys[k_w] && keys[k_d])  //å¦‚æœåŒæ—¶æŒ‰äº†wå’Œd
+		//Èç¹ûÍ¬Ê±°´ÁËwºÍd£¬Ê×ÏÈ¼ì²âÊÇ·ñ¿ÉÒÔÍùÉÏ²¢ÇÒ¿ÉÒÔÍùÓÒ
+		//·½·¨ÊÇÏÈ½«·Ö·½ÏòÅĞ¶Ïº¯ÊıµÄ²ÎÊı´«µİÎªfalse
+		//ÕâÑùÖ»»á¼ì²âÊÇ·ñ¿ÉÒÔ×ß,²»»áÊµ¼Êµ÷runEventº¯Êı
+		if (keys[k_w] && keys[k_d])  //Èç¹ûÍ¬Ê±°´ÁËwºÍd
 		{
 			bool flagup = up(false), flagright = right(false);
-			if (flagup && flagright)			//å¦‚æœå¾€ä¸Šå’Œå¾€å³éƒ½å¯ä»¥èµ°
+			if (flagup && flagright)			//Èç¹ûÍùÉÏºÍÍùÓÒ¶¼¿ÉÒÔ×ß
 			{
 				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "wd");
@@ -1733,13 +1740,13 @@ void GamePlaying::update(float delta)
 					&& ((MAP_SIZE - x) > size.width / 2))
 				{
 					up(true, 1);
-				}           //è™½ç„¶è°ƒç”¨çš„æ˜¯up(true)ä½†æ˜¯å®é™…runEventl()é‡Œèµ°çš„æ–¹å‘è¿˜æ˜¯å³ä¸Šçš„
-							//ä»…ä»…è°ƒupæ–¹å‘çš„ç§»åŠ¨å‡½æ•°è¿˜ä¸å¤Ÿç”¨,è¿˜éœ€è¦é€šè¿‡è°ƒç”¨right(false)æ¥è®©åœ°å›¾èƒ½åŒæ­¥çš„ç§»åŠ¨
+				}           //ËäÈ»µ÷ÓÃµÄÊÇup(true)µ«ÊÇÊµ¼ÊrunEventl()Àï×ßµÄ·½Ïò»¹ÊÇÓÒÉÏµÄ
+							//½ö½öµ÷up·½ÏòµÄÒÆ¶¯º¯Êı»¹²»¹»ÓÃ,»¹ĞèÒªÍ¨¹ıµ÷ÓÃright(false)À´ÈÃµØÍ¼ÄÜÍ¬²½µÄÒÆ¶¯
 				else { up(true); }
 			}
-			else if (flagup && !flagright)  //å¦‚æœåªæ˜¯å¾€ä¸Šå¯ä»¥èµ°ï¼Œé‚£è¡¨ç°çš„æ•ˆæœå°±æ˜¯æ²¿ç€å¢™å¾€ä¸Šè·‘
+			else if (flagup && !flagright)  //Èç¹ûÖ»ÊÇÍùÉÏ¿ÉÒÔ×ß£¬ÄÇ±íÏÖµÄĞ§¹û¾ÍÊÇÑØ×ÅÇ½ÍùÉÏÅÜ
 			{
-				keys[k_d] = false;         //æŠŠå³æ–¹å‘çš„é”®ç›˜ç›‘å¬å…³æ‰ï¼Œè¡¨ç°ä¸ºç›¸å½“äºåªæŒ‰äº†w
+				keys[k_d] = false;         //°ÑÓÒ·½ÏòµÄ¼üÅÌ¼àÌı¹Øµô£¬±íÏÖÎªÏàµ±ÓÚÖ»°´ÁËw
 				if (_sioClient && isconnect)
 					_sioClient->emit("n_player keys", "w");
 				up(true);
@@ -1924,7 +1931,7 @@ void GamePlaying::update(float delta)
 		touchon = false;
 	}
 	else touchon = false;
-	//é¼ æ ‡ç‚¹å‡»äº‹ä»¶ï¼Œé€šè¿‡å‰é¢è¿™å‡ è¡Œæ“ä½œå¯ä»¥ä½¿å•å‡»ä¸€æ¬¡æ—¶ä»…æ”»å‡»ä¸€æ¬¡ï¼Œbugå·²ä¿®å¤
+	//Êó±êµã»÷ÊÂ¼ş£¬Í¨¹ıÇ°ÃæÕâ¼¸ĞĞ²Ù×÷¿ÉÒÔÊ¹µ¥»÷Ò»´ÎÊ±½ö¹¥»÷Ò»´Î£¬bugÒÑĞŞ¸´
 
 	std::vector<BulletBase*>::iterator it;
 	for (it = bubsum.begin(); it != bubsum.end();)
@@ -1935,75 +1942,85 @@ void GamePlaying::update(float delta)
 		}
 		else it++;
 	}
-	for (auto &bub : bubsum)
+	////////////////////////////////////
+	for (auto bub : bubsum)
 	{
-		if (!m_player->ifcan_breakwall)  //æ²¡æœ‰ç©¿å¢™é“å…·ï¼Œåˆ™æ£€æµ‹å­å¼¹å’Œå¢™å£ç¢°æ’
+		if (!bub->comefrom->ifcan_breakwall)  //Ã»ÓĞ´©Ç½µÀ¾ß£¬Ôò¼ì²â×Óµ¯ºÍÇ½±ÚÅö×²
 		{
 			if (!isCanReach(bub->point.x, bub->point.y))
 			{
 				bub->hide();
 			}
 		}
-
-		for (auto bub : bubsum)
+	}
+	for (auto bub : bubsum)
+	{
+		for (auto pl : plsum)
 		{
-			for (auto pl : plsum)
-			{
-				int a = bub->collidePlayer(pl);
+			int a = bub->collidePlayer(pl);
 
-				if (a && bub->real)
+			if (a && bub->real)
+			{
+				bub->real = false;
+
+				if (_sioClient && isconnect)
 				{
-					///////////////////////
+					char hurtmess[5];
+					sprintf(hurtmess, "%d ", a);
+					_sioClient->emit("hurt", hurtmess);
+				}
+
+				if (pl->hurt(a))
+				{
+					srand(time(NULL));
+					int randx, randy, flag_start;
+					while (1)
+					{
+						flag_start = true;
+						randx = (rand() % MAP_SIZE) / 2 + 80.0f;
+						randy = (rand() % MAP_SIZE) / 2 + 80.0f;
+						for (int xi = -32; xi <= 32; xi += 32)
+						{
+							for (int yj = -32; yj <= 32; yj += 32)
+							{
+								if (!isCanReach(randx + xi, randy + yj))
+								{
+									flag_start = false;
+									break;
+								}
+							}
+							if (!flag_start) { break; }
+						}
+						if (flag_start) { break; }
+					}
+					pl->die(randx, randy);
+
 					if (_sioClient && isconnect)
 					{
-						char hurtmess[5];
-						sprintf(hurtmess, "%d ", a);
-						_sioClient->emit("hurt", hurtmess);
+						char restart_mess[10];
+						sprintf(restart_mess, "%d %d ", randx, randy);
+						_sioClient->emit("restart point", restart_mess);
 					}
-					////////////////////////
-					if (pl->hurt(a))
+
+					//tiledmap->setPositionX(tiledmap->getPositionX() - m_player->x_coord / MAP_SIZE * 310);
+					//x_move += m_player->x_coord / MAP_SIZE * 310;
+					//tiledmap->setPositionY(tiledmap->getPositionY() - m_player->y_coord / MAP_SIZE * 800);
+					//y_move += m_player->y_coord / MAP_SIZE * 800;
+
+					if (this->getChildByName("smallmap"))
 					{
-						srand(time(NULL));
-						int randx, randy, flag_start;
-						while (1)
-						{
-							flag_start = true;
-							randx = (rand() % MAP_SIZE) / 2 + 80.0f;
-							randy = (rand() % MAP_SIZE) / 2 + 80.0f;
-							for (int xi = -32; xi <= 32; xi += 32)
-							{
-								for (int yj = -32; yj <= 32; yj += 32)
-								{
-									if (!isCanReach(randx + xi, randy + yj))
-									{
-										flag_start = false;
-										break;
-									}
-								}
-								if (!flag_start) { break; }
-							}
-							if (flag_start) { break; }
-						}
-						pl->die(randx, randy);
-
-						tiledmap->setPositionX(tiledmap->getPositionX() - m_player->x_coord / MAP_SIZE * 310);
-						x_move += m_player->x_coord / MAP_SIZE * 310;
-						tiledmap->setPositionY(tiledmap->getPositionY() - m_player->y_coord / MAP_SIZE * 800);
-						y_move += m_player->y_coord / MAP_SIZE * 800;
-
-						if (this->getChildByName("smallmap"))
-						{
-							this->getChildByName("smallmap")->removeFromParentAndCleanup(true);
-						}
+						this->getChildByName("smallmap")->removeFromParentAndCleanup(true);
 						SmallmapPrinter();
-
-						if (bub->comefrom->expraise(pl->level * 5))
-							levelup();
 					}
+					
+
+					if (bub->comefrom->expraise(pl->level * 5))
+						levelup();
 				}
 			}
 		}
 	}
+
 
 }
 void GamePlaying::runEvent()
@@ -2038,7 +2055,7 @@ void GamePlaying::attackweapon(Player* player, float num, Point point)
 	if (num == 0)
 		return;
 
-	Point atkpoint = point;//å‘å°„å­å¼¹çš„åæ ‡
+	Point atkpoint = point;//·¢Éä×Óµ¯µÄ×ø±ê
 
 	float xd = (point.y - player->y_coord) / 20;
 	float yd = (point.x - player->x_coord) / 20;
@@ -2177,7 +2194,7 @@ void GamePlaying::attackweapon_nn(Player* player, float num, Point point)
 	if (num == 0)
 		return;
 
-	Point atkpoint = point;//å‘å°„å­å¼¹çš„åæ ‡
+	Point atkpoint = point;//·¢Éä×Óµ¯µÄ×ø±ê
 
 	float xd = (point.y - player->y_coord) / 20;
 	float yd = (point.x - player->x_coord) / 20;
@@ -2329,14 +2346,14 @@ void GamePlaying::menuHelloWorldScene(Ref* pSender)
 	}
 
 
-	//è¿”å›æŒ‰é’®ä¹‹å‰æŠŠä¸€åˆ‡å›åˆ°æœ€åˆçŠ¶æ€
+	//·µ»Ø°´Å¥Ö®Ç°°ÑÒ»ÇĞ»Øµ½×î³õ×´Ì¬
 	smallmap_switch = true;
 	music_switch = true;
 	mode_switch = true;
-	isowner = true; 
+	isowner = true;
 	isconnect = false;
 
-	auto sc = HelloWorld::createScene();        //ç¼©æ”¾äº¤æ›¿çš„åˆ‡æ¢åŠ¨ç”»
+	auto sc = HelloWorld::createScene();        //Ëõ·Å½»ÌæµÄÇĞ»»¶¯»­
 	auto reScene = TransitionShrinkGrow::create(1.0f, sc);
 	Director::getInstance()->replaceScene(reScene);
 }

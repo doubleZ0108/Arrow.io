@@ -1,4 +1,4 @@
-﻿#include "Player.h"
+#include "Player.h"
 #include "GamePlaying.h"
 #define k_w (EventKeyboard::KeyCode)146
 #define k_a (EventKeyboard::KeyCode)124
@@ -87,7 +87,8 @@ void Player::die(int rex, int rey)
 
 	this->sprite->setAnchorPoint(Point(0.5, 0));
 	this->setPosition(x_coord, y_coord - 35);
-
+	x_coord = rex;
+	y_coord = rey;
 	auto * rotateto = RotateTo::create(0.3, 90);
 	CCActionInterval * delaytime = CCDelayTime::create(1);
 
