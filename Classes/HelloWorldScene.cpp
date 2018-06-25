@@ -7,8 +7,8 @@
 USING_NS_CC;
 
 bool language_flag = true;     //true->English   false->Chinese
-int is_paused = reply_music;   //¹ØÓÚis_pausedµÄ¾ßÌå½âÊÍÇë¼û "HelloWorldScene.h"
-double window_size = 1.0f;     //ÓÎÏ·´°¿Ú´óÐ¡
+int is_paused = reply_music;   //å…³äºŽis_pausedçš„å…·ä½“è§£é‡Šè¯·è§ "HelloWorldScene.h"
+double window_size = 1.0f;     //æ¸¸æˆçª—å£å¤§å°
 extern char *FontToUTF8(const char* font);
 //it is define in another .cpp file 
 //and it is used to change character
@@ -126,7 +126,7 @@ void HelloWorld::ScenePrinter()
 	{
 		startbutton = MenuItemImage::create(
 			"Scene/Buttons/starteng_normal.png",
-			"Scene/Buttons/startend_selected.png",
+			"Scene/Buttons/starteng_selected.png",
 			CC_CALLBACK_1(HelloWorld::menuStartButton, this));
 	}
 	else
@@ -227,19 +227,19 @@ void HelloWorld::menuCloseCallback(Ref* pSender)
 void HelloWorld::menuStartButton(Ref* pSender)
 {
 	CocosDenshion::SimpleAudioEngine::sharedEngine()->pauseBackgroundMusic();
-	auto sc = StartScene::createScene();        //Ëæ»úÍßÆ¬µÄÇÐ»»¶¯»­
+	auto sc = StartScene::createScene();        //éšæœºç“¦ç‰‡çš„åˆ‡æ¢åŠ¨ç”»
 	auto reScene = TransitionSplitCols::create(1.0f, sc);
 	Director::getInstance()->replaceScene(reScene);
 }
 void HelloWorld::menuSettingButton(Ref* pSender)
 {
 	auto sc = SettingScene::createScene();
-	auto reScene = TransitionSlideInL::create(1.0f, sc);  //´Ó×ó±ßÍÆÈëµÄ¶¯»­
+	auto reScene = TransitionSlideInL::create(1.0f, sc);  //ä»Žå·¦è¾¹æŽ¨å…¥çš„åŠ¨ç”»
 	Director::getInstance()->replaceScene(reScene);
 }
 void HelloWorld::menuHelpButton(Ref* pSender)
 {
-	auto sc = HelpScene::createScene();        //Íø¸ñ¹ý¶ÉµÄÇÐ»»¶¯»­
+	auto sc = HelpScene::createScene();        //ç½‘æ ¼è¿‡æ¸¡çš„åˆ‡æ¢åŠ¨ç”»
 	auto reScene = TransitionFadeTR::create(1.0f, sc);
 	Director::getInstance()->replaceScene(reScene);
 }
