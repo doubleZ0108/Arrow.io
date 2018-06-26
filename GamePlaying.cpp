@@ -733,6 +733,8 @@ void GamePlaying::Breakwall_change(Ref * pSender)
 bool GamePlaying::up(bool flag, int ifxie)  //ifxie默认参数为false，默认是直着走
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
+	if (x < 0 || y < 0) { return false; }
+
 	if (y + tileSize.height < MAP_SIZE && (m_player->ifbreakwall ||
 		(isCanReach(x + DIFF, y)
 			&& isCanReach(x - DIFF, y)
@@ -793,6 +795,8 @@ bool GamePlaying::up(bool flag, int ifxie)  //ifxie默认参数为false，默认是直着走
 bool GamePlaying::right(bool flag, int ifxie)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
+	if (x < 0 || y < 0) { return false; }
+
 	if (x + tileSize.width < MAP_SIZE && (m_player->ifbreakwall ||
 		(isCanReach(x + 2 * DIFF, y - DIFF)
 			&& isCanReach(x + 2 * DIFF, y - 2 * DIFF))))
@@ -816,6 +820,8 @@ bool GamePlaying::right(bool flag, int ifxie)
 bool GamePlaying::left(bool flag, int ifxie)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
+	if (x < 0 || y < 0) { return false; }
+
 	if (x>tileSize.width && (m_player->ifbreakwall ||
 		(isCanReach(x - 2 * DIFF, y - DIFF)
 			&& isCanReach(x - 2 * DIFF, y - 2 * DIFF))))
@@ -839,7 +845,7 @@ bool GamePlaying::left(bool flag, int ifxie)
 bool GamePlaying::down(bool flag, int ifxie)
 {
 	float x = m_player->getPositionX(), y = m_player->getPositionY();
-
+	if (x < 0 || y < 0) { return false; }
 	if (y>tileSize.height && (m_player->ifbreakwall ||
 		(isCanReach(x, y - 4 * DIFF)
 			&& isCanReach(x - DIFF, y - 4 * DIFF))))
