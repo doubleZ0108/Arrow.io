@@ -280,6 +280,7 @@ void ExpProgress::youwin()
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 2;
 	auto sprite = Sprite::create("Scene/Background/youwin.png");
+	sprite->setScale(2.0f);
 	sprite->setPosition(Vec2(x, y));
 	this->addChild(sprite);
 }
@@ -290,6 +291,7 @@ void ExpProgress::youlose()
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 2;
 	auto sprite = Sprite::create("Scene/Background/youlose.png");
+	sprite->setScale(2.0f);
 	sprite->setPosition(Vec2(x, y));
 	this->addChild(sprite);
 }
