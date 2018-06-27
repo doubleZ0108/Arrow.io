@@ -16,6 +16,8 @@ std::vector<HP_MESS> GamePlaying::hp_auto_arise;   //ÓÃÓÚ´¢´æËæ»ú°²ÖÃµÄ»ØÑªµÀ¾ßµ
 std::vector<EXP_MESS> GamePlaying::exp_auto_arise;   //ÓÃÓÚ´¢´æËæ»ú°²ÖÃµÄ¾­ÑéµÀ¾ßµÄÏà¹ØĞÅÏ¢
 
 extern bool language_flag;  //true->English   false->Chinese
+							//it is define in another .cpp file 
+							//and it is used to change character
 extern int is_paused;       //¹ØÓÚis_pausedµÄ¾ßÌå½âÊÍÇë¼û "HelloWorldScene.h"
 extern char *FontToUTF8(const char* font);
 
@@ -36,9 +38,6 @@ bool isowner = true;  //·¿Ö÷£¨²úÉúÑª°üµÄÈËÅĞ¶¨
 bool isconnect = false;
 
 std::string hero_nature;
-
-//it is define in another .cpp file 
-//and it is used to change character
 
 Scene* GamePlaying::createScene()
 {
@@ -212,6 +211,7 @@ void GamePlaying::NetworkPrinter()//noneed
 		_sioClient->on("hurt", CC_CALLBACK_2(GamePlaying::hurt_n, this));
 		_sioClient->on("restart point", CC_CALLBACK_2(GamePlaying::restart_n, this));
 		_sioClient->on("red hp", CC_CALLBACK_2(GamePlaying::redhp_n, this));
+		_sioClient->on("room crowded", CC_CALLBACK_2(GamePlaying::roomcrowded, this));
 	}
 
 }
@@ -361,8 +361,8 @@ void GamePlaying::SettingPrinter()
 	preturn->setScale(1.0f);
 	this->addChild(preturn, 100);   //°Ñ·µ»Ø°´Å¥ÖÃÓÚ100²ã£¬·ÀÖ¹ÕÚµ²
 
-									///////////////////////////////////////////////
-									//add network choice
+	///////////////////////////////////////////////
+	//add network choice
 	auto networkMenuItem = MenuItemToggle::createWithCallback(
 		CC_CALLBACK_1(GamePlaying::Network_Switch, this),
 		MenuItemImage::create(
@@ -1465,6 +1465,12 @@ void GamePlaying::restart_n(SIOClient * client, const std::string & data)
 void GamePlaying::redhp_n(SIOClient * client, const std::string & data)
 {
 	n_player->hpraise(1);
+}
+void GamePlaying::roomcrowded(SIOClient * client, const std::string & data)
+{
+	_sioClient = nullptr;
+
+	expPro->loselink();
 }
 
 void GamePlaying::HP_recieve(SIOClient * client, const std::string & data)

@@ -55,8 +55,8 @@ USING_NS_CC;
 using namespace cocos2d::network;
 struct HP_MESS
 {
-	Sprite* hp_potion;   //道具药水图片的精灵
-	int savex, savey;  //储存下道具的位置用于检索
+	Sprite* hp_potion;		//道具药水图片的精灵
+	int savex, savey;		//储存下道具的位置用于检索
 	HP_MESS(Sprite* buf, int randx, int randy)
 		:hp_potion(buf), savex(randx), savey(randy) {}
 	//重载==运算符，否则的话调用std::find()函数时会出bug
@@ -72,8 +72,8 @@ struct HP_MESS
 };
 struct EXP_MESS
 {
-	Sprite* exp_potion;   //道具药水图片的精灵
-	int savex, savey;  //储存下道具的位置用于检索
+	Sprite* exp_potion;		//道具药水图片的精灵
+	int savex, savey;		//储存下道具的位置用于检索
 	EXP_MESS(Sprite* buf, int randx, int randy)
 		:exp_potion(buf), savex(randx), savey(randy) {}
 	bool operator==(const EXP_MESS &thv)
@@ -100,18 +100,15 @@ private:
 	Size size;
 	Sprite* sprite;
 
-	Size mapSize;
-	Size tileSize;
-	float x_move = 0.0;   //用于地图调整之后鼠标点击的位置做相应的数值转换
+	Size mapSize;			//地图的尺寸
+	Size tileSize;			//瓦片的尺寸
+	float x_move = 0.0;     //用于地图调整之后鼠标点击的位置做相应的数值转换
 	float y_move = 0.0;
 	TMXTiledMap* tiledmap;
 	TMXLayer* meta;
-	TMXLayer* HP_objects;
 
-	static std::vector<HP_MESS> hp_auto_arise;
-	static std::vector<EXP_MESS> exp_auto_arise;
 public:
-	SIOClient * _sioClient;
+
 	static cocos2d::Scene* createScene();
 
 	virtual bool init();
@@ -143,8 +140,8 @@ public:
 
 	////////////////////////////////////
 	//各个方向的判断和墙壁检测
-	bool up(bool flag, int ifxie = 0); //true代表我需要调用runEvent函数实实在在的移动
-	bool right(bool flag, int ifxie = 0);//false代表我只是想判断这个方向能不能走，其实不想移动
+	bool up(bool flag, int ifxie = 0);			//true代表我需要调用runEvent函数实实在在的移动
+	bool right(bool flag, int ifxie = 0);		//false代表我只是想判断这个方向能不能走，其实不想移动
 	bool left(bool flag, int ifxie = 0);
 	bool down(bool flag, int ifxie = 0);
 	bool isCanReach(float x, float y);
@@ -152,6 +149,9 @@ public:
 
 	/////////////////////////////////////////
 	//道具的随机出现函数 和 判断并吃掉道具的函数
+	static std::vector<HP_MESS> hp_auto_arise;
+	static std::vector<EXP_MESS> exp_auto_arise;
+
 	void HPjudge(const Vec2 &pos);
 	void HP_grow(float dt);
 	void EXPjudge(const Vec2 &pos);
@@ -163,6 +163,7 @@ public:
 
 	//////////////////////////////////////
 	//网络  信息接收  信息解码
+	SIOClient * _sioClient;
 	//socket连接时调用
 	void onConnect(SIOClient* client) {}
 	//收到数据时调用
@@ -202,6 +203,7 @@ public:
 	void hurt_n(SIOClient* client, const std::string& data);
 	void restart_n(SIOClient* client, const std::string& data);
 	void redhp_n(SIOClient* client, const std::string& data);
+	void roomcrowded(SIOClient* client, const std::string& data);
 	/////////////////////////////////////////
 
 	// implement the "static create()" method manually
@@ -217,42 +219,37 @@ public:
 	void levelup();
 	/////////////////////////
 private:
-	Player * m_player = Player::create();		//主角1
-	Player* n_player = Player::create();       //主角2，作为不动靶，闲的话也可
-	std::map<EventKeyboard::KeyCode, bool>keys;//记录按键状态
-	std::map<EventKeyboard::KeyCode, bool>keys1;
-	std::map<EventKeyboard::KeyCode, bool>keys_n;
-	std::map<EventKeyboard::KeyCode, bool>keys1_n;
-	bool touchon = false;//是否单击
-	Point pos;//单击坐标，用于攻击
+	Point pos;					//单击坐标，用于攻击
+	Player * m_player = Player::create();	//主角1
+	Player* n_player = Player::create();       //主角2
 	std::vector<Player*>plsum;
 	std::vector<BulletBase*>bubsum;
-
-	bool waytorun = true;  //true->键盘移动鼠标攻击
-
-	Sprite *m_smallmap;
-	//LayerColor *m_smallmap;
-	Player *m_smallplayer;
-	Player *n_smallplayer;
-
+	bool waytorun = true;	   //true->键盘移动鼠标攻击
 	///////////////////////////////
 	//血条
 	ProgressView *m_pProgressView;
 	ProgressView *n_pProgressView;
-
 	/////////////////////////
+	//经验条
 	ExpProgress *expPro;
 	ExpProgress *expPro_n;
-
 	Label *lv;
-
 	int live = 0;
+
+	Sprite *m_smallmap;
+	Player *m_smallplayer;
+	Player *n_smallplayer;
 
 	///////////////////////////////
 	EventListenerKeyboard *keylistener;
 	EventListenerMouse *mouselistener;
 	EventDispatcher *eventDispatcher1;
 	EventDispatcher *eventDispatcher2;
+	std::map<EventKeyboard::KeyCode, bool>keys;//记录按键状态
+	std::map<EventKeyboard::KeyCode, bool>keys1;
+	std::map<EventKeyboard::KeyCode, bool>keys_n;
+	std::map<EventKeyboard::KeyCode, bool>keys1_n;
+	bool touchon = false;//是否单击
 };
 
 #endif //_GAMEPLAYING_H_

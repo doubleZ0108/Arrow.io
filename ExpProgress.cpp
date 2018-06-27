@@ -1,5 +1,5 @@
 #include "ExpProgress.h"
-
+#include "Start.h"
 #define choicesnum 20
 
 //#define charactersize 20
@@ -312,4 +312,40 @@ void ExpProgress::Breakwall_change(Player*player)
 			player->getChildByName("player buff")->removeFromParentAndCleanup(true);
 		}
 	}
+}
+
+void ExpProgress::loselink()
+{
+	auto background = Sprite::create("Scene/Background/bg.png");
+	auto errorsp = Sprite::create("Scene/Background/err_pic.png");
+	auto confirm = Button::create("Scene/Background/confirm_disable.png",
+		"Scene/Background/confirm_hover.png");
+	float x, y;
+	x = rect.origin.x + rect.size.width / 2;
+	y = rect.origin.y + rect.size.height / 2;
+	background->setPosition(Vec2(x, y));
+	errorsp->setPosition(Vec2(x, y + 40));
+	confirm->setPosition(Vec2(x, y - 50));
+	confirm->addTouchEventListener([&](Ref* sender, Widget::TouchEventType type)
+	{
+		auto sc = StartScene::createScene();        //随机瓦片的切换动画
+		auto reScene = TransitionSplitCols::create(1.0f, sc);
+		Director::getInstance()->replaceScene(reScene);
+	});
+	Label *word;
+	if (language_flag)
+	{
+		word = Label::create("Rome crowded! Please Choose another map!", "Arial", 30);
+	}
+	else
+	{
+		word = Label::create(FontToUTF8("房间拥挤！请选择其他地图!"), "Arial", 30);
+	}
+	word->setColor(Color3B::BLACK);
+	word->setPosition(Vec2(x, y));
+
+	this->addChild(background);
+	this->addChild(errorsp);
+	this->addChild(confirm);
+	this->addChild(word);
 }

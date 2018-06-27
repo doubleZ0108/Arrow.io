@@ -27,6 +27,7 @@ public:
 	void youlose();
 	bool ifchose = 0;
 	void Breakwall_change(Player* player);
+	void loselink();
 private:
 	ProgressView * expProgressView;
 	Label *lv;

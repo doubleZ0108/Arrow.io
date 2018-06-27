@@ -57,8 +57,8 @@ void StartScene::ScenePrinter()
 	///////////////////////////////////
 	//a return button which click to back to HelloWorldScene
 	auto *return_button = MenuItemImage::create(
-		"backtoupper.png",
-		"backtoupper_select.png",
+		"Scene/Buttons/backtoupper.png",
+		"Scene/Buttons/backtoupper_select.png",
 		CC_CALLBACK_1(StartScene::menuHellowWorldScene, this));
 
 	auto *preturn = Menu::create(return_button, NULL);
@@ -73,7 +73,7 @@ void StartScene::ScenePrinter()
 
 	x = rect.origin.x + rect.size.width / 2;
 	y = rect.origin.y + rect.size.height / 2;
-	auto *background = Sprite::create("blue_background.png");
+	auto *background = Sprite::create("Scene/Background/blue_background.png");
 	background->setPosition(Vec2(x, y));
 	this->addChild(background);
 	/////////////////////////////////////
@@ -97,8 +97,8 @@ void StartScene::ScenePrinter()
 
 	//add start button
 	auto toplaybutton = MenuItemImage::create(
-		"ToPlay_normal.png",
-		"ToPlay_select.png",
+		"Scene/Buttons/ToPlay_normal.png",
+		"Scene/Buttons/ToPlay_select.png",
 		CC_CALLBACK_1(StartScene::menuToPlayButton, this));
 
 	auto *toplay = Menu::create(toplaybutton, NULL);
@@ -110,8 +110,8 @@ void StartScene::ScenePrinter()
 	///////////////////////////////////
 	//add some botton to let player to chose maps and players
 	auto mapchosebutton = MenuItemImage::create(
-		"button.png",
-		"button2.png",
+		"Scene/Buttons/button.png",
+		"Scene/Buttons/button2.png",
 		CC_CALLBACK_1(StartScene::menuMapChoseButton, this));
 	mapchosebutton->setScale(1.5f);
 	Label *mapchoseword;
@@ -134,8 +134,8 @@ void StartScene::ScenePrinter()
 	this->addChild(mapchose);
 
 	auto playerchosebutton = MenuItemImage::create(
-		"button.png",
-		"button2.png",
+		"Scene/Buttons/button.png",
+		"Scene/Buttons/button2.png",
 		CC_CALLBACK_1(StartScene::menuPlayerChoseButton, this));
 	playerchosebutton->setScale(1.5f);
 	Label *playerchoseword;
