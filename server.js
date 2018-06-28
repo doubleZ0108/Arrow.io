@@ -22,30 +22,53 @@ io.on('connection', function (socket) {
         console.log('join map');
         console.log(data);
         if (data == '1') {
-            socket.join(data);
-            member_1++;
             id = i_map1;
-            socket.handshake.userAgent = id;
-            io.to(socket.id).emit('IDJudge', id);
-            console.log(socket.handshake.userAgent, 'id', id);
-            //socket.to(data).emit('IDJudge', i_map1++);
-            i_map1++;
+            if (i_map1 < 2) {
+                socket.join(data);
+                member_1++;
+                socket.handshake.userAgent = id;
+                io.to(socket.id).emit('IDJudge', id);
+                console.log(socket.handshake.userAgent, 'id', id);
+                //socket.to(data).emit('IDJudge', i_map1++);
+                i_map1++;
+            }
+            else {
+                io.to(socket.id).emit('room crowded', 'The map is full!');
+                socket.disconnect(true);
+            }
         }
         else if (data == '2') {
-            socket.join(data);
             id = i_map2;
-            member_2++;
-            io.to(socket.id).emit('IDJudge', id);
-            //socket.to(data).emit('IDJudge', i_map2++);
-            i_map2++;
+            if (i_map2 < 2) {
+                socket.join(data);
+                member_2++;
+                socket.handshake.userAgent = id;
+                io.to(socket.id).emit('IDJudge', id);
+                console.log(socket.handshake.userAgent, 'id', id);
+                //socket.to(data).emit('IDJudge', i_map1++);
+                i_map2++;
+            }
+            else {
+                io.to(socket.id).emit('room crowded', 'The map is full!');
+                socket.disconnect(true);
+            }
+
         }
         else if (data == '3') {
-            socket.join(data);
             id = i_map3;
-            member_3++;
-            io.to(socket.id).emit('IDJudge', id);
-            //socket.to(data).emit('IDJudge', i_map3++);
-            i_map3++;
+            if (i_map3 < 2) {
+                socket.join(data);
+                member_3++;
+                socket.handshake.userAgent = id;
+                io.to(socket.id).emit('IDJudge', id);
+                console.log(socket.handshake.userAgent, 'id', id);
+                //socket.to(data).emit('IDJudge', i_map1++);
+                i_map3++;
+            }
+            else {
+                io.to(socket.id).emit('room crowded', 'The map is full!');
+                socket.disconnect(true);
+            }
         }
         socket.on('owner', function (uQuit) {
             socket.broadcast.to(data).emit('owner', "guest");
@@ -103,20 +126,20 @@ io.on('connection', function (socket) {
         });
 
         socket.on('playerchose', function (character) {
-            if (data == '1') {
+            if (data == '1'&&id!=2) {
                 list_enemy1.push(character);
                 for (var i = 0; i < id; i++) {
                     if (list_enemy1[i] != "") io.to(socket.id).emit('enemy', list_enemy1[i]);
                     console.log("enemy get 1");
                 }
             }
-            else if (data == '2') {
+            else if (data == '2'&&id!=2) {
                 list_enemy2.push(character);
                 for (var i = 0; i < id; i++)
                     if (list_enemy2[i] != "") io.to(socket.id).emit('enemy', list_enemy2[i]);
                 console.log("enemy get 2");
             }
-            else if (data == '3') {
+            else if (data == '3'&&id!=2) {
                 list_enemy3.push(character);
                 for (var i = 0; i < id; i++)
                     if (list_enemy3[i] != "") io.to(socket.id).emit('enemy', list_enemy3[i]);
@@ -174,7 +197,7 @@ io.on('connection', function (socket) {
             console.log(socket.handshake.address);
             console.log('lost');
         });
-
+        setTimeout(() => socket.disconnect(true), 1000);
         console.log('mapchose OK');
     });
 });
