@@ -8,6 +8,9 @@
 - 仓库中有完整版 *弓箭手大作战*  Images & Resources等 **使用请注明出处**
 - 任何问题欢迎send email to **doubleZ0108@gmail.com** (有时间都会一一回复的, 要耐心呦~)
 - 一走一过让小哥哥有更多的创作动力 **star一下⑧** 
+- 视频版demo奉上 **©2019 double Z, tongji uni. All right reserved.**
+     > 链接：https://pan.baidu.com/s/1yXHeklQa20usBAYdbD-F2A 
+     > 提取码：t3ca 
 
 ---
 
