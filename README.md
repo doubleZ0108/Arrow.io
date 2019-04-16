@@ -11,7 +11,7 @@
 - 视频版demo奉上 **©2019 double Z, tongji uni. All right reserved.**
      > 链接：https://pan.baidu.com/s/1yXHeklQa20usBAYdbD-F2A 
      > 提取码：t3ca 
-- [] 项目高清源码链接待更新
+- [ ] 项目高清源码链接待更新
 ---
 
 ## 自选项目——弓箭手大作战
